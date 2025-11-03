@@ -107,7 +107,7 @@ public class GameManager : MonoBehaviour
             if (hand == playerHand)
             {
                 Debug.Log("プレイヤーが引いたカード: " + drawnCard.cardName);
-                UIManager.Instance.UpdatePlayerHandUI(playerHand);
+                // UIManager.Instance.UpdatePlayerHandUI(playerHand);
             }
         }
     }

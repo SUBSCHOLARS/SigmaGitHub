@@ -50,6 +50,8 @@ public class UIManager : MonoBehaviour
             // CardControllerを取得して、カード情報を設定
             newCardObj.GetComponent<CardController>().Setup(cardData);
         }
+
+        playerHandArea.GetComponent<HandLayoutManager>().UpdateLayout();
     }
     // 場のカードを更新するメソッド
     public void UpdateFieldCardUI(CardData cardData)
