@@ -338,8 +338,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 91.04, y: -157.42}
-  m_SizeDelta: {x: -182.08, y: -314.84}
+  m_AnchoredPosition: {x: 0.000061035156, y: -157.41998}
+  m_SizeDelta: {x: -0.000061035, y: -314.84}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &584865300
 MonoBehaviour:
@@ -848,6 +848,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9836f4b5b2e334bc6836e215263ed3e2, type: 2}
   - {fileID: 11400000, guid: c6d8dfc6a115b45bfae349d1c02fb34c, type: 2}
   - {fileID: 11400000, guid: 6292ae7848b2c46fa94fe22971bb0d2c, type: 2}
+  deck: []
+  discardPile: []
   currentCardOnField: {fileID: 0}
   currentTrendValue: 0
 --- !u!4 &1928954888

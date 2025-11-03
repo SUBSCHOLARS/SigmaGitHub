@@ -10,8 +10,8 @@ public class GameManager : MonoBehaviour
     [Header("カードデータ")]
     public List<CardData> allCardDatabase;
     [Header("ゲームの状態")]
-    private List<CardData> deck = new List<CardData>();
-    private List<CardData> discardPile = new List<CardData>();
+    public List<CardData> deck = new List<CardData>();
+    public List<CardData> discardPile = new List<CardData>();
     // （デバッグ用）現在の場のカード
     [SerializeField] private CardData currentCardOnField;
     // 現在の「トレンド（場の数字）」
@@ -44,6 +44,7 @@ public class GameManager : MonoBehaviour
         DrawCards(cpuHand, 7);
         // （テスト用）最初の1枚を馬に出す
         StartGame();
+        UIManager.Instance.UpdatePlayerHandUI(playerHand);
     }
 
     // Update is called once per frame
@@ -106,6 +107,7 @@ public class GameManager : MonoBehaviour
             if (hand == playerHand)
             {
                 Debug.Log("プレイヤーが引いたカード: " + drawnCard.cardName);
+                UIManager.Instance.UpdatePlayerHandUI(playerHand);
             }
         }
     }
@@ -157,21 +159,48 @@ public class GameManager : MonoBehaviour
         if (card.effect == CardEffect.Bribe)
         {
             Debug.Log("ワイルドカードが場に出されました。プレイヤーは数字を宣言してください。");
+            // TODO: プレイヤーに数字を選ばせるUIを実装
+            // 仮に5を選んだとする
+            currentTrendValue = 5;
         }
-        // 場のトレンド（数字）を更新
-        currentTrendValue = card.numberValue;
+        else
+        {
+            // 場のトレンド（数字）を更新
+            currentTrendValue = card.numberValue;
+        }
         Debug.Log("場に " + card.cardName + " が出されました。現在のトレンド: " + currentTrendValue);
+        UIManager.Instance.UpdateFieldCardUI(card);
         // TODO: ここで全プレイヤーのマッチ判定を呼び出す
     }
     // カードが出せるかを判定するメソッド
     public bool CanPlayCard(CardData cardToPlay)
     {
-        // TODO: 
         // 1. cardToPlay.effect == CardEffect.Bribe (賄賂) なら true
+        if (cardToPlay.effect == CardEffect.Bribe)
+        {
+            return true;
+        }
         // 2. cardToPlay.sector == currentCardOnField.sector (色が同じ) なら true
+        if (cardToPlay.sector == currentCardOnField.sector)
+        {
+            return true;
+        }
         // 3. cardToPlay.effect == currentCardOnField.effect (効果が同じ) かつ effect != None なら true
+        if (cardToPlay.effect != CardEffect.None && cardToPlay.effect == currentCardOnField.effect)
+        {
+            return true;
+        }
         // 4. cardToPlay.numberValue == currentTrendValue (数字が同じ) かつ effect == None なら true
-        return true;
+        if (cardToPlay.effect == CardEffect.None && currentCardOnField.effect == CardEffect.None && cardToPlay.numberValue == currentTrendValue)
+        {
+            return true;
+        }
+        // 5. 調査カード (Censor, Interrogate) は場には出せない (効果使用のみ)
+        if(cardToPlay.effect==CardEffect.Censor||cardToPlay.effect==CardEffect.Interrogate)
+        {
+            return false;
+        }
+        return false;
     }
     // プレイヤーの手札の合計値を計算するメソッド
     public int GetHandValue(List<CardData> hand)
@@ -182,5 +211,23 @@ public class GameManager : MonoBehaviour
             totalValue += card.handValue;
         }
         return totalValue;
+    }
+    public void TryPlayCard(CardData cardToPlay)
+    {
+        if (!CanPlayCard(cardToPlay))
+        {
+            Debug.Log("このカードは出せません: " + cardToPlay.cardName);
+            // TODDO: 出せない場合のフィードバックをUIに表示
+            return;
+        }
+        // カードを出せる場合の処理を続ける
+        playerHand.Remove(cardToPlay);
+        PlayCardToField(cardToPlay);
+
+        // UIを更新
+        UIManager.Instance.UpdatePlayerHandUI(playerHand);
+
+        // TODO: マッチ判定
+        // TODO: COUのターンを呼び出す
     }
 }
