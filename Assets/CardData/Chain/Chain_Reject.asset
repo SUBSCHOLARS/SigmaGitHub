@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Chain_Reject
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Chain_Reject
-  cardSprite: {fileID: 8924189393525305848, guid: e3658bb47383b488bb2033afb8882ad0, type: 3}
+  cardSprite: {fileID: 21300000, guid: e3658bb47383b488bb2033afb8882ad0, type: 3}
   sector: 1
   effect: 2
   numberValue: 0
