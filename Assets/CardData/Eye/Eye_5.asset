@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Eye_5
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Eye_5
-  cardSprite: {fileID: 21300000, guid: 0d4ad32fec8bb463491c13110f861809, type: 3}
+  cardSprite: {fileID: 4226941303213268616, guid: d5f0de9447c5346389de654e1fdd7e34, type: 3}
   sector: 0
   effect: 0
   numberValue: 5
