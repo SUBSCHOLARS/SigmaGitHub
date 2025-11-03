@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Interrogate
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Interrogate
-  cardSprite: {fileID: 4510279645623468925, guid: fb55d30e706a141b8bd89f448f788e28, type: 3}
+  cardSprite: {fileID: 7715035301452304648, guid: 48f5da631605c47faa469fdf17289a84, type: 3}
   sector: 4
   effect: 6
   numberValue: 0

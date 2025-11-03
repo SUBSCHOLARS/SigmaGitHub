@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Bribe
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Bribe
-  cardSprite: {fileID: 6938428024278276195, guid: 9178a1d1738944515a67c00fc54fddbf, type: 3}
+  cardSprite: {fileID: -6431385883010078040, guid: c34f050b84c8046948a91b9988f50ce5, type: 3}
   sector: 4
   effect: 4
   numberValue: 0
