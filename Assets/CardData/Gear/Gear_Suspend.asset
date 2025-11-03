@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Gear_Suspend
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Gear_Suspend
-  cardSprite: {fileID: 21300000, guid: 591a67d9fc1db46df955d17cd7b87530, type: 3}
+  cardSprite: {fileID: 7203099110285501528, guid: 402723bcbe122475a99aa3161f7f33c9, type: 3}
   sector: 2
   effect: 1
   numberValue: 0

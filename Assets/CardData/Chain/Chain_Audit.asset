@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Chain_Audit
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Chain_Audit
-  cardSprite: {fileID: 21300000, guid: dd72fbc691e8a447e8ff8de4a0848fad, type: 3}
+  cardSprite: {fileID: 6533834863623151488, guid: 00c23793e0353450294ef507dcb390c6, type: 3}
   sector: 1
   effect: 3
   numberValue: 0

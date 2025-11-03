@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Gear_Reject
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Gear_Reject
-  cardSprite: {fileID: 21300000, guid: a651f64398688475e8edb3a347093d14, type: 3}
+  cardSprite: {fileID: 6959997348725510271, guid: 881fc6228a9c74fac930c7c0b73d0514, type: 3}
   sector: 2
   effect: 2
   numberValue: 0
