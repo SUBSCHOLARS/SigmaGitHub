@@ -422,7 +422,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 15.49}
-  m_SizeDelta: {x: 100, y: 130.98}
+  m_SizeDelta: {x: 100, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &958951310
 MonoBehaviour:
@@ -499,7 +499,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 13.33, y: -174}
-  m_SizeDelta: {x: 300, y: 100}
+  m_SizeDelta: {x: 400, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1358585430
 MonoBehaviour:
@@ -513,7 +513,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea2211752dca94b469e4ff740cf0f97c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HandLayoutManager
-  cardSpacing: 50
+  cardSpacing: 60
   arcAmount: 200
   rotationAmount: 5
 --- !u!114 &1358585431

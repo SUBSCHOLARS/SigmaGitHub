@@ -1,6 +1,7 @@
 using UnityEngine.UI;
 using UnityEngine;
 using System.Collections.Generic;
+using DG.Tweening;
 // GameManagerからの指示を受けて画面を更新する
 public class UIManager : MonoBehaviour
 {
@@ -50,10 +51,24 @@ public class UIManager : MonoBehaviour
     public void UpdatePlayerHandUI(List<CardData> hand)
     {
         // 1. まず手札を全削除してリセット
+        // いてレート中にリストを変更するとエラーになるため、
+        // 最初に破棄する対象をリストアップする
+        List<Transform> oldCards = new List<Transform>();
         foreach (Transform child in playerHandArea)
         {
+            oldCards.Add(child);
+        }
+        // リストアップした対象を破棄する
+        foreach (Transform child in oldCards)
+        {
+            child.DOKill();
+            // playerHandAreaから即座に切り離す
+            // これでchildCountが即座に0になる
+            child.SetParent(null);
             Destroy(child.gameObject);
         }
+        // この時点でplayerHandArea.childCountは0になっている。
+
         // Detectorのリストもリセット
         handHoverDetector.cardsInHand.Clear();
 
@@ -69,6 +84,8 @@ public class UIManager : MonoBehaviour
             handHoverDetector.cardsInHand.Add(cardController);
         }
 
+        // レイアウトの更新
+        // この時点でplayerHandArea.childCountは6（新しい手札の枚数）になっている
         playerHandArea.GetComponent<HandLayoutManager>().UpdateLayout();
     }
     // 場のカードを更新するメソッド
