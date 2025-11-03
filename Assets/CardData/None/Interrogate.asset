@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Interrogate
   cardSprite: {fileID: 7715035301452304648, guid: 48f5da631605c47faa469fdf17289a84, type: 3}
+  cardIcon: {fileID: 4510279645623468925, guid: 694b8fa7a317b4dddbf7da2b3cefc0ff, type: 3}
   sector: 4
   effect: 6
   numberValue: 0

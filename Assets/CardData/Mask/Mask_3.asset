@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Mask_3
   cardSprite: {fileID: 3673995442476043508, guid: 6cec823681db942c39eec028a403da08, type: 3}
+  cardIcon: {fileID: 21300000, guid: ae8ab9d9362bd46d3903d0d1fad25559, type: 3}
   sector: 3
   effect: 0
   numberValue: 3

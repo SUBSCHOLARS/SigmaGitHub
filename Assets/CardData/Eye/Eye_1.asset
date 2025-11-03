@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Eye_1
   cardSprite: {fileID: -1543264310181214662, guid: be1cbce4eca09414d9d771505e045a6a, type: 3}
+  cardIcon: {fileID: 21300000, guid: 1968835786b1a43d3ae4a3b345c46b09, type: 3}
   sector: 0
   effect: 0
   numberValue: 1

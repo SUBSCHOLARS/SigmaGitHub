@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Censor
   cardSprite: {fileID: 1187792249778045608, guid: 4f93d0785480c4650bc2758356cd2c94, type: 3}
+  cardIcon: {fileID: -5208859477969359750, guid: f4d1b9aff1d9642e098052bdbb1bfe21, type: 3}
   sector: 4
   effect: 5
   numberValue: 0

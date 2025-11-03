@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Chain_Suspend
   cardSprite: {fileID: -7156728681446953658, guid: 5345b3db7a91646f5aee116b1e320dbc, type: 3}
+  cardIcon: {fileID: 21300000, guid: ec263fe592b0547829fa4a6c9c126209, type: 3}
   sector: 1
   effect: 1
   numberValue: 0

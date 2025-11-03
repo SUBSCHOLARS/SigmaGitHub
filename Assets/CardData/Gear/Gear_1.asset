@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Gear_1
   cardSprite: {fileID: 3673045547314789858, guid: 9c1b6a0e9452f4fd0b793cdb8fcd5eb8, type: 3}
+  cardIcon: {fileID: 21300000, guid: de9ac1998f46b4943bc8f77dd2c0252f, type: 3}
   sector: 2
   effect: 0
   numberValue: 1
