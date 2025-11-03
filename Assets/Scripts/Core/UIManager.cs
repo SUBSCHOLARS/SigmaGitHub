@@ -11,6 +11,7 @@ public class UIManager : MonoBehaviour
     public Image fieldCardImage; // 場に出ているカードを表示するImage
     [Header("プレハブ")]
     public GameObject cardPrefab;
+    private HandHoverDetector handHoverDetector;
     void Awake()
     {
         if (Instance == null)
@@ -20,6 +21,18 @@ public class UIManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+        }
+        if (playerHandArea != null)
+        {
+            handHoverDetector = playerHandArea.GetComponent<HandHoverDetector>();
+            if (handHoverDetector == null)
+            {
+                Debug.LogError("PlayerHandAreaにHandHoverDetectorコンポーネントがアタッチされていません!");
+            }
+        }
+        else
+        {
+            Debug.LogError("UIManagerのplayerHandAreaがインスペクタで設定されていません。");
         }
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -41,6 +54,8 @@ public class UIManager : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
+        // Detectorのリストもリセット
+        handHoverDetector.cardsInHand.Clear();
 
         // 2. 新しい手札を生成
         foreach (CardData cardData in hand)
@@ -48,7 +63,10 @@ public class UIManager : MonoBehaviour
             // プレハブをplayerHandAreaの子として生成
             GameObject newCardObj = Instantiate(cardPrefab, playerHandArea);
             // CardControllerを取得して、カード情報を設定
-            newCardObj.GetComponent<CardController>().Setup(cardData);
+            CardController cardController = newCardObj.GetComponent<CardController>();
+            cardController.Setup(cardData);
+            // Detectorのリストに新しいカードを追加
+            handHoverDetector.cardsInHand.Add(cardController);
         }
 
         playerHandArea.GetComponent<HandLayoutManager>().UpdateLayout();
