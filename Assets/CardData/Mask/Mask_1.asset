@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Mask_1
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Mask_1
-  cardSprite: {fileID: 21300000, guid: ba023c4ee8d5b4f37ab8e1ab008ce4da, type: 3}
+  cardSprite: {fileID: 1334112762561373075, guid: 0ac3b895fbbfe417ab1996db52ab8bb8, type: 3}
   sector: 3
   effect: 0
   numberValue: 1
