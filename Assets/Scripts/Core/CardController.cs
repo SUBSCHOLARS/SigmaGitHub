@@ -34,7 +34,15 @@ public class CardController : MonoBehaviour
     {
         Debug.Log("クリックされたカード" + myCardData.cardName);
         // GameManagerに「このカードがプレイされようとした」と伝える
-        // GameManager.Instance.TryPlayCard(myCardData);
+        bool isAbleToPlay = GameManager.Instance.CanPlayCard(myCardData);
+        if(isAbleToPlay)
+        {
+            GameManager.Instance.PlayCardToField(myCardData);
+        }
+        else
+        {
+            Debug.Log("このカードは使えないよ。");
+        }
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
