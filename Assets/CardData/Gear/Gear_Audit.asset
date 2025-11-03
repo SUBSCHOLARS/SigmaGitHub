@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Gear_Audit
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Gear_Audit
-  cardSprite: {fileID: 7607442657339973530, guid: f295ff5dfd8db4c67ade598567be02ae, type: 3}
+  cardSprite: {fileID: 21300000, guid: f295ff5dfd8db4c67ade598567be02ae, type: 3}
   sector: 2
   effect: 3
   numberValue: 0

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Gear_12
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Gear_12
-  cardSprite: {fileID: -1544442028708468657, guid: 8773702c4634b4d97ac352cb3924ac97, type: 3}
+  cardSprite: {fileID: 21300000, guid: 8773702c4634b4d97ac352cb3924ac97, type: 3}
   sector: 2
   effect: 0
   numberValue: 12
