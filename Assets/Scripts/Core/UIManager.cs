@@ -25,8 +25,9 @@ public class UIManager : MonoBehaviour
     [Header("プレハブ")]
     public GameObject cardPrefab;
     public GameObject cardBackPrefab; // CardBackをアタッチ
+    [Header("山札表示")]
+    public Transform deckVisualContainer; // DeckVisualContainerをアタッチ
     private HandHoverDetector handHoverDetector;
-
     public Transform logContentArea;
     public GameObject logMessagePrefab;
     void Awake()
@@ -83,6 +84,36 @@ public class UIManager : MonoBehaviour
     void Update()
     {
 
+    }
+    // 山札の見た目を更新するメソッド
+    public void UpdateDeckVisual(int deckCount)
+    {
+        // 1. 古い山札を削除
+        foreach (Transform child in deckVisualContainer)
+        {
+            child.SetParent(null);
+            Destroy(child.gameObject);
+        }
+        // 2. 山札の枚数分、1ピクセルずつずらして生成
+        for(int i=0; i<deckCount; i++)
+        {
+            GameObject cardBack = Instantiate(cardBackPrefab, deckVisualContainer);
+            // 1ピクセルずつY方向にずらす
+            float xOffset = i * 0.5f; // 0.5ピクセルずつ下へ
+            float yOffset = 0;
+            float rotation = 0; // 傾きは設定しない
+
+            RectTransform rect = cardBack.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0.5f, 1.0f); // 上端揃え（Top-Center）
+            rect.anchorMax = new Vector2(0.5f, 1.0f);
+            rect.pivot = new Vector2(0.5f, 1.0f);
+
+            rect.localPosition = new Vector3(xOffset, yOffset, 0);
+            rect.localRotation = Quaternion.Euler(0, 0, rotation);
+
+            // 重なり順を正しくする（新しいカードほど奥=下）
+            rect.SetAsFirstSibling();
+        }
     }
     // プレイヤーの手札を画面に表示するメソッド
     public void UpdateAllHandVisuals()

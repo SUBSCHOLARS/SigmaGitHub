@@ -70,6 +70,7 @@ public class GameManager : MonoBehaviour
         // データベースから全てのカードを山札に追加
         deck.AddRange(allCardDatabase);
         ShuffleDeck();
+        UIManager.Instance.UpdateDeckVisual(deck.Count);
     }
     // Fisher-Yatesアルゴリズムを使い、山札をシャッフルするメソッド
     public void ShuffleDeck()
@@ -99,6 +100,8 @@ public class GameManager : MonoBehaviour
                     deck.AddRange(discardPile);
                     discardPile.Clear();
                     ShuffleDeck();
+                    // 捨て札を戻す処理
+                    UIManager.Instance.UpdateDeckVisual(deck.Count);
                 }
                 else
                 {
@@ -406,8 +409,9 @@ public class GameManager : MonoBehaviour
             Debug.Log($"[CPU] {currentCPU.id} はカードを出せず、一枚引く");
             DrawCards(currentCPU.hand, 1);
             UIManager.Instance.UpdateAllHandVisuals(); // UI（CPUの手札枚数）を更新
+            UIManager.Instance.UpdateDeckVisual(deck.Count);
 
-            NextTurn(CardEffect.None); // 効果なしで次のターンへs
+            NextTurn(CardEffect.None); // 効果なしで次のターンへ
         }
     }
     // CPUの「脳」（貪欲法）
