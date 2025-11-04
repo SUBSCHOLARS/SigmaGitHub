@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int currentTrendValue = 0;
 
     // プレイヤーの管理（本実装）
-    private List<Player> players = new List<Player>();
+    public List<Player> players = new List<Player>();
     private int currentPlayerIndex = 0;
     private bool isTurnClockwise = true; // ターン進行方向（Reject用）
 
@@ -52,7 +52,7 @@ public class GameManager : MonoBehaviour
         // 最初の1枚を場に出す
         StartGame();
         // プレイヤー（0番目）の手札をUIに反映
-        UIManager.Instance.UpdatePlayerHandUI(players[0].hand);
+        UIManager.Instance.UpdateAllHandVisuals();
     }
 
     // Update is called once per frame
@@ -119,6 +119,14 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    public List<CardData> GetPlayerHand()
+    {
+        if (players.Count > 0 && !players[0].isCPU)
+        {
+            return players[0].hand;
+        }
+        return new List<CardData>(); // 該当なし。
+    } 
     // ゲームの開始（最初の1枚を場に出す）
     public void StartGame()
     {
@@ -245,7 +253,7 @@ public class GameManager : MonoBehaviour
         PlayCardToField(cardToPlay, humanPlayer.id);
 
         // UIを更新
-        UIManager.Instance.UpdatePlayerHandUI(humanPlayer.hand);
+        UIManager.Instance.UpdateAllHandVisuals(); ;
 
         // TODO: マッチ判定
         // TODO: CPUのターンを呼び出す
