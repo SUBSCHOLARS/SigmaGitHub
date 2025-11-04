@@ -2,6 +2,7 @@ using UnityEngine.UI;
 using UnityEngine;
 using System.Collections.Generic;
 using DG.Tweening;
+using TMPro;
 // GameManagerからの指示を受けて画面を更新する
 public class UIManager : MonoBehaviour
 {
@@ -9,10 +10,17 @@ public class UIManager : MonoBehaviour
     public static UIManager Instance { get; private set; }
     [Header("UI参照")]
     public Transform playerHandArea; // プレイヤーの手札を並べる場所
-    public Image fieldCardImage; // 場に出ているカードを表示するImage
+    [Header("場のカード表示")]
+    public Image fieldCardTop; // 場に出ているカード（一番上）
+    public Image fieldCardMiddle; // 場に出ているカード（真ん中）
+    public Image fieldCardBottom; // 場に出ているカード（下）
+    public GameObject discardPileViewer; // 捨て札山の表示オブジェクト
     [Header("プレハブ")]
     public GameObject cardPrefab;
     private HandHoverDetector handHoverDetector;
+
+    public Transform logContentArea;
+    public GameObject logMessagePrefab;
     void Awake()
     {
         if (Instance == null)
@@ -35,6 +43,27 @@ public class UIManager : MonoBehaviour
         {
             Debug.LogError("UIManagerのplayerHandAreaがインスペクタで設定されていません。");
         }
+    }
+    public void AddLogMessage(string message, Sprite icon)
+    {
+        // 1. PrefabをLogContentAreaの子として生成
+        GameObject logEntry = Instantiate(logMessagePrefab, logContentArea);
+        // 2. IconとTextを設定
+        // Findは非推奨ファが、Prefabが単純なため使用
+        Image iconImage = logEntry.transform.Find("Icon").GetComponent<Image>();
+        TextMeshProUGUI messageText = logEntry.transform.Find("MessageText").GetComponent<TextMeshProUGUI>();
+        if (icon != null)
+        {
+            iconImage.sprite = icon;
+            iconImage.enabled = true;
+        }
+        else
+        {
+            iconImage.enabled = false;
+        }
+        messageText.text = message;
+        // TODO: スクロールを一番下に移動させる処理を追加
+        // TODO: 古いログを一定数超えたら削除する処理を追加
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -89,17 +118,42 @@ public class UIManager : MonoBehaviour
         playerHandArea.GetComponent<HandLayoutManager>().UpdateLayout();
     }
     // 場のカードを更新するメソッド
-    public void UpdateFieldCardUI(CardData cardData)
+    public void UpdateFieldPileUI(CardData cardData)
     {
-        if (cardData != null)
+        // GameManagerから現在の捨て札リストを取得
+        List<CardData> pile = GameManager.Instance.discardPile;
+        int count = pile.Count;
+
+        // 1. 一番上のカード（今出たカード）
+        if (count >= 1)
         {
-            fieldCardImage.sprite = cardData.cardSprite;
-            fieldCardImage.enabled = true;
+            // リストの末尾(count-1)が最新のカード
+            fieldCardTop.sprite = pile[count - 1].cardSprite;
+            fieldCardTop.enabled = true;
         }
         else
         {
-            // 念のため（場が空の場合など）
-            fieldCardImage.enabled = false;
+            // 該当カードがなければ非表示
+        }
+        // 2. 1ターン前のカード
+        if (count >= 2)
+        {
+            fieldCardMiddle.sprite = pile[count - 2].cardSprite;
+            fieldCardMiddle.enabled = true;
+        }
+        else
+        {
+            fieldCardMiddle.enabled = false;
+        }
+        // 3. 2ターン前のカード
+        if (count >= 3)
+        {
+            fieldCardBottom.sprite = pile[count - 3].cardSprite;
+            fieldCardBottom.enabled = true;
+        }
+        else
+        {
+            fieldCardBottom.enabled = false;
         }
     }
 }

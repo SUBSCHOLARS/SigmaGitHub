@@ -83,7 +83,7 @@ public class GameManager : MonoBehaviour
             {
                 // 山札が空の場合、捨て札をシャッフルして山札に戻す
                 Debug.Log("山札が空です。捨て札をシャッフルして山札に戻します。");
-                
+
                 if (discardPile.Count > 0)
                 {
                     deck.AddRange(discardPile);
@@ -94,7 +94,7 @@ public class GameManager : MonoBehaviour
                 {
                     // 捨て札も空なら、もう引けないのでループを抜ける
                     Debug.LogWarning("山札も捨て札も空です。これ以上カードを引けません。");
-                    break; 
+                    break;
                 }
             }
 
@@ -131,14 +131,14 @@ public class GameManager : MonoBehaviour
             // 見つかった場合
             CardData firstCard = deck[firstCardIndex];
             deck.RemoveAt(firstCardIndex); // 見つけた場所から削除
-            PlayCardToField(firstCard);
+            PlayCardToField(firstCard, PlayerID.GameMaster); // 最初のカードを場に出す
             Debug.Log("ゲーム開始！最初のカード: " + firstCard.cardName);
         }
         else
         {
             // 1枚も見つからなかった場合（テスト中や、特殊な状況）
             Debug.LogError("山札に数字カードが1枚もありません。ゲームを開始できません。");
-            
+
             // (もし山札が空なら、捨て札を戻してリトライする処理などもここ)
             if (deck.Count == 0 && discardPile.Count > 0)
             {
@@ -151,10 +151,15 @@ public class GameManager : MonoBehaviour
         }
     }
     // カードを場（捨て札）に出す処理
-    public void PlayCardToField(CardData card)
+    public void PlayCardToField(CardData card, PlayerID player)
     {
         discardPile.Add(card);
         currentCardOnField = card;
+        // メッセージを作成
+        string playerName = player.ToString();
+        string message = $"[{playerName}] played [{card.cardName}]";
+        // UIManagerにログ表示を依頼
+        UIManager.Instance.AddLogMessage(message, card.cardIcon);
         // TODO: Bribeの場合の数字設定の処理を追加
         if (card.effect == CardEffect.Bribe)
         {
@@ -169,7 +174,7 @@ public class GameManager : MonoBehaviour
             currentTrendValue = card.numberValue;
         }
         Debug.Log("場に " + card.cardName + " が出されました。現在のトレンド: " + currentTrendValue);
-        UIManager.Instance.UpdateFieldCardUI(card);
+        UIManager.Instance.UpdateFieldPileUI(card);
         // TODO: ここで全プレイヤーのマッチ判定を呼び出す
     }
     // カードが出せるかを判定するメソッド
@@ -196,7 +201,7 @@ public class GameManager : MonoBehaviour
             return true;
         }
         // 5. 調査カード (Censor, Interrogate) は場には出せない (効果使用のみ)
-        if(cardToPlay.effect==CardEffect.Censor||cardToPlay.effect==CardEffect.Interrogate)
+        if (cardToPlay.effect == CardEffect.Censor || cardToPlay.effect == CardEffect.Interrogate)
         {
             return false;
         }
@@ -222,7 +227,7 @@ public class GameManager : MonoBehaviour
         }
         // カードを出せる場合の処理を続ける
         playerHand.Remove(cardToPlay);
-        PlayCardToField(cardToPlay);
+        PlayCardToField(cardToPlay, PlayerID.Player);
 
         // UIを更新
         UIManager.Instance.UpdatePlayerHandUI(playerHand);
@@ -230,4 +235,10 @@ public class GameManager : MonoBehaviour
         // TODO: マッチ判定
         // TODO: COUのターンを呼び出す
     }
+}
+public enum PlayerID
+{
+    Player,
+    CPU,
+    GameMaster
 }
