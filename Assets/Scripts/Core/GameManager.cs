@@ -21,9 +21,11 @@ public class GameManager : MonoBehaviour
     public List<Player> players = new List<Player>();
     private int currentPlayerIndex = 0;
     private bool isTurnClockwise = true; // ターン進行方向（Reject用）
+    private Player gameMaster;
 
     void Awake()
     {
+        gameMaster = new Player(PlayerID.GameMaster, false, "GameMaster");
         // シングルトンの設定
         if (Instance == null)
         {
@@ -39,9 +41,9 @@ public class GameManager : MonoBehaviour
     {
         // 3人対戦のセットアップ
         players.Clear();
-        players.Add(new Player(PlayerID.Player, false)); // 0番目が人間
-        players.Add(new Player(PlayerID.CPU, true));    // 1番目がCPU
-        players.Add(new Player(PlayerID.CPU, true));    // 2番目がCPU
+        players.Add(new Player(PlayerID.Player, false, "Ian")); // 0番目が人間
+        players.Add(new Player(PlayerID.CPU, true, "CPU_1"));    // 1番目がCPU
+        players.Add(new Player(PlayerID.CPU, true, "CPU_2"));    // 2番目がCPU
         // ゲーム開始時に山札を準備
         SetUpDeck();
         // 全プレイヤーにカードを配る
@@ -147,7 +149,7 @@ public class GameManager : MonoBehaviour
             // 見つかった場合
             CardData firstCard = deck[firstCardIndex];
             deck.RemoveAt(firstCardIndex); // 見つけた場所から削除
-            PlayCardToField(firstCard, PlayerID.GameMaster); // 最初のカードを場に出す
+            PlayCardToField(firstCard, gameMaster); // 最初のカードを場に出す
             Debug.Log("ゲーム開始！最初のカード: " + firstCard.cardName);
         }
         else
@@ -167,12 +169,12 @@ public class GameManager : MonoBehaviour
         }
     }
     // カードを場（捨て札）に出す処理
-    public void PlayCardToField(CardData card, PlayerID player)
+    public void PlayCardToField(CardData card, Player player)
     {
         discardPile.Add(card);
         currentCardOnField = card;
         // メッセージを作成
-        string playerName = player.ToString();
+        string playerName = player.playerName;
         string message = $"[{playerName}] played [{card.cardName}]";
         // UIManagerにログ表示を依頼
         UIManager.Instance.AddLogMessage(message, card.cardIcon);
@@ -250,16 +252,16 @@ public class GameManager : MonoBehaviour
         // カードを出せる場合の処理を続ける
         Player humanPlayer = players[currentPlayerIndex];
         humanPlayer.hand.Remove(cardToPlay);
-        PlayCardToField(cardToPlay, humanPlayer.id);
+        PlayCardToField(cardToPlay, humanPlayer);
 
         // UIを更新
-        UIManager.Instance.UpdateAllHandVisuals(); ;
+        // UIManager.Instance.UpdateAllHandVisuals();
 
         // TODO: マッチ判定
         // TODO: CPUのターンを呼び出す
         if (!CheckForMatch(humanPlayer))
         {
-            NextTurn();
+            NextTurn(cardToPlay.effect);
         }
         else
         {
@@ -267,30 +269,62 @@ public class GameManager : MonoBehaviour
         }
     }
     // ターンを次のプレイヤーに進めるメソッド
-    public void NextTurn()
+    public void NextTurn(CardEffect playedEffect)
     {
-        // TODO: ここでSuspend（スキップ）やReject（リバース）の処理を実装
-        if (isTurnClockwise)
+        // 1. 効果処理（ターン計算の「前」）
+        if (playedEffect == CardEffect.Reject)
         {
-            currentPlayerIndex++;
-            if (currentPlayerIndex >= players.Count)
+            isTurnClockwise = !isTurnClockwise;
+            Debug.Log("リバース!");
+        }
+        // 2. 次のプレイヤーを計算
+        int skippledPlayers = 0;
+        if (playedEffect == CardEffect.Suspend)
+        {
+            skippledPlayers = 1; // 1人スキップ
+            Debug.Log("スキップ!");
+        }
+        for (int i = 0; i <= skippledPlayers; i++)
+        {
+            if (isTurnClockwise)
             {
-                currentPlayerIndex = 0; // 周回させる
+                currentPlayerIndex++;
+                if (currentPlayerIndex >= players.Count)
+                {
+                    currentPlayerIndex = 0; // 周回させる
+                }
+            }
+            else
+            {
+                currentPlayerIndex--;
+                if (currentPlayerIndex < 0)
+                {
+                    currentPlayerIndex = players.Count - 1; // 周回させる
+                }
             }
         }
-        else
-        {
-            currentPlayerIndex--;
-            if (currentPlayerIndex < 0)
-            {
-                currentPlayerIndex = players.Count - 1; // 周回させる
-            }
-        }
+        Player targetPlayer = players[currentPlayerIndex];
         Debug.Log($"--- {players[currentPlayerIndex].id} のターン ---");
-        // 次の人がCPUなら、CPUの試行ルーチンを呼ぶ
-        if (players[currentPlayerIndex].isCPU)
+
+        // 3. 効果処理（ターン計算の「後」）
+        if (playedEffect == CardEffect.Audit)
         {
-            // ExecuteCPUTurn();
+            // TODO: 回避（Audit返し）のロジック
+            Debug.Log($"{targetPlayer.id} は2枚引く!");
+            DrawCards(targetPlayer.hand, 2);
+            UIManager.Instance.UpdateAllHandVisuals();
+        }
+        if(playedEffect==CardEffect.Bribe)
+        {
+            // TODO: Bribeの数字選択
+            // 今は仮に5とする
+            currentTrendValue = 5;
+            Debug.Log($"Bribe: トレンドが{currentTrendValue} に設定されました。");
+        }
+        // 次の人がCPUなら、CPUの試行ルーチンを呼ぶ
+        if (targetPlayer.isCPU)
+        {
+            ExecuteCPUTurn();
         }
     }
     // マッチ（勝利）判定を行うメソッド
@@ -311,27 +345,125 @@ public class GameManager : MonoBehaviour
                     // TODO: 勝利したplayerのポイントを加算
                 }
             }
-            if (trendRideWin) return true; // 他人ドボンが最優先
-
-            // 2. セルフマッチ（自分ドボン）のチェック
-            if (GetHandValue(cardPlayer.hand) == currentTrendValue)
+        }
+        if (trendRideWin) return true; // 他人ドボンが最優先
+        // 2. セルフマッチ（自分ドボン）のチェック
+        if (GetHandValue(cardPlayer.hand) == currentTrendValue)
+        {
+            if (cardPlayer.hand.Count > 0 || currentTrendValue != 0)
             {
-                if (cardPlayer.hand.Count > 0 || currentTrendValue != 0)
+                // Bribeでの上がり禁止チェック
+                if (currentCardOnField.effect == CardEffect.Bribe)
                 {
-                    // Bribeでの上がり禁止チェック
-                    if (currentCardOnField.effect == CardEffect.Bribe)
-                    {
-                        Debug.Log("Bribe（賄賂）では上がれません!");
-                        return false;
-                    }
-
-                    Debug.Log($"セルフマッチ! {cardPlayer.id} が勝利!");
-                    // TODO: cardPlayerのポイントを加算
-                    return true;
+                    Debug.Log("Bribe（賄賂）では上がれません!");
+                    return false;
                 }
+
+                Debug.Log($"セルフマッチ! {cardPlayer.id} が勝利!");
+                // TODO: cardPlayerのポイントを加算
+                return true;
             }
         }
         return false; // 誰もマッチしなかった場合
+    }
+    // CPUのターンを実行する（NextTurnから呼ばれる）
+    private void ExecuteCPUTurn()
+    {
+        // CPUが考えているように見せるため、数秒後に実行する
+        Invoke("CPUTurnLogic", Random.Range(2f, 4.5f));
+    }
+    // CPUの思考ロジック本体
+    private void CPUTurnLogic()
+    {
+        Player currentCPU = players[currentPlayerIndex];
+
+        // 1. 出すカードを決める
+        CardData cardToPlay = FindBestCardForCPU(currentCPU);
+
+        // 2. 出せるカードがあった場合
+        if (cardToPlay != null)
+        {
+            Debug.Log($"[CPU] {currentCPU.id} が {cardToPlay.cardName} をプレイ");
+            currentCPU.hand.Remove(cardToPlay);
+            PlayCardToField(cardToPlay, currentCPU);
+            // UIManager.Instance.UpdateAllHandVisuals(); // UI（CPUの手札枚数）を更新
+
+            // 3. マッチ判定と次のターン
+            if (!CheckForMatch(currentCPU))
+            {
+                NextTurn(cardToPlay.effect);
+            }
+            else
+            {
+                // CPUが勝利した
+                Debug.Log($"[CPU] {currentCPU.id} が勝利しました!");
+                // TODO: 勝利演出、ランド終了時
+            }
+        }
+        // 4. 出せるカードがなかった場合
+        else
+        {
+            Debug.Log($"[CPU] {currentCPU.id} はカードを出せず、一枚引く");
+            DrawCards(currentCPU.hand, 1);
+            UIManager.Instance.UpdateAllHandVisuals(); // UI（CPUの手札枚数）を更新
+
+            NextTurn(CardEffect.None); // 効果なしで次のターンへs
+        }
+    }
+    // CPUの「脳」（貪欲法）
+    private CardData FindBestCardForCPU(Player cpu)
+    {
+        List<CardData> playableCards = new List<CardData>();
+
+        // 1. 出せるカードを全てリストアップ
+        foreach (CardData card in cpu.hand)
+        {
+            if (CanPlayCard(card))
+            {
+                playableCards.Add(card);
+            }
+        }
+        if (playableCards.Count == 0)
+        {
+            return null; // 出せるカードがない
+        }
+        // 2. 貪欲法（Greedy Algorithm）で「最善」のカードを選ぶ
+        // 優先度1: セルフマッチできるカード（Bribe以外）
+        foreach (CardData card in playableCards)
+        {
+            if (card.effect == CardEffect.Bribe)
+            {
+                continue;
+            }
+            // もしこのカードを出したら...
+            int futureTrend = card.numberValue;
+            int futureHandValue = GetHandValue(cpu.hand) - card.handValue;
+
+            if (futureHandValue == futureTrend && (cpu.hand.Count > 1 || futureHandValue != 0))
+            {
+                return card; // 勝利する
+            }
+        }
+        // 優先度2: 手札コストの高いカード（15）を捨てる（Bribe, Censor, Interrogate）
+        foreach (CardData card in playableCards)
+        {
+            if (card.handValue == 15)
+            {
+                return card; // 高コストカードを素早く手放す
+            }
+        }
+        // 優先度3: 効果付きカード（Audit, Suspend, Reject）
+        foreach (CardData card in playableCards)
+        {
+            if (card.effect == CardEffect.Audit ||
+                card.effect == CardEffect.Suspend ||
+                card.effect == CardEffect.Reject)
+            {
+                return card;
+            }
+        }
+        // 優先度4: 残った出せるカード（数字カード）からランダムに1枚
+        return playableCards[Random.Range(0, playableCards.Count)];
     }
 }
 public enum PlayerID
