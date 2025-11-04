@@ -19,10 +19,9 @@ public class UIManager : MonoBehaviour
     public Transform cpu1HandContainer; // CPU1_HandDisplayをアタッチ
     public Transform cpu2HandContainer; // CPU2_HandDisplayをアタッチ
     [Header("CPUの手札表示パラメータ")]
-    [SerializeField] private float xFactor = 8f;
-    [SerializeField] private float yFactor = -2f;
-    [SerializeField] private float rotationAngle = -15f;
-    [SerializeField] private float rotationAngleFactor = 4f;
+    [SerializeField] private float cpuCardSpacing = 30f;
+    [SerializeField] private float cpuArcAmount = 150f;
+    [SerializeField] private float cpuRotationAmount = 3f;
     [Header("プレハブ")]
     public GameObject cardPrefab;
     public GameObject cardBackPrefab; // CardBackをアタッチ
@@ -145,25 +144,38 @@ public class UIManager : MonoBehaviour
             child.SetParent(null);
             Destroy(child.gameObject);
         }
-        // 2. CPUの手札の枚数分だけ裏カードを生成
-        for(int i=0; i<cpu.hand.Count; i++)
+        int childCount = cpu.hand.Count;
+        if (childCount == 0)
         {
-            // cardBackPrefabをcontainerの子として生成
-            GameObject cardBack = Instantiate(cardBackPrefab, container);
-            // 3. 重ねて食べ寝るためのずらすと傾きを設定
-            float xOffset = i * xFactor; // xFactorずつずらす（正の値で右、負の値で左）
-            float yOffset = i * yFactor; // yFactorずつずらす（正の値で上、負の値で下）
-            float rotation = rotationAngle + (i * rotationAngleFactor); // rotationAngleから傾きを少しずつ変える
+            return;
+        }
+        // 2. CPUの手札の枚数分だけ裏カードを生成
+        // 手札全体の「高さ」を計算
+        float totalWidth = (childCount - 1) * cpuCardSpacing;
+        float startX = -totalWidth / 2f;
 
-            // RectTransformを取得してアンカーを中央に設定
+        for(int i=0; i<childCount; i++)
+        {
+            GameObject cardBack = Instantiate(cardBackPrefab, container);
             RectTransform rect = cardBack.GetComponent<RectTransform>();
+
+            // アンカーとピボットを中央に設定
             rect.anchorMin = new Vector2(0.5f, 0.5f);
             rect.anchorMax = new Vector2(0.5f, 0.5f);
             rect.pivot = new Vector2(0.5f, 0.5f);
 
-            // 位置と傾きを設定
-            rect.localPosition = new Vector3(xOffset, yOffset, 0);
-            rect.localRotation = Quaternion.Euler(0, 0, rotation);
+            // 1. 位置を決める（HandLayoutManagerのXとYを入れ替える）
+            float xPos = startX + i * cpuCardSpacing; // メインの軸（縦）
+            // 最終的なX座標
+            float yPos = -Mathf.Abs(xPos) / cpuArcAmount;
+
+            rect.localPosition = new Vector3(xPos, yPos, 0);
+
+            // 2. 角度を決める（Y座標を基準に）
+            float angle = -xPos / (totalWidth + 1f) * (cpuRotationAmount * childCount);
+
+            // 3. ベース回転（90度）と束の傾き（angle）を足す
+            rect.localRotation = Quaternion.Euler(0, 0, angle);
         }
     }
     // 場のカードを更新するメソッド
