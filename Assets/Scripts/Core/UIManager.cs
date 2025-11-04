@@ -277,22 +277,32 @@ public class UIManager : MonoBehaviour
     // ターンアニメーション非表示
     public void HideTurnAnimation()
     {
-        // 1. 点滅を止めて非表示に
-        turnIndicatorText.DOKill(); // アニメーション停止
-        turnIndicatorText.gameObject.SetActive(false);
-        turnIndicatorText.alpha = 1f; // Alphaをリセット
+        if (turnIndicatorText != null)
+        {
+            // 1. 点滅を止めて非表示に
+            turnIndicatorText.DOKill(); // アニメーション停止
+            turnIndicatorText.gameObject.SetActive(false);
+            turnIndicatorText.alpha = 1f; // Alphaをリセット
+        }
 
         // 2. 枠線を全て消す
-        playerTurnGlow.DOKill();
-        cpu1TurnGlow.DOKill();
-        cpu2TurnGlow.DOKill();
-
-        playerTurnGlow.enabled = false;
-        cpu1TurnGlow.enabled = false;
-        cpu2TurnGlow.enabled = false;
-
-        playerTurnGlow.color = new Color(playerTurnGlow.color.r, playerTurnGlow.color.g, playerTurnGlow.color.b, 1f);
-        cpu1TurnGlow.color = new Color(cpu1TurnGlow.color.r, cpu1TurnGlow.color.g, cpu1TurnGlow.color.b, 1f);
-        cpu2TurnGlow.color = new Color(cpu2TurnGlow.color.r, cpu2TurnGlow.color.g, cpu2TurnGlow.color.b, 1f);
+        if (playerTurnGlow != null)
+        {
+            playerTurnGlow.DOKill();
+            playerTurnGlow.enabled = false;
+            playerTurnGlow.color = new Color(playerTurnGlow.color.r, playerTurnGlow.color.g, playerTurnGlow.color.b, 1f);
+        }
+        if (cpu1TurnGlow != null)
+        {
+            cpu1TurnGlow.DOKill();
+            cpu1TurnGlow.enabled = false;
+            cpu1TurnGlow.color = new Color(cpu1TurnGlow.color.r, cpu1TurnGlow.color.g, cpu1TurnGlow.color.b, 1f);
+        }
+        if (cpu2TurnGlow != null)
+        {
+            cpu2TurnGlow.DOKill();
+            cpu2TurnGlow.enabled = false;
+            cpu2TurnGlow.color = new Color(cpu2TurnGlow.color.r, cpu2TurnGlow.color.g, cpu2TurnGlow.color.b, 1f);
+        }
     }
 }
