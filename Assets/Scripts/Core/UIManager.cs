@@ -27,6 +27,11 @@ public class UIManager : MonoBehaviour
     public GameObject cardBackPrefab; // CardBackをアタッチ
     [Header("山札表示")]
     public Transform deckVisualContainer; // DeckVisualContainerをアタッチ
+    [Header("ターンインジケーター")]
+    public Image playerTurnGlow;
+    public Image cpu1TurnGlow;
+    public Image cpu2TurnGlow;
+    public TextMeshProUGUI turnIndicatorText; // TurnIndicatorTExtをアタッチ
     private HandHoverDetector handHoverDetector;
     public Transform logContentArea;
     public GameObject logMessagePrefab;
@@ -247,5 +252,47 @@ public class UIManager : MonoBehaviour
         {
             fieldCardBottom.enabled = false;
         }
+    }
+    // ターンアニメーション表示
+    public void ShowTurnAnimation(string playerName, int playerIdex)
+    {
+        // 1. 枠線を光らせる（UpdateTurnIndicatorを流用）
+        Image targetGlow = null;
+        if (playerIdex == 0) targetGlow = playerTurnGlow;
+        else if (playerIdex == 1) targetGlow = cpu1TurnGlow;
+        else if (playerIdex == 2) targetGlow = cpu2TurnGlow;
+        if(targetGlow!=null)
+        {
+            targetGlow.enabled = true;
+            targetGlow.DOFade(0f, 0.4f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Yoyo);
+        }
+        // 2. テキストを表示して点滅させる
+        turnIndicatorText.text = $"-{playerName}- TURN";
+        turnIndicatorText.gameObject.SetActive(true);
+
+        //DOTweenで点滅
+        turnIndicatorText.DOFade(0f, 0.4f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Yoyo);
+
+    }
+    // ターンアニメーション非表示
+    public void HideTurnAnimation()
+    {
+        // 1. 点滅を止めて非表示に
+        turnIndicatorText.DOKill(); // アニメーション停止
+        turnIndicatorText.gameObject.SetActive(false);
+        turnIndicatorText.alpha = 1f; // Alphaをリセット
+
+        // 2. 枠線を全て消す
+        playerTurnGlow.DOKill();
+        cpu1TurnGlow.DOKill();
+        cpu2TurnGlow.DOKill();
+
+        playerTurnGlow.enabled = false;
+        cpu1TurnGlow.enabled = false;
+        cpu2TurnGlow.enabled = false;
+
+        playerTurnGlow.color = new Color(playerTurnGlow.color.r, playerTurnGlow.color.g, playerTurnGlow.color.b, 1f);
+        cpu1TurnGlow.color = new Color(cpu1TurnGlow.color.r, cpu1TurnGlow.color.g, cpu1TurnGlow.color.b, 1f);
+        cpu2TurnGlow.color = new Color(cpu2TurnGlow.color.r, cpu2TurnGlow.color.g, cpu2TurnGlow.color.b, 1f);
     }
 }

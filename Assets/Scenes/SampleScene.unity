@@ -214,6 +214,10 @@ MonoBehaviour:
   cardPrefab: {fileID: 4087856086764915820, guid: 676823b40ee3c4f99904263a0a8d815d, type: 3}
   cardBackPrefab: {fileID: 4586531106669417455, guid: 8bd66bf65c7df45388df0163aacf02df, type: 3}
   deckVisualContainer: {fileID: 938293776}
+  playerTurnGlow: {fileID: 1667480559}
+  cpu1TurnGlow: {fileID: 813954720}
+  cpu2TurnGlow: {fileID: 2003222102}
+  turnIndicatorText: {fileID: 1018812489}
   logContentArea: {fileID: 1429304433}
   logMessagePrefab: {fileID: 6736737488240504262, guid: 93dced3c888434e5d96f39f1e8df55ae, type: 3}
 --- !u!1 &404600648
@@ -556,7 +560,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 404600650}
   m_HandleRect: {fileID: 404600649}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -1930,6 +1934,7 @@ MonoBehaviour:
   discardPile: []
   currentCardOnField: {fileID: 0}
   currentTrendValue: 0
+  isPlayerInputLocked: 0
 --- !u!4 &1928954888
 Transform:
   m_ObjectHideFlags: 0

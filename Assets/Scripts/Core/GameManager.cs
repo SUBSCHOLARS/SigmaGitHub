@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -21,6 +22,7 @@ public class GameManager : MonoBehaviour
     public List<Player> players = new List<Player>();
     private int currentPlayerIndex = 0;
     private bool isTurnClockwise = true; // ターン進行方向（Reject用）
+    public bool isPlayerInputLocked = false; // 操作ロックようフラグ
     private Player gameMaster;
 
     void Awake()
@@ -240,6 +242,11 @@ public class GameManager : MonoBehaviour
     }
     public void TryPlayCard(CardData cardToPlay)
     {
+        // 操作ロックをチェック
+        if (isPlayerInputLocked)
+        {
+            return;
+        }
         // プレイヤーのターンかチェック
         if (players[currentPlayerIndex].isCPU)
         {
@@ -272,8 +279,17 @@ public class GameManager : MonoBehaviour
         }
     }
     // ターンを次のプレイヤーに進めるメソッド
+    // コルーチンを呼び出すラッパーである
     public void NextTurn(CardEffect playedEffect)
     {
+        StartCoroutine(TurnTransitionRoutine(playedEffect));
+    }
+    // ターン遷移アニメーション用コルーチン
+    private IEnumerator TurnTransitionRoutine(CardEffect playedEffect)
+    {
+        // 1. 操作をロック
+        isPlayerInputLocked = true;
+        // 2. ターン計算（効果処理）
         // 1. 効果処理（ターン計算の「前」）
         if (playedEffect == CardEffect.Reject)
         {
@@ -309,7 +325,14 @@ public class GameManager : MonoBehaviour
         Player targetPlayer = players[currentPlayerIndex];
         Debug.Log($"--- {players[currentPlayerIndex].id} のターン ---");
 
-        // 3. 効果処理（ターン計算の「後」）
+        // 3. アニメーション開始
+        UIManager.Instance.ShowTurnAnimation(targetPlayer.playerName, currentPlayerIndex);
+        // 4. アニメーションが終わるまで待つ
+        yield return new WaitForSeconds(1.5f);
+        // 5. アニメーション終了（非表示にする）
+        UIManager.Instance.HideTurnAnimation();
+
+        // 4. 効果処理（ターン計算の「後」）
         if (playedEffect == CardEffect.Audit)
         {
             // TODO: 回避（Audit返し）のロジック
@@ -317,7 +340,7 @@ public class GameManager : MonoBehaviour
             DrawCards(targetPlayer.hand, 2);
             UIManager.Instance.UpdateAllHandVisuals();
         }
-        if(playedEffect==CardEffect.Bribe)
+        if (playedEffect == CardEffect.Bribe)
         {
             // TODO: Bribeの数字選択
             // 今は仮に5とする
@@ -399,6 +422,7 @@ public class GameManager : MonoBehaviour
             else
             {
                 // CPUが勝利した
+                isPlayerInputLocked = false;
                 Debug.Log($"[CPU] {currentCPU.id} が勝利しました!");
                 // TODO: 勝利演出、ランド終了時
             }

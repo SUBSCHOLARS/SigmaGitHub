@@ -33,6 +33,10 @@ public class HandHoverDetector : MonoBehaviour, IPointerMoveHandler, IPointerExi
     }
     public void OnPointerClick(PointerEventData eventData)
     {
+        if(GameManager.Instance.isPlayerInputLocked)
+        {
+            return;
+        }
         if (currentlyHoveredCard != null)
         {
             currentlyHoveredCard.HandleClick();
