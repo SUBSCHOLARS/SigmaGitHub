@@ -18,6 +18,11 @@ public class UIManager : MonoBehaviour
     [Header("CPUの手札表示")]
     public Transform cpu1HandContainer; // CPU1_HandDisplayをアタッチ
     public Transform cpu2HandContainer; // CPU2_HandDisplayをアタッチ
+    [Header("CPUの手札表示パラメータ")]
+    [SerializeField] private float xFactor = 8f;
+    [SerializeField] private float yFactor = -2f;
+    [SerializeField] private float rotationAngle = -15f;
+    [SerializeField] private float rotationAngleFactor = 4f;
     [Header("プレハブ")]
     public GameObject cardPrefab;
     public GameObject cardBackPrefab; // CardBackをアタッチ
@@ -146,9 +151,9 @@ public class UIManager : MonoBehaviour
             // cardBackPrefabをcontainerの子として生成
             GameObject cardBack = Instantiate(cardBackPrefab, container);
             // 3. 重ねて食べ寝るためのずらすと傾きを設定
-            float xOffset = i * 8f; // 8ピクセルずつ右にずらす
-            float yOffset = i * -2f; // 2ピクセルずつ下にずらす
-            float rotation = -15f + (i * 4f); // -15度から傾きを少しずつ変える
+            float xOffset = i * xFactor; // xFactorずつずらす（正の値で右、負の値で左）
+            float yOffset = i * yFactor; // yFactorずつずらす（正の値で上、負の値で下）
+            float rotation = rotationAngle + (i * rotationAngleFactor); // rotationAngleから傾きを少しずつ変える
 
             // RectTransformを取得してアンカーを中央に設定
             RectTransform rect = cardBack.GetComponent<RectTransform>();

@@ -31,11 +31,6 @@ public class CardController : MonoBehaviour
     public void HandleClick()
     {
         Debug.Log("クリックされたカード" + myCardData.cardName);
-        // クリックされたらホバーを強制解除してからGameManagerに渡す
-        // if(isHovered)
-        // {
-        //     SetHover(false);
-        // }
         // GameManagerに「このカードがプレイされようとした」と伝える
         GameManager.Instance.TryPlayCard(myCardData);
     }

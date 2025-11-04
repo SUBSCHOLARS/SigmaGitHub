@@ -208,6 +208,10 @@ MonoBehaviour:
   discardPileViewer: {fileID: 246202545}
   cpu1HandContainer: {fileID: 1285096508}
   cpu2HandContainer: {fileID: 2032769464}
+  xFactor: 9
+  yFactor: -2
+  rotationAngle: -15
+  rotationAngleFactor: 4
   cardPrefab: {fileID: 4087856086764915820, guid: 676823b40ee3c4f99904263a0a8d815d, type: 3}
   cardBackPrefab: {fileID: 4586531106669417455, guid: 8bd66bf65c7df45388df0163aacf02df, type: 3}
   logContentArea: {fileID: 1429304433}
