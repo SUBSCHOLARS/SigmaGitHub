@@ -6,10 +6,11 @@ public class Player
     public List<CardData> hand = new List<CardData>();
     public bool isCPU;
     public string playerName;
-    public Player(PlayerID id, bool isCPU, string name)
+    public int totalPoints;
+    public Player(PlayerID id, bool isCPU, string playerName)
     {
         this.id = id;
         this.isCPU = isCPU;
-        this.playerName = name;
+        this.playerName = playerName;
     }
 }

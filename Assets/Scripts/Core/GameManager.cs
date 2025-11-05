@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
+using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -82,7 +83,7 @@ public class GameManager : MonoBehaviour
         Assert.IsNotNull(deck, "デッキが空なのでシャッフルできません");
         for (int i = 0; i < deck.Count; i++)
         {
-            int rand = Random.Range(i, deck.Count);
+            int rand = UnityEngine.Random.Range(i, deck.Count);
             CardData temp = deck[rand];
             deck[rand] = deck[i];
             deck[i] = temp;
@@ -182,7 +183,7 @@ public class GameManager : MonoBehaviour
         currentCardOnField = card;
         // メッセージを作成
         string playerName = player.playerName;
-        string message = $"[{playerName}] played [{card.cardName}]";
+        string message = $"{DateTime.Now} [{playerName}] played [{card.cardName}]";
         // UIManagerにログ表示を依頼
         UIManager.Instance.AddLogMessage(message, card.cardIcon);
         // TODO: Bribeの場合の数字設定の処理を追加
@@ -348,7 +349,7 @@ public class GameManager : MonoBehaviour
         {
             if (cardPlayer.isCPU)
             {
-                int chosenTrend = Random.Range(1, 6); // AIはあとで賢くする
+                int chosenTrend = UnityEngine.Random.Range(1, 6); // AIはあとで賢くする
                 currentTrendValue = chosenTrend;
                 Debug.Log($"Bribe: CPUがトレンドを{currentTrendValue} に設定しました。");
                 StartCoroutine(TurnTransitionRoutine(playedEffect));
@@ -493,7 +494,7 @@ public class GameManager : MonoBehaviour
     private void ExecuteCPUTurn()
     {
         // CPUが考えているように見せるため、数秒後に実行する
-        Invoke("CPUTurnLogic", Random.Range(2f, 4.5f));
+        Invoke("CPUTurnLogic", UnityEngine.Random.Range(2f, 4.5f));
     }
     // CPUの思考ロジック本体
     private void CPUTurnLogic()
@@ -584,7 +585,7 @@ public class GameManager : MonoBehaviour
             }
         }
         // 優先度4: 残った出せるカード（数字カード）からランダムに1枚
-        return playableCards[Random.Range(0, playableCards.Count)];
+        return playableCards[UnityEngine.Random.Range(0, playableCards.Count)];
     }
     public void PlayerSelectTarget(int targetPlayerIndex)
     {
@@ -606,7 +607,7 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                CardData randomCard = targetPlayer.hand[Random.Range(0, targetPlayer.hand.Count)];
+                CardData randomCard = targetPlayer.hand[UnityEngine.Random.Range(0, targetPlayer.hand.Count)];
                 string resultMessage = $"{targetPlayer.playerName} の手札を検閲: [{randomCard.cardName}]";
                 StartCoroutine(UIManager.Instance.ShowEffectResult(resultMessage));
             }
