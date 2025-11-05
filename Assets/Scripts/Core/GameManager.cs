@@ -327,11 +327,7 @@ public class GameManager : MonoBehaviour
         Debug.Log($"--- {players[currentPlayerIndex].id} のターン ---");
 
         // 3. アニメーション開始
-        UIManager.Instance.ShowTurnAnimation(targetPlayer.playerName, currentPlayerIndex);
-        // 4. アニメーションが終わるまで待つ
-        yield return new WaitForSeconds(1.5f);
-        // 5. アニメーション終了（非表示にする）
-        UIManager.Instance.HideTurnAnimation();
+        yield return StartCoroutine(UIManager.Instance.ShowTurnAnimation(targetPlayer.playerName, currentPlayerIndex));
 
         // 4. 効果処理（ターン計算の「後」）
         if (playedEffect == CardEffect.Audit)

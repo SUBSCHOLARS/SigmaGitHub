@@ -1,6 +1,7 @@
 using UnityEngine.UI;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 using DG.Tweening;
 using TMPro;
 // GameManagerからの指示を受けて画面を更新する
@@ -255,25 +256,25 @@ public class UIManager : MonoBehaviour
         }
     }
     // ターンアニメーション表示
-    public void ShowTurnAnimation(string playerName, int playerIndex)
+    public IEnumerator ShowTurnAnimation(string playerName, int playerIndex)
     {
         // 1. 枠線を光らせる（UpdateTurnIndicatorを流用）
         Image targetGlow = null;
         if (playerIndex == 0) targetGlow = playerTurnGlow;
         else if (playerIndex == 1) targetGlow = cpu1TurnGlow;
         else if (playerIndex == 2) targetGlow = cpu2TurnGlow;
+
+        Sequence glowSequence = DOTween.Sequence();
         if (targetGlow != null)
         {
             targetGlow.enabled = true;
             // 枠線の色をキャッシュ（色情報が失われないように）
             Color glowColor = targetGlow.color;
-
-            Sequence glowSequence = DOTween.Sequence();
             glowSequence.AppendCallback(() => targetGlow.color = new Color(glowColor.r, glowColor.g, glowColor.b, 0f)) // 瞬時に非表示
                         .AppendInterval(0.3f) // 0.3秒待機
                         .AppendCallback(() => targetGlow.color = new Color(glowColor.r, glowColor.g, glowColor.b, 1f)) // 瞬時に表示
                         .AppendInterval(0.3f) // 0.3秒待機
-                        .SetLoops(-1); // ループ
+                        .SetLoops(3); // ループ
 
         }
         // 2. テキストを表示して点滅させる
@@ -286,7 +287,11 @@ public class UIManager : MonoBehaviour
                     .AppendInterval(0.3f) // 0.3秒待機
                     .AppendCallback(() => turnIndicatorText.alpha = 1f) // 瞬時に表示
                     .AppendInterval(0.3f) // 0.3秒待機
-                    .SetLoops(-1); // ループ
+                    .SetLoops(3); // ループ
+
+        // アニメーションの完了を待つ
+        yield return textSequence.WaitForCompletion();
+        HideTurnAnimation();
 
     }
     // ターンアニメーション非表示
