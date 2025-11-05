@@ -8,6 +8,7 @@ public enum CardSector
     Gear,
     // 仮面（マスク）
     Mask,
+    // スートなし
     None
 }
 public enum CardEffect
