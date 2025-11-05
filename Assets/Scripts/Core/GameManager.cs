@@ -186,12 +186,13 @@ public class GameManager : MonoBehaviour
         // UIManagerにログ表示を依頼
         UIManager.Instance.AddLogMessage(message, card.cardIcon);
         // TODO: Bribeの場合の数字設定の処理を追加
-        if (card.effect == CardEffect.Bribe)
+        if (card.effect == CardEffect.Bribe ||
+            card.effect == CardEffect.Censor ||
+            card.effect==CardEffect.Interrogate)
         {
-            Debug.Log("ワイルドカードが場に出されました。プレイヤーは数字を宣言してください。");
-            // TODO: プレイヤーに数字を選ばせるUIを実装
-            // 仮に5を選んだとする
-            currentTrendValue = 5;
+            // Bribe/Censor/Interrogateが出た直後は
+            // currentTrendValueは「前のカード」の値を保持したまま。
+            // これにより、CheckForMatchが誤作動なくなる。
         }
         else
         {
@@ -344,7 +345,7 @@ public class GameManager : MonoBehaviour
         {
             if (cardPlayer.isCPU)
             {
-                int chosenTrend = Random.Range(1, 6);
+                int chosenTrend = Random.Range(1, 6); // AIはあとで賢くする
                 currentTrendValue = chosenTrend;
                 Debug.Log($"Bribe: CPUがトレンドを{currentTrendValue} に設定しました。");
                 StartCoroutine(TurnTransitionRoutine(playedEffect));
@@ -598,7 +599,7 @@ public class GameManager : MonoBehaviour
             // Censor（ランダム1枚開示）のロジック
             if (targetPlayer.hand.Count == 0)
             {
-                StartCoroutine(UIManager.Instance.ShowEffectResult("対象の手札は0です"));
+                StartCoroutine(UIManager.Instance.ShowEffectResult("対象の手札は0枚です"));
             }
             else
             {
