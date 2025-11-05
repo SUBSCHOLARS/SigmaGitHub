@@ -255,12 +255,12 @@ public class GameManager : MonoBehaviour
         // 4. マッチ判定（ドローした時にセルフマッチする可能性はあるよね...?）
         if (!CheckForMatch(humanPlayer))
         {
-            NextTurn(CardEffect.None);
+            NextTurn();
         }
         else
         {
             // TODO: 勝利演出
-            isPlayerInputLocked = false;
+            isPlayerInputLocked = true;
             Debug.Log($"セルフマッチ! {humanPlayer.playerName} が勝利!");
         }
     }
@@ -283,7 +283,7 @@ public class GameManager : MonoBehaviour
         UIManager.Instance.HideBribeSelectionUI();
 
         // ターンを次に回す。CPUではないことが保証されているので回して良い。
-        NextTurn(CardEffect.None);
+        NextTurn();
     }
     // プレイヤーの手札の合計値を計算するメソッド
     public int GetHandValue(List<CardData> hand)
@@ -297,12 +297,12 @@ public class GameManager : MonoBehaviour
     }
     public void TryPlayCard(CardData cardToPlay)
     {
-        // 操作ロックをチェック
+        // 1. 操作ロックをチェック
         if (isPlayerInputLocked)
         {
             return;
         }
-        // プレイヤーのターンかチェック
+        // 2. プレイヤーのターンかチェック
         if (players[currentPlayerIndex].isCPU)
         {
             Debug.LogWarning("現在はCPUのターンです。プレイヤーはカードを出せません。");
@@ -314,29 +314,73 @@ public class GameManager : MonoBehaviour
             // TODO: 出せない場合のフィードバックをUIに表示
             return;
         }
-        // カードを出せる場合の処理を続ける
+        // 3. カードを出せる場合の処理を続ける
         Player humanPlayer = players[currentPlayerIndex];
         humanPlayer.hand.Remove(cardToPlay);
-        PlayCardToField(cardToPlay, humanPlayer);
+        PlayCardToField(cardToPlay, humanPlayer); // UI更新もこの中で行われる
 
-        // TODO: マッチ判定
-        // TODO: CPUのターンを呼び出す
-        if (!CheckForMatch(humanPlayer))
+        // 4. マッチ判定
+        if (CheckForMatch(humanPlayer))
         {
-            NextTurn(cardToPlay.effect);
+            isPlayerInputLocked = true;
+            Debug.Log($"セルフマッチ! {humanPlayer.playerName} が勝利!");
+            return; // 勝利したのでターンを回さない
+        }
+        // 5. マッチしなかった場合、効果処理とターン送り
+        // 操作をロックし、効果処理コルーチン開始
+        isPlayerInputLocked = true;
+        StartCoroutine(HandleCardEffectAndTransition(cardToPlay.effect));
+    }
+    // 効果なしでターンを終える時専用
+    public void NextTurn()
+    {
+        StartCoroutine(TurnTransitionRoutine(CardEffect.None));
+    }
+    private IEnumerator HandleCardEffectAndTransition(CardEffect playedEffect)
+    {
+        // 1. カードを出した本人が実行する効果処理
+        Player cardPlayer = players[currentPlayerIndex];
+        if (playedEffect == CardEffect.Bribe)
+        {
+            if (cardPlayer.isCPU)
+            {
+                int chosenTrend = Random.Range(1, 6);
+                currentTrendValue = chosenTrend;
+                Debug.Log($"Bribe: CPUがトレンドを{currentTrendValue} に設定しました。");
+                StartCoroutine(TurnTransitionRoutine(playedEffect));
+            }
+            else
+            {
+                // プレイヤーの入力待ち
+                UIManager.Instance.ShowBribeSelectionUI();
+                // // PlayerSelectBribeTrendが呼ばれるまで、このコルーチンはここで「待機」
+                // (PlayerSelectBribeTrendがNextTurn()を呼ぶ)
+                yield break; // コルーチンを終了し、ボタン入力を終了し、ボタン入力を待つ
+            }
+        }
+        else if (playedEffect == CardEffect.Censor || playedEffect == CardEffect.Interrogate)
+        {
+            pendingSurveyEffect = playedEffect;
+            if (cardPlayer.isCPU)
+            {
+                int targetIndex = (currentPlayerIndex == 1) ? 2 : 1;
+                // CPUは即座に実行するが、見せるために少し待つ
+                yield return new WaitForSeconds(1.0f);
+                PlayerSelectTarget(targetIndex);
+                yield break; // PlayerSelelctTargetがNextTurn()を呼ぶ
+            }
+            else
+            {
+                UIManager.Instance.ShowTargetSelectionUI();
+                yield break; // PlayerSelectTargetがNextTurn()を呼ぶ
+            }
         }
         else
         {
-            // TODO: 勝利演出
-            isPlayerInputLocked = false;
-            Debug.Log($"セルフマッチ! {humanPlayer.playerName} が勝利!");
+            // 2. ターン遷移（Bribe/Censor/Interrogate 以外の場合）
+            // 以前のNextTurn(playedEffect)のロジックをここに持ってくる
+            StartCoroutine(TurnTransitionRoutine(playedEffect));
         }
-    }
-    // ターンを次のプレイヤーに進めるメソッド
-    // コルーチンを呼び出すラッパーである
-    public void NextTurn(CardEffect playedEffect)
-    {
-        StartCoroutine(TurnTransitionRoutine(playedEffect));
     }
     // ターン遷移アニメーション用コルーチン
     private IEnumerator TurnTransitionRoutine(CardEffect playedEffect)
@@ -390,49 +434,16 @@ public class GameManager : MonoBehaviour
             DrawCards(targetPlayer.hand, 2);
             UIManager.Instance.UpdateAllHandVisuals();
         }
-        if (playedEffect == CardEffect.Bribe)
+        // ターン開始
+        // 次の人がCPUなら、CPUの試行ルーチンを呼ぶ
+        if (targetPlayer.isCPU)
         {
-            // CPUが出した場合
-            if (targetPlayer.isCPU)
-            {
-                int chosenTrend = Random.Range(1, 6); // AIはあとで賢くする
-                currentTrendValue = chosenTrend;
-                Debug.Log($"Bribe: CPUがトレンドを {currentTrendValue} に設定しました。");
-                NextTurn(CardEffect.None);
-            }
-            else
-            {
-                UIManager.Instance.ShowBribeSelectionUI();
-            }
+            ExecuteCPUTurn();
         }
-        else if(playedEffect==CardEffect.Censor||playedEffect==CardEffect.Interrogate)
-        {
-            pendingSurveyEffect = playedEffect; // どの効果か記憶
-            if (targetPlayer.isCPU)
-            {
-                // CPUが調査カードを使った
-                int targetIndex = (currentPlayerIndex == 1) ? 2 : 1; // とりあえず自分以外のCPUを対象
-                PlayerSelectTarget(targetIndex); // CPUは即座にターゲット選択
-            }
-            else
-            {
-                // プレイヤーが調査カードを使った
-                UIManager.Instance.ShowTargetSelectionUI();
-                // プレイヤーのボタン押しを待つ
-            }
-        }
+        // それ以外ならプレイヤーのターンなのでロックを解除する
         else
         {
-            // 次の人がCPUなら、CPUの試行ルーチンを呼ぶ
-            if (targetPlayer.isCPU)
-            {
-                ExecuteCPUTurn();
-            }
-            // それ以外ならプレイヤーのターンなのでロックを解除する
-            else
-            {
-                isPlayerInputLocked = false;
-            }
+            isPlayerInputLocked = false;
         }
     }
     // マッチ（勝利）判定を行うメソッド
@@ -484,7 +495,6 @@ public class GameManager : MonoBehaviour
     private void CPUTurnLogic()
     {
         Player currentCPU = players[currentPlayerIndex];
-
         // 1. 出すカードを決める
         CardData cardToPlay = FindBestCardForCPU(currentCPU);
 
@@ -496,17 +506,15 @@ public class GameManager : MonoBehaviour
             PlayCardToField(cardToPlay, currentCPU);
 
             // 3. マッチ判定と次のターン
-            if (!CheckForMatch(currentCPU))
+            if (CheckForMatch(currentCPU))
             {
-                NextTurn(cardToPlay.effect);
+                isPlayerInputLocked = true;
+                Debug.Log($"[CPU] {currentCPU.playerName} が勝利しました!");
+                // TODO: 勝利演出
+                return; // 勝利したらターンを回さない
             }
-            else
-            {
-                // CPUが勝利した
-                isPlayerInputLocked = false;
-                Debug.Log($"[CPU] {currentCPU.id} が勝利しました!");
-                // TODO: 勝利演出、ランド終了時
-            }
+            // 効果処理コルーチンを呼ぶ
+            StartCoroutine(HandleCardEffectAndTransition(cardToPlay.effect));
         }
         // 4. 出せるカードがなかった場合
         else
@@ -516,7 +524,7 @@ public class GameManager : MonoBehaviour
             UIManager.Instance.UpdateAllHandVisuals(); // UI（CPUの手札枚数）を更新
             UIManager.Instance.UpdateDeckVisual(deck.Count);
 
-            NextTurn(CardEffect.None); // 効果なしで次のターンへ
+            NextTurn(); // 効果なしで次のターンへ
         }
     }
     // CPUの「脳」（貪欲法）
@@ -608,7 +616,7 @@ public class GameManager : MonoBehaviour
         }
         pendingSurveyEffect = CardEffect.None; // 記憶をリセット
         // 使ったカードはPlayCardToFieldの時点で捨て札に送られているのでOK
-        NextTurn(CardEffect.None); // ターン終了
+        NextTurn(); // ターン終了
     }
 }
 public enum PlayerID
