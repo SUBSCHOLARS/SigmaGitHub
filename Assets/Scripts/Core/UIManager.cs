@@ -9,7 +9,8 @@ public class UIManager : MonoBehaviour
     // シングルトン設定
     public static UIManager Instance { get; private set; }
     [Header("UI参照")]
-    public Transform playerHandArea; // プレイヤーの手札を並べる場所
+    //public Transform playerHandArea; // プレイヤーの手札を並べる場所
+    public Transform playerHandContainer;
     [Header("場のカード表示")]
     public Image fieldCardTop; // 場に出ているカード（一番上）
     public Image fieldCardMiddle; // 場に出ているカード（真ん中）
@@ -45,12 +46,12 @@ public class UIManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        if (playerHandArea != null)
+        if (playerHandContainer != null)
         {
-            handHoverDetector = playerHandArea.GetComponent<HandHoverDetector>();
+            handHoverDetector = playerHandContainer.GetComponent<HandHoverDetector>();
             if (handHoverDetector == null)
             {
-                Debug.LogError("PlayerHandAreaにHandHoverDetectorコンポーネントがアタッチされていません!");
+                Debug.LogError("Player_HandContainerにHandHoverDetectorコンポーネントがアタッチされていません!");
             }
         }
         else
@@ -124,10 +125,10 @@ public class UIManager : MonoBehaviour
     public void UpdateAllHandVisuals()
     {
         // 1. まず手札を全削除してリセット
-        // いてレート中にリストを変更するとエラーになるため、
+        // イテレート中にリストを変更するとエラーになるため、
         // 最初に破棄する対象をリストアップする
         List<Transform> oldCards = new List<Transform>();
-        foreach (Transform child in playerHandArea)
+        foreach (Transform child in playerHandContainer)
         {
             oldCards.Add(child);
         }
@@ -149,8 +150,8 @@ public class UIManager : MonoBehaviour
         // 2. 新しい手札を生成
         foreach (CardData cardData in playerHand)
         {
-            // プレハブをplayerHandAreaの子として生成
-            GameObject newCardObj = Instantiate(cardPrefab, playerHandArea);
+            // プレハブをplayerHandContainerの子として生成
+            GameObject newCardObj = Instantiate(cardPrefab, playerHandContainer);
             // CardControllerを取得して、カード情報を設定
             CardController cardController = newCardObj.GetComponent<CardController>();
             cardController.Setup(cardData);
@@ -159,8 +160,8 @@ public class UIManager : MonoBehaviour
         }
 
         // レイアウトの更新
-        // この時点でplayerHandArea.childCountは6（新しい手札の枚数）になっている
-        playerHandArea.GetComponent<HandLayoutManager>().UpdateLayout();
+        // この時点でplayerHandContainer.childCountは6（新しい手札の枚数）になっている
+        playerHandContainer.GetComponent<HandLayoutManager>().UpdateLayout();
 
         // 3. CPUの手札更新
         List<Player> players = GameManager.Instance.players;
@@ -254,24 +255,38 @@ public class UIManager : MonoBehaviour
         }
     }
     // ターンアニメーション表示
-    public void ShowTurnAnimation(string playerName, int playerIdex)
+    public void ShowTurnAnimation(string playerName, int playerIndex)
     {
         // 1. 枠線を光らせる（UpdateTurnIndicatorを流用）
         Image targetGlow = null;
-        if (playerIdex == 0) targetGlow = playerTurnGlow;
-        else if (playerIdex == 1) targetGlow = cpu1TurnGlow;
-        else if (playerIdex == 2) targetGlow = cpu2TurnGlow;
-        if(targetGlow!=null)
+        if (playerIndex == 0) targetGlow = playerTurnGlow;
+        else if (playerIndex == 1) targetGlow = cpu1TurnGlow;
+        else if (playerIndex == 2) targetGlow = cpu2TurnGlow;
+        if (targetGlow != null)
         {
             targetGlow.enabled = true;
-            targetGlow.DOFade(0f, 0.4f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Yoyo);
+            // 枠線の色をキャッシュ（色情報が失われないように）
+            Color glowColor = targetGlow.color;
+
+            Sequence glowSequence = DOTween.Sequence();
+            glowSequence.AppendCallback(() => targetGlow.color = new Color(glowColor.r, glowColor.g, glowColor.b, 0f)) // 瞬時に非表示
+                        .AppendInterval(0.3f) // 0.3秒待機
+                        .AppendCallback(() => targetGlow.color = new Color(glowColor.r, glowColor.g, glowColor.b, 1f)) // 瞬時に表示
+                        .AppendInterval(0.3f) // 0.3秒待機
+                        .SetLoops(-1); // ループ
+
         }
         // 2. テキストを表示して点滅させる
+        turnIndicatorText.enabled = true;
         turnIndicatorText.text = $"-{playerName}- TURN";
-        turnIndicatorText.gameObject.SetActive(true);
 
         //DOTweenで点滅
-        turnIndicatorText.DOFade(0f, 0.4f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Yoyo);
+        Sequence textSequence = DOTween.Sequence();
+        textSequence.AppendCallback(() => turnIndicatorText.alpha = 0f) // 瞬時に非表示
+                    .AppendInterval(0.3f) // 0.3秒待機
+                    .AppendCallback(() => turnIndicatorText.alpha = 1f) // 瞬時に表示
+                    .AppendInterval(0.3f) // 0.3秒待機
+                    .SetLoops(-1); // ループ
 
     }
     // ターンアニメーション非表示
@@ -281,7 +296,7 @@ public class UIManager : MonoBehaviour
         {
             // 1. 点滅を止めて非表示に
             turnIndicatorText.DOKill(); // アニメーション停止
-            turnIndicatorText.gameObject.SetActive(false);
+            turnIndicatorText.enabled = false;
             turnIndicatorText.alpha = 1f; // Alphaをリセット
         }
 

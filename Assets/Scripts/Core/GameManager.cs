@@ -198,6 +198,7 @@ public class GameManager : MonoBehaviour
         }
         Debug.Log("場に " + card.cardName + " が出されました。現在のトレンド: " + currentTrendValue);
         UIManager.Instance.UpdateFieldPileUI(card);
+        UIManager.Instance.UpdateAllHandVisuals();
         // TODO: ここで全プレイヤーのマッチ判定を呼び出す
     }
     // カードが出せるかを判定するメソッド
@@ -351,6 +352,11 @@ public class GameManager : MonoBehaviour
         if (targetPlayer.isCPU)
         {
             ExecuteCPUTurn();
+        }
+        // それ以外ならプレイヤーのターンなのでロックを解除する
+        else
+        {
+            isPlayerInputLocked = false;
         }
     }
     // マッチ（勝利）判定を行うメソッド
