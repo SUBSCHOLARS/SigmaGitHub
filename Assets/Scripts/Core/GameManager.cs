@@ -265,9 +265,6 @@ public class GameManager : MonoBehaviour
         humanPlayer.hand.Remove(cardToPlay);
         PlayCardToField(cardToPlay, humanPlayer);
 
-        // UIを更新
-        // UIManager.Instance.UpdateAllHandVisuals();
-
         // TODO: マッチ判定
         // TODO: CPUのターンを呼び出す
         if (!CheckForMatch(humanPlayer))
@@ -277,6 +274,8 @@ public class GameManager : MonoBehaviour
         else
         {
             // TODO: 勝利演出
+            isPlayerInputLocked = false;
+            Debug.Log($"セルフマッチ! {humanPlayer.playerName} が勝利!");
         }
     }
     // ターンを次のプレイヤーに進めるメソッド
@@ -414,7 +413,6 @@ public class GameManager : MonoBehaviour
             Debug.Log($"[CPU] {currentCPU.id} が {cardToPlay.cardName} をプレイ");
             currentCPU.hand.Remove(cardToPlay);
             PlayCardToField(cardToPlay, currentCPU);
-            // UIManager.Instance.UpdateAllHandVisuals(); // UI（CPUの手札枚数）を更新
 
             // 3. マッチ判定と次のターン
             if (!CheckForMatch(currentCPU))

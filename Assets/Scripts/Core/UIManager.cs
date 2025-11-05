@@ -65,7 +65,7 @@ public class UIManager : MonoBehaviour
         // 1. PrefabをLogContentAreaの子として生成
         GameObject logEntry = Instantiate(logMessagePrefab, logContentArea);
         // 2. IconとTextを設定
-        // Findは非推奨ファが、Prefabが単純なため使用
+        // Findは非推奨だが、Prefabが単純なため使用
         Image iconImage = logEntry.transform.Find("Icon").GetComponent<Image>();
         TextMeshProUGUI messageText = logEntry.transform.Find("MessageText").GetComponent<TextMeshProUGUI>();
         if (icon != null)
@@ -176,8 +176,13 @@ public class UIManager : MonoBehaviour
     // CPUの手札ビジュアルを生成するメソッド
     public void UpdateCPUHandVisuals(Player cpu, Transform container)
     {
+        List<Transform> oldCards = new List<Transform>();
         // 1. 古いカードバックを全て削除
         foreach (Transform child in container)
+        {
+            oldCards.Add(child);
+        }
+        foreach(Transform child in oldCards)
         {
             child.SetParent(null);
             Destroy(child.gameObject);
