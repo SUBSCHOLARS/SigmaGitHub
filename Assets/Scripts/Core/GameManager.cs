@@ -220,7 +220,7 @@ public class GameManager : MonoBehaviour
             return true;
         }
         // 4. cardToPlay.numberValue == currentTrendValue (数字が同じ) かつ effect == None なら true
-        if (cardToPlay.effect == CardEffect.None && currentCardOnField.effect == CardEffect.None && cardToPlay.numberValue == currentTrendValue)
+        if (cardToPlay.effect == CardEffect.None && cardToPlay.numberValue == currentTrendValue)
         {
             return true;
         }
@@ -230,6 +230,40 @@ public class GameManager : MonoBehaviour
             return false;
         }
         return false;
+    }
+    // DrawButtonから呼ばれるメソッド
+    public void PlayerDrawCard()
+    {
+        // 1. 操作ロックとターンをチェック
+        if (isPlayerInputLocked)
+        {
+            return;
+        }
+        if (players[currentPlayerIndex].isCPU)
+        {
+            return;
+        }
+        Player humanPlayer = players[currentPlayerIndex];
+
+        // 2. 1枚引く
+        Debug.Log("プレイヤーが山札から1枚引きます。");
+        DrawCards(humanPlayer.hand, 1);
+
+        // 3. UIを全て更新
+        UIManager.Instance.UpdateAllHandVisuals();
+        UIManager.Instance.UpdateDeckVisual(deck.Count);
+
+        // 4. マッチ判定（ドローした時にセルフマッチする可能性はあるよね...?）
+        if (!CheckForMatch(humanPlayer))
+        {
+            NextTurn(CardEffect.None);
+        }
+        else
+        {
+            // TODO: 勝利演出
+            isPlayerInputLocked = false;
+            Debug.Log($"セルフマッチ! {humanPlayer.playerName} が勝利!");
+        }
     }
     // プレイヤーの手札の合計値を計算するメソッド
     public int GetHandValue(List<CardData> hand)
