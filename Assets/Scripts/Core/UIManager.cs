@@ -41,6 +41,9 @@ public class UIManager : MonoBehaviour
     private HandHoverDetector handHoverDetector;
     public Transform logContentArea;
     public GameObject logMessagePrefab;
+    [Header("操作UI")]
+    public Button drawButton; // DrawButton
+    private Image playerHandRaycaster; // Player_HandContainerのImage（透明な壁）
     void Awake()
     {
         if (Instance == null)
@@ -54,9 +57,14 @@ public class UIManager : MonoBehaviour
         if (playerHandContainer != null)
         {
             handHoverDetector = playerHandContainer.GetComponent<HandHoverDetector>();
+            playerHandRaycaster = playerHandContainer.GetComponent<Image>();
             if (handHoverDetector == null)
             {
                 Debug.LogError("Player_HandContainerにHandHoverDetectorコンポーネントがアタッチされていません!");
+            }
+            if(playerHandRaycaster==null)
+            {
+                Debug.LogError("Player_HandCongainerにImage（透明な壁）がありません!");
             }
         }
         else
@@ -80,6 +88,26 @@ public class UIManager : MonoBehaviour
     public void HideTargetSelectionUI()
     {
         targetSelectionPanel.SetActive(false);
+    }
+    // プレイヤーの操作UIの有効/無効を切り替える
+    public void SetPlayerControlsActive(bool isActive)
+    {
+        // 手札の「透明な壁」の検知をON/OFF
+        if (playerHandRaycaster != null)
+        {
+            playerHandRaycaster.raycastTarget = isActive;
+        }
+        // ドローボタンの操作可否をON/OFF
+        if(drawButton!=null)
+        {
+            drawButton.interactable = isActive;
+            // もし非アクティブにする際、ボタンがホバーで光ったままなら今日背的に戻す
+            if(!isActive && drawButton.animator!=null)
+            {
+                // ボタンのハイライト状態を強制的にNormalに戻す
+                drawButton.animator.Play("Normal");
+            }
+        }
     }
     // 結果を一定時間表示するコルーチンも追加
     public IEnumerator ShowEffectResult(string message)

@@ -243,6 +243,9 @@ public class GameManager : MonoBehaviour
         {
             return;
         }
+        // 押した瞬間にロック
+        SetInputLock(true);
+
         Player humanPlayer = players[currentPlayerIndex];
 
         // 2. 1枚引く
@@ -323,13 +326,13 @@ public class GameManager : MonoBehaviour
         // 4. マッチ判定
         if (CheckForMatch(humanPlayer))
         {
-            isPlayerInputLocked = true;
+            SetInputLock(true);
             Debug.Log($"セルフマッチ! {humanPlayer.playerName} が勝利!");
             return; // 勝利したのでターンを回さない
         }
         // 5. マッチしなかった場合、効果処理とターン送り
         // 操作をロックし、効果処理コルーチン開始
-        isPlayerInputLocked = true;
+        SetInputLock(true);
         StartCoroutine(HandleCardEffectAndTransition(cardToPlay.effect));
     }
     // 効果なしでターンを終える時専用
@@ -387,7 +390,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator TurnTransitionRoutine(CardEffect playedEffect)
     {
         // 1. 操作をロック
-        isPlayerInputLocked = true;
+        SetInputLock(true);
         // 2. ターン計算（効果処理）
         // 1. 効果処理（ターン計算の「前」）
         if (playedEffect == CardEffect.Reject)
@@ -444,7 +447,7 @@ public class GameManager : MonoBehaviour
         // それ以外ならプレイヤーのターンなのでロックを解除する
         else
         {
-            isPlayerInputLocked = false;
+            SetInputLock(false);
         }
     }
     // マッチ（勝利）判定を行うメソッド
@@ -509,7 +512,7 @@ public class GameManager : MonoBehaviour
             // 3. マッチ判定と次のターン
             if (CheckForMatch(currentCPU))
             {
-                isPlayerInputLocked = true;
+                SetInputLock(true);
                 Debug.Log($"[CPU] {currentCPU.playerName} が勝利しました!");
                 // TODO: 勝利演出
                 return; // 勝利したらターンを回さない
@@ -618,6 +621,15 @@ public class GameManager : MonoBehaviour
         pendingSurveyEffect = CardEffect.None; // 記憶をリセット
         // 使ったカードはPlayCardToFieldの時点で捨て札に送られているのでOK
         NextTurn(); // ターン終了
+    }
+    // 入力ロックとUIを同期させる
+    private void SetInputLock(bool isLocked)
+    {
+        isPlayerInputLocked = isLocked;
+        if(UIManager.Instance!=null)
+        {
+            UIManager.Instance.SetPlayerControlsActive(!isLocked);
+        }
     }
 }
 public enum PlayerID
