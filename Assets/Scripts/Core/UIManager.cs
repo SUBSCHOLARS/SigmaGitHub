@@ -33,7 +33,9 @@ public class UIManager : MonoBehaviour
     public Image playerTurnGlow;
     public Image cpu1TurnGlow;
     public Image cpu2TurnGlow;
-    public TextMeshProUGUI turnIndicatorText; // TurnIndicatorTExtをアタッチ
+    public TextMeshProUGUI turnIndicatorText; // TurnIndicatorTextをアタッチ
+    [Header("エフェクトUI")]
+    public GameObject bribeSelectionPanel; // BribeSelectionPanelをアタッチ
     private HandHoverDetector handHoverDetector;
     public Transform logContentArea;
     public GameObject logMessagePrefab;
@@ -59,6 +61,15 @@ public class UIManager : MonoBehaviour
         {
             Debug.LogError("UIManagerのplayerHandAreaがインスペクタで設定されていません。");
         }
+        bribeSelectionPanel.SetActive(false);
+    }
+    public void ShowBribeSelectionUI()
+    {
+        bribeSelectionPanel.SetActive(true);
+    }
+    public void HideBribeSelectionUI()
+    {
+        bribeSelectionPanel.SetActive(false);
     }
     public void AddLogMessage(string message, Sprite icon)
     {

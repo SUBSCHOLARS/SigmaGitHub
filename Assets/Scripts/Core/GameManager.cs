@@ -205,7 +205,9 @@ public class GameManager : MonoBehaviour
     public bool CanPlayCard(CardData cardToPlay)
     {
         // 1. cardToPlay.effect == CardEffect.Bribe (賄賂) なら true
-        if (cardToPlay.effect == CardEffect.Bribe)
+        if (cardToPlay.effect == CardEffect.Bribe ||
+            cardToPlay.effect == CardEffect.Censor ||
+            cardToPlay.effect == CardEffect.Interrogate)
         {
             return true;
         }
@@ -223,11 +225,6 @@ public class GameManager : MonoBehaviour
         if (cardToPlay.effect == CardEffect.None && cardToPlay.numberValue == currentTrendValue)
         {
             return true;
-        }
-        // 5. 調査カード (Censor, Interrogate) は場には出せない (効果使用のみ)
-        if (cardToPlay.effect == CardEffect.Censor || cardToPlay.effect == CardEffect.Interrogate)
-        {
-            return false;
         }
         return false;
     }
@@ -264,6 +261,27 @@ public class GameManager : MonoBehaviour
             isPlayerInputLocked = false;
             Debug.Log($"セルフマッチ! {humanPlayer.playerName} が勝利!");
         }
+    }
+    // Bribeの5つのボタンから呼ばれるメソッド
+    public void PlayerSelectBribeTrend(int trend)
+    {
+        // 予期せぬ呼び出しをガード
+        if (!isPlayerInputLocked)
+        {
+            return;
+        }
+        // プレイヤーのターンのみ
+        if (players[currentPlayerIndex].isCPU)
+        {
+            return;
+        }
+        currentTrendValue = trend;
+        Debug.Log($"Bribe: プレイヤーがトレンドを {currentTrendValue} に設定しました。");
+
+        UIManager.Instance.HideBribeSelectionUI();
+
+        // ターンを次に回す。CPUではないことが保証されているので回して良い。
+        NextTurn(CardEffect.None);
     }
     // プレイヤーの手札の合計値を計算するメソッド
     public int GetHandValue(List<CardData> hand)
@@ -372,20 +390,31 @@ public class GameManager : MonoBehaviour
         }
         if (playedEffect == CardEffect.Bribe)
         {
-            // TODO: Bribeの数字選択
-            // 今は仮に5とする
-            currentTrendValue = 5;
-            Debug.Log($"Bribe: トレンドが{currentTrendValue} に設定されました。");
+            // CPUが出した場合
+            if (targetPlayer.isCPU)
+            {
+                int chosenTrend = Random.Range(1, 6); // AIはあとで賢くする
+                currentTrendValue = chosenTrend;
+                Debug.Log($"Bribe: CPUがトレンドを {currentTrendValue} に設定しました。");
+                NextTurn(CardEffect.None);
+            }
+            else
+            {
+                UIManager.Instance.ShowBribeSelectionUI();
+            }
         }
-        // 次の人がCPUなら、CPUの試行ルーチンを呼ぶ
-        if (targetPlayer.isCPU)
-        {
-            ExecuteCPUTurn();
-        }
-        // それ以外ならプレイヤーのターンなのでロックを解除する
         else
         {
-            isPlayerInputLocked = false;
+            // 次の人がCPUなら、CPUの試行ルーチンを呼ぶ
+            if (targetPlayer.isCPU)
+            {
+                ExecuteCPUTurn();
+            }
+            // それ以外ならプレイヤーのターンなのでロックを解除する
+            else
+            {
+                isPlayerInputLocked = false;
+            }
         }
     }
     // マッチ（勝利）判定を行うメソッド
