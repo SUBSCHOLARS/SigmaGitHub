@@ -36,6 +36,8 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI turnIndicatorText; // TurnIndicatorTextをアタッチ
     [Header("エフェクトUI")]
     public GameObject bribeSelectionPanel; // BribeSelectionPanelをアタッチ
+    public GameObject targetSelectionPanel; // TargetSelectionPanelをアタッチ
+    public TextMeshProUGUI effectResultText; // 結果表示用テキスト
     private HandHoverDetector handHoverDetector;
     public Transform logContentArea;
     public GameObject logMessagePrefab;
@@ -70,6 +72,22 @@ public class UIManager : MonoBehaviour
     public void HideBribeSelectionUI()
     {
         bribeSelectionPanel.SetActive(false);
+    }
+    public void ShowTargetSelectionUI()
+    {
+        targetSelectionPanel.SetActive(true);
+    }
+    public void HideTargetSelectionUI()
+    {
+        targetSelectionPanel.SetActive(false);
+    }
+    // 結果を一定時間表示するコルーチンも追加
+    public IEnumerator ShowEffectResult(string message)
+    {
+        effectResultText.text = message;
+        effectResultText.gameObject.SetActive(true);
+        yield return new WaitForSeconds(2.0f); // 2秒間表示
+        effectResultText.gameObject.SetActive(false);
     }
     public void AddLogMessage(string message, Sprite icon)
     {

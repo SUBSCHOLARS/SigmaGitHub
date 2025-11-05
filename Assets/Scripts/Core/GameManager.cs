@@ -24,6 +24,8 @@ public class GameManager : MonoBehaviour
     private bool isTurnClockwise = true; // ターン進行方向（Reject用）
     public bool isPlayerInputLocked = false; // 操作ロックようフラグ
     private Player gameMaster;
+    // どの調査カードが使われたか記憶する変数
+    private CardEffect pendingSurveyEffect = CardEffect.None;
 
     void Awake()
     {
@@ -403,6 +405,22 @@ public class GameManager : MonoBehaviour
                 UIManager.Instance.ShowBribeSelectionUI();
             }
         }
+        else if(playedEffect==CardEffect.Censor||playedEffect==CardEffect.Interrogate)
+        {
+            pendingSurveyEffect = playedEffect; // どの効果か記憶
+            if (targetPlayer.isCPU)
+            {
+                // CPUが調査カードを使った
+                int targetIndex = (currentPlayerIndex == 1) ? 2 : 1; // とりあえず自分以外のCPUを対象
+                PlayerSelectTarget(targetIndex); // CPUは即座にターゲット選択
+            }
+            else
+            {
+                // プレイヤーが調査カードを使った
+                UIManager.Instance.ShowTargetSelectionUI();
+                // プレイヤーのボタン押しを待つ
+            }
+        }
         else
         {
             // 次の人がCPUなら、CPUの試行ルーチンを呼ぶ
@@ -555,6 +573,42 @@ public class GameManager : MonoBehaviour
         }
         // 優先度4: 残った出せるカード（数字カード）からランダムに1枚
         return playableCards[Random.Range(0, playableCards.Count)];
+    }
+    public void PlayerSelectTarget(int targetPlayerIndex)
+    {
+        if (isPlayerInputLocked == false || targetPlayerIndex < 1 || targetPlayerIndex >= players.Count)
+        {
+            // 不正な呼び出し
+            return;
+        }
+        UIManager.Instance.HideTargetSelectionUI();
+        Player targetPlayer = players[targetPlayerIndex];
+
+        // 記憶していた効果によって処理を分岐
+        if (pendingSurveyEffect == CardEffect.Censor)
+        {
+            // Censor（ランダム1枚開示）のロジック
+            if (targetPlayer.hand.Count == 0)
+            {
+                StartCoroutine(UIManager.Instance.ShowEffectResult("対象の手札は0です"));
+            }
+            else
+            {
+                CardData randomCard = targetPlayer.hand[Random.Range(0, targetPlayer.hand.Count)];
+                string resultMessage = $"{targetPlayer.playerName} の手札を検閲: [{randomCard.cardName}]";
+                StartCoroutine(UIManager.Instance.ShowEffectResult(resultMessage));
+            }
+        }
+        else if (pendingSurveyEffect == CardEffect.Interrogate)
+        {
+            // Interrogate（上下質問）のロジック
+            int targetValue = GetHandValue(targetPlayer.hand);
+            string resultMessage = (targetValue > 15) ? "合計値は15[以上]です" : "合計値は15未満です";
+            StartCoroutine(UIManager.Instance.ShowEffectResult(resultMessage));
+        }
+        pendingSurveyEffect = CardEffect.None; // 記憶をリセット
+        // 使ったカードはPlayCardToFieldの時点で捨て札に送られているのでOK
+        NextTurn(CardEffect.None); // ターン終了
     }
 }
 public enum PlayerID
