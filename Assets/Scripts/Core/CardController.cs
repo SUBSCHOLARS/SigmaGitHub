@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
-using UnityEngine.EventSystems;
 // 自分が何のカードなのか記憶し、クリックされたらGameManagerに通知する
 [RequireComponent(typeof(Image))]
 public class CardController : MonoBehaviour
