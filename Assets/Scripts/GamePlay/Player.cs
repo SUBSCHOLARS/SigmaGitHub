@@ -7,10 +7,11 @@ public class Player
     public bool isCPU;
     public string playerName;
     public int totalPoints;
-    public Player(PlayerID id, bool isCPU, string playerName)
+    public Player(PlayerID id, bool isCPU, string playerName, int totalPoints)
     {
         this.id = id;
         this.isCPU = isCPU;
         this.playerName = playerName;
+        this.totalPoints = totalPoints;
     }
 }

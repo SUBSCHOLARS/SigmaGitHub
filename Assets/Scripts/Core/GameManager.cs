@@ -27,10 +27,11 @@ public class GameManager : MonoBehaviour
     private Player gameMaster;
     // どの調査カードが使われたか記憶する変数
     private CardEffect pendingSurveyEffect = CardEffect.None;
+    private int winningScore = 50;
 
     void Awake()
     {
-        gameMaster = new Player(PlayerID.GameMaster, false, "GameMaster");
+        gameMaster = new Player(PlayerID.GameMaster, false, "GameMaster", 0);
         // シングルトンの設定
         if (Instance == null)
         {
@@ -46,9 +47,9 @@ public class GameManager : MonoBehaviour
     {
         // 3人対戦のセットアップ
         players.Clear();
-        players.Add(new Player(PlayerID.Player, false, "Ian")); // 0番目が人間
-        players.Add(new Player(PlayerID.CPU, true, "CPU_1"));    // 1番目がCPU
-        players.Add(new Player(PlayerID.CPU, true, "CPU_2"));    // 2番目がCPU
+        players.Add(new Player(PlayerID.Player, false, "Ian", 0)); // 0番目が人間
+        players.Add(new Player(PlayerID.CPU, true, "CPU_1", 0));    // 1番目がCPU
+        players.Add(new Player(PlayerID.CPU, true, "CPU_2", 0));    // 2番目がCPU
         // ゲーム開始時に山札を準備
         SetUpDeck();
         // 全プレイヤーにカードを配る
@@ -258,15 +259,17 @@ public class GameManager : MonoBehaviour
         UIManager.Instance.UpdateDeckVisual(deck.Count);
 
         // 4. マッチ判定（ドローした時にセルフマッチする可能性はあるよね...?）
-        if (!CheckForMatch(humanPlayer))
+        List<Player> roundWinners = CheckForMatch(humanPlayer);
+        if (roundWinners.Count > 0)
         {
-            NextTurn();
+            // TODO: 勝利演出
+            SetInputLock(true);
+            Debug.Log($"セルフマッチ! {humanPlayer.playerName} が勝利!");
+            return;
         }
         else
         {
-            // TODO: 勝利演出
-            isPlayerInputLocked = true;
-            Debug.Log($"セルフマッチ! {humanPlayer.playerName} が勝利!");
+            NextTurn();
         }
     }
     // Bribeの5つのボタンから呼ばれるメソッド
@@ -325,7 +328,8 @@ public class GameManager : MonoBehaviour
         PlayCardToField(cardToPlay, humanPlayer); // UI更新もこの中で行われる
 
         // 4. マッチ判定
-        if (CheckForMatch(humanPlayer))
+        List<Player> roundWinners = CheckForMatch(humanPlayer);
+        if (roundWinners.Count > 0)
         {
             SetInputLock(true);
             Debug.Log($"セルフマッチ! {humanPlayer.playerName} が勝利!");
@@ -340,6 +344,33 @@ public class GameManager : MonoBehaviour
     public void NextTurn()
     {
         StartCoroutine(TurnTransitionRoutine(CardEffect.None));
+    }
+    // 勝利演出　=> ポイント計算 => 次ラウンド準備の流れを管理
+    private IEnumerator StartRoundEndSequence(List<Player> winners)
+    {
+        // 1. 勝利演出（UIに任せる）
+        // 他のプレイヤーの手札も全て公開する
+        UIManager.Instance.RevealAllHands();
+        yield return StartCoroutine(UIManager.Instance.ShowWinnerAnimation(winners));
+
+        // ポイント計算
+        CalculatePoints(winners);
+        UIManager.Instance.UpdateScoreboard(players); // スコアボードUIを更新
+
+        // 3. 最終勝利判定
+        Player overallWinner = CheckForOverallWinner();
+        if (overallWinner != null)
+        {
+            // ゲーム終了
+            yield return StartCoroutine(UIManager.Instance.ShowGameEndAnimation(overallWinner));
+            Debug.Log($"最終勝者: {overallWinner.playerName}");
+        }
+        else
+        {
+            // 4. 次ラウンドへの移行準備
+            yield return new WaitForSeconds(3.0f); // 結果表示
+            StartNextRound();
+        }
     }
     private IEnumerator HandleCardEffectAndTransition(CardEffect playedEffect)
     {
@@ -452,25 +483,32 @@ public class GameManager : MonoBehaviour
         }
     }
     // マッチ（勝利）判定を行うメソッド
-    public bool CheckForMatch(Player cardPlayer)
+    public List<Player> CheckForMatch(Player cardPlayer)
     {
+        List<Player> winners = new List<Player>();
         // 1. トレンドライド（他人ドボン）のチェック
-        bool trendRideWin = false;
         foreach (Player player in players)
         {
-            if (player == cardPlayer) continue; // カードを出した人は他人ドボンの対象には論理的にならないので除く
+            if (player == cardPlayer)
+            {
+                continue; // カードを出した人は他人ドボンの対象には論理的にならないので除く
+            }
             if (GetHandValue(player.hand) == currentTrendValue)
             {
                 // 手札0枚での「0」マッチは禁止
                 if (player.hand.Count > 0 || currentTrendValue != 0)
                 {
-                    Debug.Log($"トレンドライド! {player.id} が勝利!");
-                    trendRideWin = true;
-                    // TODO: 勝利したplayerのポイントを加算
+                    // 0-0マッチ禁止ルールを適用する。
+                    if (player.hand.Count > 0 || currentTrendValue != 0)
+                    {
+                        Debug.Log($"トレンドライド! {player.id} が勝利!");
+                        winners.Add(player);
+                        // TODO: 勝利したplayerのポイントを加算
+                    }
                 }
             }
         }
-        if (trendRideWin) return true; // 他人ドボンが最優先
+        if (winners.Count > 0) return winners; // 他人ドボンが最優先
         // 2. セルフマッチ（自分ドボン）のチェック
         if (GetHandValue(cardPlayer.hand) == currentTrendValue)
         {
@@ -480,15 +518,70 @@ public class GameManager : MonoBehaviour
                 if (currentCardOnField.effect == CardEffect.Bribe)
                 {
                     Debug.Log("Bribe（賄賂）では上がれません!");
-                    return false;
+                    return winners; // 空のリスト
                 }
 
                 Debug.Log($"セルフマッチ! {cardPlayer.id} が勝利!");
                 // TODO: cardPlayerのポイントを加算
-                return true;
+                winners.Add(cardPlayer);
             }
         }
-        return false; // 誰もマッチしなかった場合
+        return winners; // 誰もマッチしなかった場合
+    }
+    // ポイント計算（仮実装）
+    private void CalculatePoints(List<Player> winners)
+    {
+        foreach (Player winner in winners)
+        {
+            winner.totalPoints += 10; // 勝者は10クレジット
+            Debug.Log($"{winner.playerName}が10クレジット獲得!");
+        }
+        // TODO: 敗者は手札の合計値分減点などの処理
+    }
+    // 総合勝利判定
+    private Player CheckForOverallWinner()
+    {
+        foreach (Player player in players)
+        {
+            if (player.totalPoints >= winningScore)
+            {
+                return player;
+            }
+        }
+        return null;
+    }
+    // 次のラウンドを開始する
+    public void StartNextRound()
+    {
+        Debug.Log("--- 次のラウンドを開始します ---");
+
+        // 1. 全員の手札をクリア
+        foreach (Player player in players)
+        {
+            player.hand.Clear();
+        }
+
+        // 2. 山札と捨て札をリセット
+        SetUpDeck(); // 山札の準備とシャッフル
+
+        // 3. 全員んい7枚ずつ配る
+        foreach (Player player in players)
+        {
+            DrawCards(player.hand, 7);
+        }
+        // 最初の1枚を場に出す
+        StartGame(); // 既存のロジックを再利用
+
+        // 5. UIをリセット・更新
+        UIManager.Instance.UpdateAllHandVisuals();
+        UIManager.Instance.HideBribeSelectionUI();
+        UIManager.Instance.HideTargetSelectionUI();
+
+        // 6. ターンをリセット
+        currentPlayerIndex = 0;
+        isTurnClockwise = true;
+
+        // 7. 最初のプレイヤーのターンの開始
     }
     // CPUのターンを実行する（NextTurnから呼ばれる）
     private void ExecuteCPUTurn()
@@ -511,7 +604,8 @@ public class GameManager : MonoBehaviour
             PlayCardToField(cardToPlay, currentCPU);
 
             // 3. マッチ判定と次のターン
-            if (CheckForMatch(currentCPU))
+            List<Player> roundWinners = CheckForMatch(currentCPU);
+            if (roundWinners.Count > 0)
             {
                 SetInputLock(true);
                 Debug.Log($"[CPU] {currentCPU.playerName} が勝利しました!");

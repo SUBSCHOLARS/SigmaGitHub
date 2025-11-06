@@ -44,6 +44,10 @@ public class UIManager : MonoBehaviour
     [Header("操作UI")]
     public Button drawButton; // DrawButton
     private Image playerHandRaycaster; // Player_HandContainerのImage（透明な壁）
+    [Header("勝利演出")]
+    public GameObject winnerPanel;
+    public TextMeshProUGUI winnerText;
+    public GameObject scoreboardPanel;
     void Awake()
     {
         if (Instance == null)
@@ -72,6 +76,8 @@ public class UIManager : MonoBehaviour
             Debug.LogError("UIManagerのplayerHandAreaがインスペクタで設定されていません。");
         }
         bribeSelectionPanel.SetActive(false);
+        targetSelectionPanel.SetActive(false);
+        winnerPanel.SetActive(false);
     }
     public void ShowBribeSelectionUI()
     {
@@ -386,5 +392,42 @@ public class UIManager : MonoBehaviour
             cpu2TurnGlow.enabled = false;
             cpu2TurnGlow.color = new Color(cpu2TurnGlow.color.r, cpu2TurnGlow.color.g, cpu2TurnGlow.color.b, 1f);
         }
+    }
+    // 勝利演出の本体
+    public IEnumerator ShowWinnerAnimation(List<Player> winners)
+    {
+        string winnerNames = "";
+        foreach (Player player in winners)
+        {
+            winnerNames += player.playerName + "\n"; // 複数勝利対応
+        }
+        winnerText.text = $"ROUND WINNER:\n{winnerNames}";
+        winnerPanel.SetActive(true);
+
+        // ここにDOTweenなどでの演出
+        yield return new WaitForSeconds(3.0f); // 3秒待機
+        winnerPanel.SetActive(false);
+    }
+    // 全員の手札を公開する（CPUの手札を表にする）
+    public void RevealAllHands()
+    {
+        // TODO: UpdateCPUHandVisualsを改造し、
+        // vardBackPrefabではなく、cardPrefabを使い、
+        // CPUの手札を全て表向きに表示する処理を実装する
+        Debug.Log("全員の手札公開!");
+    }
+    // スコアボード更新（ダミー）
+    public void UpdateScoreboard(List<Player> players)
+    {
+        // TODO: スコアボードUIに各プレイヤーのtotalPointsを反映する
+        Debug.Log($"スコア更新: P1({players[0].totalPoints}), P2({players[1].totalPoints}), P3({players[2].totalPoints})");
+    }
+    // ゲーム終了演出（ダミー）
+    public IEnumerator ShowGameEndAnimation(Player winner)
+    {
+        winnerText.text = $"OVERALL WINNER:\n{winner.playerName}";
+        winnerPanel.SetActive(true);
+        // 実際はメインメニューに戻るボタンなどを表示
+        yield return new WaitForSeconds(10.0f);
     }
 }
