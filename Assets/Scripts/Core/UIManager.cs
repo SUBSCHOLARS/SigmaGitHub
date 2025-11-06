@@ -492,9 +492,9 @@ public class UIManager : MonoBehaviour
         // TODO: スコアボードUIに各プレイヤーのtotalPointsを反映する
         if (players.Count >= 3)
         {
-            playerScoreText.text = $"P1 [{players[0].playerName}]: {players[0].totalPoints} CR";
-            cpu1ScoreText.text = $"P2 [{players[1].playerName}]: {players[1].totalPoints} CR";
-            cpu2ScoreText.text = $"P3 [{players[2].playerName}]: {players[2].totalPoints} CR";
+            playerScoreText.text = $"P1 [{players[0].playerName}]: \n{players[0].totalPoints} CR";
+            cpu1ScoreText.text = $"P2 [{players[1].playerName}]: \n{players[1].totalPoints} CR";
+            cpu2ScoreText.text = $"P3 [{players[2].playerName}]: \n{players[2].totalPoints} CR";
         }
         Debug.Log($"スコア更新: P1({players[0].totalPoints}), P2({players[1].totalPoints}), P3({players[2].totalPoints})");
     }
