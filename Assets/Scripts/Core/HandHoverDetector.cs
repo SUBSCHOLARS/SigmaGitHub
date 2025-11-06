@@ -50,9 +50,19 @@ public class HandHoverDetector : MonoBehaviour, IPointerMoveHandler, IPointerExi
         // どのカードもホバーしていない状態にする
         if (currentlyHoveredCard != null)
         {
-            currentlyHoveredCard.SetHover(false);
+            // オブジェクトが破棄されていないか安全確認
+            if (currentlyHoveredCard.gameObject != null)
+            {
+                currentlyHoveredCard.SetHover(false);
+            }
             currentlyHoveredCard = null;
         }
+    }
+    // UIManagerから呼び出されるリセット用のメソッド
+    public void ResetHover()
+    {
+        // 参照を強制的に解除する
+        currentlyHoveredCard = null;
     }
     // マウスの座標に地番近いカードを探すロジック（座標変換のロジックも含む）
     private CardController FindClosestCard(Vector2 mousePosition)

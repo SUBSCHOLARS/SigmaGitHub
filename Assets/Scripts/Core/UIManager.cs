@@ -237,6 +237,11 @@ public class UIManager : MonoBehaviour
     // プレイヤーの手札を画面に表示するメソッド
     public void UpdateAllHandVisuals()
     {
+        // 手札を破棄する前に、ホバー検出器の参照をリセット
+        if(handHoverDetector!=null)
+        {
+            handHoverDetector.ResetHover();
+        }
         // 1. まず手札を全削除してリセット
         // イテレート中にリストを変更するとエラーになるため、
         // 最初に破棄する対象をリストアップする
@@ -408,20 +413,24 @@ public class UIManager : MonoBehaviour
                         .SetLoops(3); // ループ
 
         }
-        // 2. テキストを表示して点滅させる
-        turnIndicatorText.enabled = true;
-        turnIndicatorText.text = $"-{playerName}- TURN";
+        if (turnIndicatorText != null)
+        {
+            // 2. テキストを表示して点滅させる
+            turnIndicatorText.DOKill();
+            turnIndicatorText.enabled = true;
+            turnIndicatorText.text = $"-{playerName}- TURN";
 
-        //DOTweenで点滅
-        Sequence textSequence = DOTween.Sequence();
-        textSequence.AppendCallback(() => turnIndicatorText.alpha = 0f) // 瞬時に非表示
-                    .AppendInterval(0.3f) // 0.3秒待機
-                    .AppendCallback(() => turnIndicatorText.alpha = 1f) // 瞬時に表示
-                    .AppendInterval(0.3f) // 0.3秒待機
-                    .SetLoops(3); // ループ
+            //DOTweenで点滅
+            Sequence textSequence = DOTween.Sequence();
+            textSequence.AppendCallback(() => turnIndicatorText.alpha = 0f) // 瞬時に非表示
+                        .AppendInterval(0.3f) // 0.3秒待機
+                        .AppendCallback(() => turnIndicatorText.alpha = 1f) // 瞬時に表示
+                        .AppendInterval(0.3f) // 0.3秒待機
+                        .SetLoops(3); // ループ
 
-        // アニメーションの完了を待つ
-        yield return textSequence.WaitForCompletion();
+            // アニメーションの完了を待つ
+            yield return textSequence.WaitForCompletion();
+        }
         HideTurnAnimation();
 
     }
