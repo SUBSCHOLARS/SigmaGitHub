@@ -23,11 +23,12 @@ public class GameManager : MonoBehaviour
     public List<Player> players = new List<Player>();
     private int currentPlayerIndex = 0;
     private bool isTurnClockwise = true; // ターン進行方向（Reject用）
-    public bool isPlayerInputLocked = false; // 操作ロックようフラグ
+    public bool isPlayerInputLocked = false; // 操作ロック用のフラグ
     private Player gameMaster;
     // どの調査カードが使われたか記憶する変数
     private CardEffect pendingSurveyEffect = CardEffect.None;
-    private int winningScore = 50;
+    private int winningScore = 50; // 勝利に必要なスコア
+    private int currentRound = 1; // 現在のラウンド
 
     void Awake()
     {
@@ -50,6 +51,10 @@ public class GameManager : MonoBehaviour
         players.Add(new Player(PlayerID.Player, false, "Ian", 0)); // 0番目が人間
         players.Add(new Player(PlayerID.CPU, true, "CPU_1", 0));    // 1番目がCPU
         players.Add(new Player(PlayerID.CPU, true, "CPU_2", 0));    // 2番目がCPU
+        // ゲーム開始時にUIを初期化
+        currentRound = 1;
+        UIManager.Instance.UpdateRoundText(currentRound);
+        UIManager.Instance.UpdateScoreboard(players); // 初期スコア(0)を表示
         // ゲーム開始時に山札を準備
         SetUpDeck();
         // 全プレイヤーにカードを配る
@@ -265,6 +270,8 @@ public class GameManager : MonoBehaviour
             // TODO: 勝利演出
             SetInputLock(true);
             Debug.Log($"セルフマッチ! {humanPlayer.playerName} が勝利!");
+            // 勝利シーケンスを開始（引数に「行動した人」を渡す）
+            StartCoroutine(StartRoundEndSequence(roundWinners, humanPlayer));
             return;
         }
         else
@@ -333,6 +340,8 @@ public class GameManager : MonoBehaviour
         {
             SetInputLock(true);
             Debug.Log($"セルフマッチ! {humanPlayer.playerName} が勝利!");
+            // 勝利シーケンスを開始（引数に「行動した人」を渡す）
+            StartCoroutine(StartRoundEndSequence(roundWinners, humanPlayer));
             return; // 勝利したのでターンを回さない
         }
         // 5. マッチしなかった場合、効果処理とターン送り
@@ -346,15 +355,15 @@ public class GameManager : MonoBehaviour
         StartCoroutine(TurnTransitionRoutine(CardEffect.None));
     }
     // 勝利演出　=> ポイント計算 => 次ラウンド準備の流れを管理
-    private IEnumerator StartRoundEndSequence(List<Player> winners)
+    private IEnumerator StartRoundEndSequence(List<Player> winners, Player actionPlayer)
     {
         // 1. 勝利演出（UIに任せる）
         // 他のプレイヤーの手札も全て公開する
         UIManager.Instance.RevealAllHands();
         yield return StartCoroutine(UIManager.Instance.ShowWinnerAnimation(winners));
 
-        // ポイント計算
-        CalculatePoints(winners);
+        // ポイント計算（actionPlayerを渡して分岐）
+        CalculatePoints(winners, actionPlayer);
         UIManager.Instance.UpdateScoreboard(players); // スコアボードUIを更新
 
         // 3. 最終勝利判定
@@ -364,6 +373,8 @@ public class GameManager : MonoBehaviour
             // ゲーム終了
             yield return StartCoroutine(UIManager.Instance.ShowGameEndAnimation(overallWinner));
             Debug.Log($"最終勝者: {overallWinner.playerName}");
+            // ゲームを最初からリスタート
+            RestartGame();
         }
         else
         {
@@ -529,14 +540,36 @@ public class GameManager : MonoBehaviour
         return winners; // 誰もマッチしなかった場合
     }
     // ポイント計算（仮実装）
-    private void CalculatePoints(List<Player> winners)
+    private void CalculatePoints(List<Player> winners, Player actionPlayer)
     {
-        foreach (Player winner in winners)
+        // セルフマッチ判定: 勝者が一人だけで、かつそれが行動者であった場合
+        bool isSelfMatch = winners.Count == 1 && winners[0] == actionPlayer;
+        if (isSelfMatch)
         {
-            winner.totalPoints += 10; // 勝者は10クレジット
-            Debug.Log($"{winner.playerName}が10クレジット獲得!");
+            // セルフマッチ
+            winners[0].totalPoints += 20; // セルフマッチは20クレジット
+            Debug.Log($"{winners[0].playerName} がセルフマッチで20クレジット獲得!");
         }
-        // TODO: 敗者は手札の合計値分減点などの処理
+        else
+        {
+            // トレンドライド（複数可能
+            foreach (Player winner in winners)
+            {
+                winner.totalPoints += 10; // 勝者は10クレジット
+                Debug.Log($"{winner.playerName}が10クレジット獲得!");
+            }
+        }
+        // 敗者の処理（例: 手札の合計値だけ失点）
+        foreach(Player player in players)
+        {
+            if(!winners.Contains(player)) // 勝者のリストに組まれていない場合
+            {
+                int penalty = GetHandValue(player.hand);
+                // マイナスカード導入後はこのロジックは要見直し
+                player.totalPoints -= Mathf.Abs(penalty); // 合計値の絶対値分を失点
+                Debug.Log($"{player.playerName} は {Mathf.Abs(penalty)} クレジット失点。");
+            }
+        }
     }
     // 総合勝利判定
     private Player CheckForOverallWinner()
@@ -554,6 +587,7 @@ public class GameManager : MonoBehaviour
     public void StartNextRound()
     {
         Debug.Log("--- 次のラウンドを開始します ---");
+        currentRound++; // ラウンド数を増やす
 
         // 1. 全員の手札をクリア
         foreach (Player player in players)
@@ -564,24 +598,38 @@ public class GameManager : MonoBehaviour
         // 2. 山札と捨て札をリセット
         SetUpDeck(); // 山札の準備とシャッフル
 
-        // 3. 全員んい7枚ずつ配る
+        // 3. 全員に7枚ずつ配る
         foreach (Player player in players)
         {
             DrawCards(player.hand, 7);
         }
-        // 最初の1枚を場に出す
-        StartGame(); // 既存のロジックを再利用
 
         // 5. UIをリセット・更新
         UIManager.Instance.UpdateAllHandVisuals();
         UIManager.Instance.HideBribeSelectionUI();
         UIManager.Instance.HideTargetSelectionUI();
+        // 最初の1枚を場に出す
+        StartGame(); // 既存のロジックを再利用
 
         // 6. ターンをリセット
         currentPlayerIndex = 0;
         isTurnClockwise = true;
 
         // 7. 最初のプレイヤーのターンの開始
+    }
+    public void RestartGame()
+    {
+        Debug.Log("--- 新しいゲームを開始します ---");
+        // 1. スコアとラウンドをリセット
+        foreach (Player player in players)
+        {
+            player.totalPoints = 0;
+        }
+        currentRound = 0; // StartNextRoundで+1されるので0に
+        // 2. UIのスコア表示をリセット
+        UIManager.Instance.UpdateScoreboard(players);
+        // 3. 次のラウンド（最初のラウンド）を開始
+        StartNextRound();
     }
     // CPUのターンを実行する（NextTurnから呼ばれる）
     private void ExecuteCPUTurn()
@@ -610,6 +658,7 @@ public class GameManager : MonoBehaviour
                 SetInputLock(true);
                 Debug.Log($"[CPU] {currentCPU.playerName} が勝利しました!");
                 // TODO: 勝利演出
+                StartCoroutine(StartRoundEndSequence(roundWinners, currentCPU));
                 return; // 勝利したらターンを回さない
             }
             // 効果処理コルーチンを呼ぶ

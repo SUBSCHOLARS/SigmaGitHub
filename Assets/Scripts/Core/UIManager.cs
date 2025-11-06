@@ -39,15 +39,23 @@ public class UIManager : MonoBehaviour
     public GameObject targetSelectionPanel; // TargetSelectionPanelをアタッチ
     public TextMeshProUGUI effectResultText; // 結果表示用テキスト
     private HandHoverDetector handHoverDetector;
+    [Header("ログ")]
     public Transform logContentArea;
     public GameObject logMessagePrefab;
+    public ScrollRect logScrollRect; // ログのスクロールビュー
     [Header("操作UI")]
     public Button drawButton; // DrawButton
     private Image playerHandRaycaster; // Player_HandContainerのImage（透明な壁）
     [Header("勝利演出")]
     public GameObject winnerPanel;
     public TextMeshProUGUI winnerText;
-    public GameObject scoreboardPanel;
+    [Header("ゲーム情報")]
+    public TextMeshProUGUI roundText;
+    public TextMeshProUGUI playerScoreText;
+    public TextMeshProUGUI cpu1ScoreText;
+    public TextMeshProUGUI cpu2ScoreText;
+
+
     void Awake()
     {
         if (Instance == null)
@@ -108,10 +116,20 @@ public class UIManager : MonoBehaviour
         {
             drawButton.interactable = isActive;
             // もし非アクティブにする際、ボタンがホバーで光ったままなら今日背的に戻す
-            if(!isActive && drawButton.animator!=null)
+            if (!isActive && drawButton.animator != null)
             {
                 // ボタンのハイライト状態を強制的にNormalに戻す
                 drawButton.animator.Play("Normal");
+            }
+            // 手札のホバー検出もON/OFF
+            if (handHoverDetector != null)
+            {
+                handHoverDetector.enabled = isActive;
+                if (!isActive)
+                {
+                    // 非アクティブにする際、ホバー中だったカードを元に戻す
+                    handHoverDetector.OnPointerExit(null);
+                }
             }
         }
     }
@@ -143,6 +161,37 @@ public class UIManager : MonoBehaviour
         messageText.text = message;
         // TODO: スクロールを一番下に移動させる処理を追加
         // TODO: 古いログを一定数超えたら削除する処理を追加
+        StartCoroutine(ScrollToBottom());
+    }
+    // ログを一番下にスクロールさせるコルーチン
+    public IEnumerator ScrollToBottom()
+    {
+        // 1フレーム待機して、レイアウトが更新されるのを待つ
+        yield return new WaitForEndOfFrame();
+        if (logScrollRect != null)
+        {
+            // verticalNormalizedPositionはoが一番下
+            logScrollRect.verticalNormalizedPosition = 0f;
+        }
+    }
+    // ログをリセットするメソッド
+    public void ResetLog()
+    {
+        List<Transform> oldLogs = new List<Transform>();
+        if (logContentArea == null)
+        {
+            return;
+        }
+        foreach (Transform child in logContentArea)
+        {
+            oldLogs.Add(child);
+        }
+        foreach(Transform child in oldLogs)
+        {
+            child.SetParent(null);
+            Destroy(child.gameObject);
+        }
+        // 必要であれば「Round X Start」のようなログをAddLogMessageで追加
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -227,17 +276,18 @@ public class UIManager : MonoBehaviour
         // この時点でplayerHandContainer.childCountは6（新しい手札の枚数）になっている
         playerHandContainer.GetComponent<HandLayoutManager>().UpdateLayout();
 
-        // 3. CPUの手札更新
+        // 3. CPUの手札更新(裏向きで更新)
         List<Player> players = GameManager.Instance.players;
         if (players.Count >= 3) // 3人以上いるか確認
         {
             // [1]番目がCPU1、[2]番目がCPU2だと仮定
-            UpdateCPUHandVisuals(players[1], cpu1HandContainer);
-            UpdateCPUHandVisuals(players[2], cpu2HandContainer);
+            // 通常の裏向き更新を呼ぶ
+            UpdateCPUHandVisuals(players[1], cpu1HandContainer, false, null);
+            UpdateCPUHandVisuals(players[2], cpu2HandContainer, false, null);
         }
     }
     // CPUの手札ビジュアルを生成するメソッド
-    public void UpdateCPUHandVisuals(Player cpu, Transform container)
+    public void UpdateCPUHandVisuals(Player cpu, Transform container, bool reveal, List<CardData> handData)
     {
         List<Transform> oldCards = new List<Transform>();
         // 1. 古いカードバックを全て削除
@@ -245,12 +295,13 @@ public class UIManager : MonoBehaviour
         {
             oldCards.Add(child);
         }
-        foreach(Transform child in oldCards)
+        foreach (Transform child in oldCards)
         {
             child.SetParent(null);
             Destroy(child.gameObject);
         }
-        int childCount = cpu.hand.Count;
+        // revealフラグに応じて、枚数を手札データから取るか、CPUの手札数から取るか変更
+        int childCount = (reveal && handData != null) ? handData.Count : cpu.hand.Count;
         if (childCount == 0)
         {
             return;
@@ -262,8 +313,20 @@ public class UIManager : MonoBehaviour
 
         for(int i=0; i<childCount; i++)
         {
-            GameObject cardBack = Instantiate(cardBackPrefab, container);
-            RectTransform rect = cardBack.GetComponent<RectTransform>();
+            GameObject cardObj;
+            if (reveal && handData != null)
+            {
+                // 表向きで生成
+                cardObj = Instantiate(cardPrefab, container);
+                CardController cardController = cardObj.GetComponent<CardController>();
+                // カードデータを設定
+                cardController.Setup(handData[i]);
+            }
+            else
+            {
+                cardObj = Instantiate(cardBackPrefab, container);
+            }
+            RectTransform rect = cardObj.GetComponent<RectTransform>();
 
             // アンカーとピボットを中央に設定
             rect.anchorMin = new Vector2(0.5f, 0.5f);
@@ -414,13 +477,34 @@ public class UIManager : MonoBehaviour
         // TODO: UpdateCPUHandVisualsを改造し、
         // vardBackPrefabではなく、cardPrefabを使い、
         // CPUの手札を全て表向きに表示する処理を実装する
+        List<Player> players = GameManager.Instance.players;
+        if(players.Count>=3)
+        {
+            // UpdateCPUHandVisualsをreveal=trueで呼び出す
+            UpdateCPUHandVisuals(players[1], cpu1HandContainer, true, players[1].hand);
+            UpdateCPUHandVisuals(players[2], cpu2HandContainer, true, players[2].hand);
+        }
         Debug.Log("全員の手札公開!");
     }
     // スコアボード更新（ダミー）
     public void UpdateScoreboard(List<Player> players)
     {
         // TODO: スコアボードUIに各プレイヤーのtotalPointsを反映する
+        if (players.Count >= 3)
+        {
+            playerScoreText.text = $"P1 [{players[0].playerName}]: {players[0].totalPoints} CR";
+            cpu1ScoreText.text = $"P2 [{players[1].playerName}]: {players[1].totalPoints} CR";
+            cpu2ScoreText.text = $"P3 [{players[2].playerName}]: {players[2].totalPoints} CR";
+        }
         Debug.Log($"スコア更新: P1({players[0].totalPoints}), P2({players[1].totalPoints}), P3({players[2].totalPoints})");
+    }
+    // ラウンド数更新メソッド
+    public void UpdateRoundText(int round)
+    {
+        if(roundText!=null)
+        {
+            roundText.text = $"ROUND {round}";
+        }
     }
     // ゲーム終了演出（ダミー）
     public IEnumerator ShowGameEndAnimation(Player winner)
@@ -429,5 +513,6 @@ public class UIManager : MonoBehaviour
         winnerPanel.SetActive(true);
         // 実際はメインメニューに戻るボタンなどを表示
         yield return new WaitForSeconds(10.0f);
+        winnerPanel.SetActive(false);
     }
 }
