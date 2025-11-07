@@ -50,11 +50,12 @@ public class UIManager : MonoBehaviour
     public GameObject winnerPanel;
     public TextMeshProUGUI winnerText;
     [Header("ゲーム情報")]
-    public TextMeshProUGUI roundText;
-    public TextMeshProUGUI playerScoreText;
-    public TextMeshProUGUI cpu1ScoreText;
-    public TextMeshProUGUI cpu2ScoreText;
-
+    public TextMeshProUGUI roundText; // RoundTextをアタッチ
+    public TextMeshProUGUI playerScoreText; // PlayerScoreTextをアタッチ
+    public TextMeshProUGUI cpu1ScoreText; // CPU1ScoreTextをアタッチ
+    public TextMeshProUGUI cpu2ScoreText; // CPU2ScoreTextをアタッチ
+    public TextMeshProUGUI currentTrendText; // CurrentTrendTextをアタッチ
+    public TextMeshProUGUI yourTrendText; // YourTrendTextをアタッチ
 
     void Awake()
     {
@@ -280,6 +281,14 @@ public class UIManager : MonoBehaviour
         // レイアウトの更新
         // この時点でplayerHandContainer.childCountは6（新しい手札の枚数）になっている
         playerHandContainer.GetComponent<HandLayoutManager>().UpdateLayout();
+
+        // プレイヤーの手札合計値を計算して表示
+        if(yourTrendText!=null)
+        {
+            // GameManagerに計算を依頼
+            int handValue = GameManager.Instance.GetHandValue(playerHand);
+            yourTrendText.text = $"HAND: {handValue}";
+        }
 
         // 3. CPUの手札更新(裏向きで更新)
         List<Player> players = GameManager.Instance.players;
@@ -523,5 +532,13 @@ public class UIManager : MonoBehaviour
         // 実際はメインメニューに戻るボタンなどを表示
         yield return new WaitForSeconds(10.0f);
         winnerPanel.SetActive(false);
+    }
+    // 場のトレンドを更新するメソッド
+    public void UpdateCurrentTrend(int trendValue)
+    {
+        if(currentTrendText!=null)
+        {
+            currentTrendText.text = $"TREND: {trendValue}";
+        }
     }
 }

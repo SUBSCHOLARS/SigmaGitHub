@@ -7,7 +7,7 @@ using System;
 public class GameManager : MonoBehaviour
 {
     // シングルトンの設定
-    // 'Instance' を通じて他のスクリプトからGameManagerの機能にアクセスできる
+    // Instanceを通じて他のスクリプトからGameManagerの機能にアクセスできる
     public static GameManager Instance { get; private set; }
     [Header("カードデータ")]
     public List<CardData> allCardDatabase;
@@ -66,6 +66,7 @@ public class GameManager : MonoBehaviour
         StartGame();
         // プレイヤー（0番目）の手札をUIに反映
         UIManager.Instance.UpdateAllHandVisuals();
+        UIManager.Instance.UpdateCurrentTrend(currentTrendValue);
     }
 
     // Update is called once per frame
@@ -195,7 +196,7 @@ public class GameManager : MonoBehaviour
         // TODO: Bribeの場合の数字設定の処理を追加
         if (card.effect == CardEffect.Bribe ||
             card.effect == CardEffect.Censor ||
-            card.effect==CardEffect.Interrogate)
+            card.effect == CardEffect.Interrogate)
         {
             // Bribe/Censor/Interrogateが出た直後は
             // currentTrendValueは「前のカード」の値を保持したまま。
@@ -206,10 +207,11 @@ public class GameManager : MonoBehaviour
             // 場のトレンド（数字）を更新
             currentTrendValue = card.numberValue;
         }
+        // 場のトレンドが更新されたのでUIに反映
+        UIManager.Instance.UpdateCurrentTrend(currentTrendValue);
         Debug.Log("場に " + card.cardName + " が出されました。現在のトレンド: " + currentTrendValue);
         UIManager.Instance.UpdateFieldPileUI(card);
-        UIManager.Instance.UpdateAllHandVisuals();
-        // TODO: ここで全プレイヤーのマッチ判定を呼び出す
+        UIManager.Instance.UpdateAllHandVisuals(); // ここで自動的にYourTrendも更新される
     }
     // カードが出せるかを判定するメソッド
     public bool CanPlayCard(CardData cardToPlay)
@@ -294,6 +296,9 @@ public class GameManager : MonoBehaviour
         }
         currentTrendValue = trend;
         Debug.Log($"Bribe: プレイヤーがトレンドを {currentTrendValue} に設定しました。");
+
+        // 場のトレンドが更新されたのでUIに反映
+        UIManager.Instance.UpdateCurrentTrend(currentTrendValue);
 
         UIManager.Instance.HideBribeSelectionUI();
 
@@ -394,6 +399,8 @@ public class GameManager : MonoBehaviour
                 int chosenTrend = UnityEngine.Random.Range(1, 6); // AIはあとで賢くする
                 currentTrendValue = chosenTrend;
                 Debug.Log($"Bribe: CPUがトレンドを{currentTrendValue} に設定しました。");
+                // 場のトレンドが更新されたのでUIに反映
+                UIManager.Instance.UpdateCurrentTrend(currentTrendValue);
                 StartCoroutine(TurnTransitionRoutine(playedEffect));
             }
             else

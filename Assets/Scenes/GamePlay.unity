@@ -1045,6 +1045,8 @@ MonoBehaviour:
   playerScoreText: {fileID: 292077736}
   cpu1ScoreText: {fileID: 55701162}
   cpu2ScoreText: {fileID: 824316627}
+  currentTrendText: {fileID: 1457230953}
+  yourTrendText: {fileID: 1093734478}
 --- !u!1 &404600648
 GameObject:
   m_ObjectHideFlags: 0
