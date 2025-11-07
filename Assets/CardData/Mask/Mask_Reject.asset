@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Mask_Reject
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Mask_Reject
-  cardSprite: {fileID: -8480942831535028229, guid: adb7524f93f7040ac8a079ed39afb154, type: 3}
+  cardSprite: {fileID: 8127521252971018266, guid: cc6cd0ba1205d464db6f09036899a128, type: 3}
   cardIcon: {fileID: 21300000, guid: 315248dda4f24424c89d15e1faf90d06, type: 3}
   sector: 3
   effect: 2
-  numberValue: 0
-  handValue: 0
+  numberValue: 10
+  handValue: 10

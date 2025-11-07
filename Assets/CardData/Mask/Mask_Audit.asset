@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Mask_Audit
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Mask_Audit
-  cardSprite: {fileID: 842186095404714092, guid: 5cbff3d9c8bc84748abe6fdb68e1c2c4, type: 3}
+  cardSprite: {fileID: -3337330556197112954, guid: 32656a7b564d14e00b53927ae56ca9a7, type: 3}
   cardIcon: {fileID: 21300000, guid: 6b8b0c134133345b5b31f8497a4db499, type: 3}
   sector: 3
   effect: 3
-  numberValue: 0
-  handValue: 0
+  numberValue: 10
+  handValue: 10
