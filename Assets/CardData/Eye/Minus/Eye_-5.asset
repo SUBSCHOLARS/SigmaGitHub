@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4225d8cb72d5c4a0bb6519732f34a999, type: 3}
+  m_Name: Eye_-5
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardName: Eye_-5
+  cardSprite: {fileID: 470113947798811335, guid: a4c4b7eb570f64e508ccaa28b37dac9b, type: 3}
+  cardIcon: {fileID: 21300000, guid: 28ad24bfc0663448f8eec467d5e9f1cd, type: 3}
+  sector: 0
+  effect: 0
+  numberValue: -5
+  handValue: -5

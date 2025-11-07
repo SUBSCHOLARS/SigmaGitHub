@@ -4768,6 +4768,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 69aa741b2011341c39e0baf20d385422, type: 2}
   - {fileID: 11400000, guid: 69aa741b2011341c39e0baf20d385422, type: 2}
   - {fileID: 11400000, guid: 736f0a74e00634cd6b4cd2aba75ea9fc, type: 2}
+  - {fileID: 11400000, guid: 736f0a74e00634cd6b4cd2aba75ea9fc, type: 2}
+  - {fileID: 11400000, guid: 3d9a1211a5ac348db904b9cf8e31c6b3, type: 2}
   - {fileID: 11400000, guid: 3d9a1211a5ac348db904b9cf8e31c6b3, type: 2}
   - {fileID: 11400000, guid: ea1720dfa5dd3412f890d404086d5425, type: 2}
   - {fileID: 11400000, guid: ea1720dfa5dd3412f890d404086d5425, type: 2}
@@ -4829,6 +4831,16 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9836f4b5b2e334bc6836e215263ed3e2, type: 2}
   - {fileID: 11400000, guid: c6d8dfc6a115b45bfae349d1c02fb34c, type: 2}
   - {fileID: 11400000, guid: 6292ae7848b2c46fa94fe22971bb0d2c, type: 2}
+  - {fileID: 11400000, guid: f4a46d443265541d9b8b18ca6c2142e9, type: 2}
+  - {fileID: 11400000, guid: f4a46d443265541d9b8b18ca6c2142e9, type: 2}
+  - {fileID: 11400000, guid: 65f3fa4e0dedb41c687bff49e337e9e4, type: 2}
+  - {fileID: 11400000, guid: 65f3fa4e0dedb41c687bff49e337e9e4, type: 2}
+  - {fileID: 11400000, guid: 7d872819efc7f4423a9c29e34c126529, type: 2}
+  - {fileID: 11400000, guid: 7d872819efc7f4423a9c29e34c126529, type: 2}
+  - {fileID: 11400000, guid: 2b584ed56cb7a4ce59f0d80b1a3f714c, type: 2}
+  - {fileID: 11400000, guid: 2b584ed56cb7a4ce59f0d80b1a3f714c, type: 2}
+  - {fileID: 11400000, guid: 79280d5f673004dde9cd2b51daa5793b, type: 2}
+  - {fileID: 11400000, guid: 79280d5f673004dde9cd2b51daa5793b, type: 2}
   deck: []
   discardPile: []
   currentCardOnField: {fileID: 0}

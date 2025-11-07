@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4225d8cb72d5c4a0bb6519732f34a999, type: 3}
-  m_Name: Eye_12
+  m_Name: Eye_-2
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: Eye_12
-  cardSprite: {fileID: 2264322547591499381, guid: 0f13ba76e080843889668ca73f30466d, type: 3}
-  cardIcon: {fileID: 21300000, guid: ef1af7da8aea849548b1f38a891b75cd, type: 3}
+  cardName: Eye_-2
+  cardSprite: {fileID: -8550884197150721842, guid: 73ad031cdba9d4b7788f9c5f051559f3, type: 3}
+  cardIcon: {fileID: 21300000, guid: df2067ef665ff4877a727c36c1a1c070, type: 3}
   sector: 0
   effect: 0
-  numberValue: 12
-  handValue: 12
+  numberValue: -2
+  handValue: -2
