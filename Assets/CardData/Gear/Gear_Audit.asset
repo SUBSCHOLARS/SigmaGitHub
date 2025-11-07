@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Gear_Audit
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Gear_Audit
-  cardSprite: {fileID: -7456064460560088223, guid: 732bfc3ff37274194878d2d157651b09, type: 3}
+  cardSprite: {fileID: 9055389646937172941, guid: 04156659703dd45f5b1c800162d803a5, type: 3}
   cardIcon: {fileID: 21300000, guid: 0af17a83fc73b4634ae0274df1635d1c, type: 3}
   sector: 2
   effect: 3
-  numberValue: 0
-  handValue: 0
+  numberValue: 10
+  handValue: 10

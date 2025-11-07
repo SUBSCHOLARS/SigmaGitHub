@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Gear_Reject
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Gear_Reject
-  cardSprite: {fileID: 6959997348725510271, guid: 881fc6228a9c74fac930c7c0b73d0514, type: 3}
+  cardSprite: {fileID: -7942001613715410866, guid: 9c1e823844f994b749897a836261c14b, type: 3}
   cardIcon: {fileID: 21300000, guid: 364d949f7cbb84b46b38430c3b9a1ee2, type: 3}
   sector: 2
   effect: 2
-  numberValue: 0
-  handValue: 0
+  numberValue: 10
+  handValue: 10
