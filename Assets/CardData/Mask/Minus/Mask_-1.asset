@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4225d8cb72d5c4a0bb6519732f34a999, type: 3}
-  m_Name: Mask_10
+  m_Name: Mask_-1
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: Mask_10
-  cardSprite: {fileID: 4766599267587086091, guid: 21eb1300de60749b3a9e6d47ef7135e9, type: 3}
-  cardIcon: {fileID: 21300000, guid: dfa21621c1ab44014b0df1fdf435645f, type: 3}
+  cardName: Mask_-1
+  cardSprite: {fileID: 4068294039164123900, guid: 864d45af1e1d74c3e8c13e0bf4210fad, type: 3}
+  cardIcon: {fileID: 21300000, guid: b701db548b98b44688a78151ee608ab1, type: 3}
   sector: 3
   effect: 0
-  numberValue: 10
-  handValue: 10
+  numberValue: -1
+  handValue: -1

@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4225d8cb72d5c4a0bb6519732f34a999, type: 3}
+  m_Name: Mask_-2
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardName: Mask_-2
+  cardSprite: {fileID: -7235430010157923103, guid: 41a7c1477696647f6a40bb72df637e78, type: 3}
+  cardIcon: {fileID: 21300000, guid: 3cd8552bc450c4cedb2dc957c3d57c4b, type: 3}
+  sector: 3
+  effect: 0
+  numberValue: -2
+  handValue: -2
