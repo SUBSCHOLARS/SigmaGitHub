@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 6ff3fa93562714485a5fb31cf0a56cf4
+guid: 3b736d0251a4c49a1b10cfdcb89b54e2
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -115061763470475413
-    second: Refined_Chain_4_0
+      213: -2936138169356363090
+    second: Refined_Chain_-6_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Refined_Chain_4_0
+      name: Refined_Chain_-6_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b6fbc1d8fe7376ef0800000000000000
-      internalID: -115061763470475413
+      spriteID: eaa5c0c24edb047d0800000000000000
+      internalID: -2936138169356363090
       vertices: []
       indices: 
       edges: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Refined_Chain_4_0: -115061763470475413
+      Refined_Chain_-6_0: -2936138169356363090
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
