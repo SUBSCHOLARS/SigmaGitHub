@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4225d8cb72d5c4a0bb6519732f34a999, type: 3}
-  m_Name: Gear_12
+  m_Name: Gear_-4
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: Gear_12
-  cardSprite: {fileID: 12347106536926574, guid: bcac5161725464bc497e831b5350a43f, type: 3}
-  cardIcon: {fileID: 21300000, guid: de817ac0278c74fd4a187132436c7904, type: 3}
+  cardName: Gear_-4
+  cardSprite: {fileID: 1718455207644135488, guid: e734ef50af89b4c57b536db329dd08bf, type: 3}
+  cardIcon: {fileID: 21300000, guid: b4df5dfc6590a402d8fa99dd8266c69c, type: 3}
   sector: 2
   effect: 0
-  numberValue: 12
-  handValue: 12
+  numberValue: -4
+  handValue: -4

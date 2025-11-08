@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4225d8cb72d5c4a0bb6519732f34a999, type: 3}
-  m_Name: Mask_-5
+  m_Name: Gear_6
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: Mask_-5
-  cardSprite: {fileID: 7060063969238500096, guid: 0920d4b67f2594b74a657dfefeeb3615, type: 3}
-  cardIcon: {fileID: 21300000, guid: f25d1685e05c346368219652947a0a0c, type: 3}
-  sector: 3
+  cardName: Gear_6
+  cardSprite: {fileID: -2732497038437617241, guid: 7985cb7d0f77449c3881065c2134e0b7, type: 3}
+  cardIcon: {fileID: 21300000, guid: e79f35bdf34594fdea7d847dca2a3908, type: 3}
+  sector: 2
   effect: 0
-  numberValue: -5
-  handValue: -5
+  numberValue: 6
+  handValue: 6
