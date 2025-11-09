@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
     private int currentPlayerIndex = 0;
     private bool isTurnClockwise = true; // ターン進行方向（Reject用）
     public bool isPlayerInputLocked = false; // 操作ロック用のフラグ
+    private bool isWaitingForWinConfirmation = false;
     private Player gameMaster;
     // どの調査カードが使われたか記憶する変数
     private CardEffect pendingSurveyEffect = CardEffect.None;
@@ -271,10 +272,9 @@ public class GameManager : MonoBehaviour
         {
             // TODO: 勝利演出
             SetInputLock(true);
-            Debug.Log($"セルフマッチ! {humanPlayer.playerName} が勝利!");
-            // 勝利シーケンスを開始（引数に「行動した人」を渡す）
-            StartCoroutine(StartRoundEndSequence(roundWinners, humanPlayer));
-            return;
+            isWaitingForWinConfirmation = true;
+            UIManager.Instance.ShowWinButton(true);
+            return; // ターンを終了せず、ボタン入力を待つ。
         }
         else
         {
@@ -777,10 +777,27 @@ public class GameManager : MonoBehaviour
     private void SetInputLock(bool isLocked)
     {
         isPlayerInputLocked = isLocked;
-        if(UIManager.Instance!=null)
+        if (UIManager.Instance != null)
         {
             UIManager.Instance.SetPlayerControlsActive(!isLocked);
         }
+    }
+    // 勝利確認ボタンによって呼ばれるメソッド
+    public void PlayerConfirmWin()
+    {
+        // 待機中以外は無視
+        if (!isWaitingForWinConfirmation)
+        {
+            return;
+        }
+        Player humanPlayer = players[0];
+        isWaitingForWinConfirmation = false;
+        UIManager.Instance.ShowWinButton(false);
+        SetInputLock(true);
+        Debug.Log($"セルフマッチ! {humanPlayer.playerName} が勝利!");
+        // 勝利シーケンスを開始（引数に「行動した人」を渡す）
+        List<Player> roundWinners = new List<Player> { humanPlayer };
+        StartCoroutine(StartRoundEndSequence(roundWinners, humanPlayer));
     }
 }
 public enum PlayerID

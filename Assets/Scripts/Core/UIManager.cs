@@ -49,6 +49,9 @@ public class UIManager : MonoBehaviour
     [Header("勝利演出")]
     public GameObject winnerPanel;
     public TextMeshProUGUI winnerText;
+    public GameObject winButton;
+    public CanvasGroup winButtonCanvasGroup; // 点滅アニメーション用
+    private Sequence winButtonAnimation; // アニメーション制御用
     [Header("ゲーム情報")]
     public TextMeshProUGUI roundText; // RoundTextをアタッチ
     public TextMeshProUGUI playerScoreText; // PlayerScoreTextをアタッチ
@@ -87,6 +90,13 @@ public class UIManager : MonoBehaviour
         bribeSelectionPanel.SetActive(false);
         targetSelectionPanel.SetActive(false);
         winnerPanel.SetActive(false);
+        // 勝利確認ボタンの初期設定
+        if(winButton!=null)
+        {
+            // CanvasGroupを取得
+            winButtonCanvasGroup = winButton.GetComponent<CanvasGroup>();
+            winButton.SetActive(false);
+        }
     }
     public void ShowBribeSelectionUI()
     {
@@ -536,9 +546,46 @@ public class UIManager : MonoBehaviour
     // 場のトレンドを更新するメソッド
     public void UpdateCurrentTrend(int trendValue)
     {
-        if(currentTrendText!=null)
+        if (currentTrendText != null)
         {
             currentTrendText.text = $"TREND: {trendValue}";
         }
+    }
+    // 勝利確認ボタンを表示/非表示にするメソッド
+    public void ShowWinButton(bool show)
+    {
+        if (winButton != null)
+        {
+            // 既存のアニメーションを停止
+            winButtonAnimation?.Kill();
+            winButton.SetActive(show);
+            if (show)
+            {
+                // レトロゲーム風の点滅アニメーション
+                // TODO: ピコピコ音追加
+                // CanvasGroupのAlpha（透明度）を1.0 -> 0 -> 1.0と往復させる
+                if (winButtonCanvasGroup != null)
+                {
+                    winButtonCanvasGroup.alpha = 1f;
+                    winButtonAnimation = DOTween.Sequence()
+                        .Append(winButtonCanvasGroup.DOFade(0f, 0.1f).SetEase(Ease.InOutQuad))
+                        .Append(winButtonCanvasGroup.DOFade(1f, 0.1f).SetEase(Ease.InOutQuad))
+                        .SetLoops(-1); // 無限ループ
+                }
+            }
+            else
+            {
+                // 非表示にする際はアルファ値を元に戻す
+                if (winButtonCanvasGroup != null)
+                {
+                    winButtonCanvasGroup.alpha = 1f;
+                }
+            }
+        }
+    }
+    // WinButtonがクリックされたときの処理
+    public void OnWinButtonPress()
+    {
+        GameManager.Instance.PlayerConfirmWin();
     }
 }
