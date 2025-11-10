@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
     private bool isTurnClockwise = true; // ターン進行方向（Reject用）
     public bool isPlayerInputLocked = false; // 操作ロック用のフラグ
     private bool isWaitingForWinConfirmation = false;
+    private bool isNextPlayWild = false;
     private Player gameMaster;
     // どの調査カードが使われたか記憶する変数
     private CardEffect pendingSurveyEffect = CardEffect.None;
@@ -75,7 +76,7 @@ public class GameManager : MonoBehaviour
             Debug.Log($"ゲーム開始時マッチ（テンホウ）が検出されました。ラウンド終了シーケンスに移行します。");
             // 即座に勝利シーケンスを起動
             // gameMasterをactionPlayerとして渡す
-            StartCoroutine(StartRoundEndSequence(initialWinners, gameMaster));
+            StartCoroutine(StartRoundEndSequence(initialWinners, gameMaster, WinType.TrendRide));
             return; // リターンで最初のターンが開始するのを防ぐ
         }
         // プレイヤー（0番目）の手札をUIに反映
@@ -146,7 +147,6 @@ public class GameManager : MonoBehaviour
             if (hand == players[0].hand)
             {
                 Debug.Log("プレイヤーが引いたカード: " + drawnCard.cardName);
-                // UIManager.Instance.UpdatePlayerHandUI(playerHand);
             }
         }
     }
@@ -208,18 +208,16 @@ public class GameManager : MonoBehaviour
         // UIManagerにログ表示を依頼
         UIManager.Instance.AddLogMessage(message, card.cardIcon);
         // TODO: Bribeの場合の数字設定の処理を追加
-        if (card.effect == CardEffect.Bribe ||
-            card.effect == CardEffect.Censor ||
-            card.effect == CardEffect.Interrogate)
+        if(card.effect==CardEffect.Censor||card.effect==CardEffect.Interrogate)
         {
-            // Bribe/Censor/Interrogateが出た直後は
-            // currentTrendValueは「前のカード」の値を保持したまま。
-            // これにより、CheckForMatchの誤作動がなくなる。
+            // 次のプレイがワイルドになる
+            isNextPlayWild = true;
         }
         else
         {
             // 場のトレンド（数字）を更新
             currentTrendValue = card.numberValue;
+            isNextPlayWild = false;
         }
         // 場のトレンドが更新されたのでUIに反映
         UIManager.Instance.UpdateCurrentTrend(currentTrendValue);
@@ -230,6 +228,11 @@ public class GameManager : MonoBehaviour
     // カードが出せるかを判定するメソッド
     public bool CanPlayCard(CardData cardToPlay)
     {
+        // 詰み回避ルールを最優先でチェック
+        if(isNextPlayWild)
+        {
+            return true;
+        }
         // 1. cardToPlay.effect == CardEffect.Bribe (賄賂) なら true
         if (cardToPlay.effect == CardEffect.Bribe ||
             cardToPlay.effect == CardEffect.Censor ||
@@ -284,9 +287,8 @@ public class GameManager : MonoBehaviour
         List<Player> trendRideWinners = CheckForTrendRide(humanPlayer);
         if (trendRideWinners.Count > 0)
         {
-            // TODO: 勝利演出
             SetInputLock(true);
-            StartCoroutine(StartRoundEndSequence(trendRideWinners, humanPlayer));
+            StartCoroutine(StartRoundEndSequence(trendRideWinners, humanPlayer, WinType.TrendRide));
             return;
         }
         // セルフマッチをチェック
@@ -367,7 +369,7 @@ public class GameManager : MonoBehaviour
             SetInputLock(true);
             Debug.Log($"セルフマッチ! {humanPlayer.playerName} が勝利!");
             // 勝利シーケンスを開始（引数に「行動した人」を渡す）
-            StartCoroutine(StartRoundEndSequence(trendRideWinners, humanPlayer));
+            StartCoroutine(StartRoundEndSequence(trendRideWinners, humanPlayer, WinType.TrendRide));
             return; // 勝利したのでターンを回さない
         }
         // セルフマッチをチェック
@@ -390,12 +392,21 @@ public class GameManager : MonoBehaviour
         StartCoroutine(TurnTransitionRoutine(CardEffect.None));
     }
     // 勝利演出　=> ポイント計算 => 次ラウンド準備の流れを管理
-    private IEnumerator StartRoundEndSequence(List<Player> winners, Player actionPlayer)
+    private IEnumerator StartRoundEndSequence(List<Player> winners, Player actionPlayer, WinType winType)
     {
         // 1. 勝利演出（UIに任せる）
         // 他のプレイヤーの手札も全て公開する
         UIManager.Instance.RevealAllHands();
-        yield return StartCoroutine(UIManager.Instance.ShowWinnerAnimation(winners));
+        if(winType==WinType.TrendRide)
+        {
+            // トレンドライドであった場合、アラートを表示して待機
+            yield return StartCoroutine(UIManager.Instance.ShowTrendRideAlert(winners, actionPlayer));
+        }
+        yield return StartCoroutine(UIManager.Instance.ShowWinnerAnimation(
+            winners,
+            winType,
+            GetHandValue(winners[0].hand) // 勝利ハンドの合計値
+            ));
 
         // ポイント計算（actionPlayerを渡して分岐）
         CalculatePoints(winners, actionPlayer);
@@ -437,7 +448,7 @@ public class GameManager : MonoBehaviour
             {
                 // プレイヤーの入力待ち
                 UIManager.Instance.ShowBribeSelectionUI();
-                // // PlayerSelectBribeTrendが呼ばれるまで、このコルーチンはここで「待機」
+                // PlayerSelectBribeTrendが呼ばれるまで、このコルーチンはここで「待機」
                 // (PlayerSelectBribeTrendがNextTurn()を呼ぶ)
                 yield break; // コルーチンを終了し、ボタン入力を終了し、ボタン入力を待つ
             }
@@ -693,7 +704,7 @@ public class GameManager : MonoBehaviour
                 SetInputLock(true);
                 Debug.Log($"[CPU] {currentCPU.playerName} が勝利しました!");
                 // TODO: 勝利演出
-                StartCoroutine(StartRoundEndSequence(trendRideWinners, currentCPU));
+                StartCoroutine(StartRoundEndSequence(trendRideWinners, currentCPU, WinType.TrendRide));
                 return; // 勝利したらターンを回さない
             }
             // CPUのセルフマッチ判定
@@ -701,7 +712,7 @@ public class GameManager : MonoBehaviour
             {
                 SetInputLock(true);
                 List<Player> winners = new List<Player> { currentCPU };
-                StartCoroutine(StartRoundEndSequence(winners, currentCPU));
+                StartCoroutine(StartRoundEndSequence(winners, currentCPU, WinType.SelfMatch));
                 return;
             }
             // 効果処理コルーチンを呼ぶ
@@ -718,14 +729,14 @@ public class GameManager : MonoBehaviour
             if (trendRideWinners.Count > 0)
             {
                 SetInputLock(true);
-                StartCoroutine(StartRoundEndSequence(trendRideWinners, currentCPU));
+                StartCoroutine(StartRoundEndSequence(trendRideWinners, currentCPU, WinType.TrendRide));
                 return;
             }
             if(CheckForSelfMatch(currentCPU))
             {
                 SetInputLock(true);
                 List<Player> winners = new List<Player> { currentCPU };
-                StartCoroutine(StartRoundEndSequence(winners, currentCPU));
+                StartCoroutine(StartRoundEndSequence(winners, currentCPU, WinType.SelfMatch));
                 return;
             }
             UIManager.Instance.UpdateAllHandVisuals(); // UI（CPUの手札枚数）を更新
@@ -849,7 +860,7 @@ public class GameManager : MonoBehaviour
         Debug.Log($"セルフマッチ! {humanPlayer.playerName} が勝利!");
         // 勝利シーケンスを開始（引数に「行動した人」を渡す）
         List<Player> roundWinners = new List<Player> { humanPlayer };
-        StartCoroutine(StartRoundEndSequence(roundWinners, humanPlayer));
+        StartCoroutine(StartRoundEndSequence(roundWinners, humanPlayer, WinType.SelfMatch));
     }
 }
 public enum PlayerID

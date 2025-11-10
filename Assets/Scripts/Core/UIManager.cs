@@ -51,6 +51,8 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI winnerText;
     public GameObject winButton;
     public CanvasGroup winButtonCanvasGroup; // 点滅アニメーション用
+    public GameObject trendRideAlertPanel;
+    public TextMeshProUGUI trendRideAlertText;
     private Sequence winButtonAnimation; // アニメーション制御用
     [Header("ゲーム情報")]
     public TextMeshProUGUI roundText; // RoundTextをアタッチ
@@ -87,9 +89,10 @@ public class UIManager : MonoBehaviour
         {
             Debug.LogError("UIManagerのplayerHandAreaがインスペクタで設定されていません。");
         }
-        bribeSelectionPanel.SetActive(false);
-        targetSelectionPanel.SetActive(false);
-        winnerPanel.SetActive(false);
+        bribeSelectionPanel?.SetActive(false);
+        targetSelectionPanel?.SetActive(false);
+        winnerPanel?.SetActive(false);
+        trendRideAlertPanel?.SetActive(false);
         // 勝利確認ボタンの初期設定
         if(winButton!=null)
         {
@@ -487,18 +490,30 @@ public class UIManager : MonoBehaviour
         }
     }
     // 勝利演出の本体
-    public IEnumerator ShowWinnerAnimation(List<Player> winners)
+    public IEnumerator ShowWinnerAnimation(List<Player> winners, WinType winType, int winningHandValue)
     {
         string winnerNames = "";
         foreach (Player player in winners)
         {
             winnerNames += player.playerName + "\n"; // 複数勝利対応
         }
-        winnerText.text = $"ROUND WINNER:\n{winnerNames}";
+        // 表示する内容をリッチにする
+        string winReason = "";
+        if (winType == WinType.TrendRide)
+        {
+            winReason = "TREND RIDE";
+        }
+        else
+        {
+            winReason = "SELF MATCH";
+        }
+        winnerText.text = $"{winReason}\n" + 
+                        $"WINNER:\n{winnerNames}" +
+                        $"HAND VALUE: {winningHandValue}";
         winnerPanel.SetActive(true);
 
         // ここにDOTweenなどでの演出
-        yield return new WaitForSeconds(3.0f); // 3秒待機
+        yield return new WaitForSeconds(4.0f); // 4秒待機、要修正
         winnerPanel.SetActive(false);
     }
     // 全員の手札を公開する（CPUの手札を表にする）
@@ -589,5 +604,23 @@ public class UIManager : MonoBehaviour
     public void OnWinButtonPress()
     {
         GameManager.Instance.PlayerConfirmWin();
+    }
+    // トレンドライドアラートを表示するコルーチン
+    public IEnumerator ShowTrendRideAlert(List<Player> winners, Player actionPlayer)
+    {
+        if (trendRideAlertPanel == null)
+        {
+            yield break;
+        }
+        string winnerNames = "";
+        foreach (Player player in winners)
+        {
+            winnerNames += player.playerName + " ";
+        }
+        trendRideAlertText.text = $"--- TREND RIDE ---\n{actionPlayer.playerName}'s action causes\n{winnerNames}to WIN!";
+        // TODO: ピコピコ音追加
+        trendRideAlertPanel.SetActive(true);
+        yield return new WaitForSeconds(3.0f); // 3秒間表示
+        trendRideAlertPanel.SetActive(false);
     }
 }
