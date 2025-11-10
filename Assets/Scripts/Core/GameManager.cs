@@ -65,6 +65,19 @@ public class GameManager : MonoBehaviour
         }
         // 最初の1枚を場に出す
         StartGame();
+        // テンホウ（仮名称）ロジックを追加
+        // ゲーム開始時のトレンドと手札が一致していないかをチェック
+        // 最初はゲームマスターという存在が手札を場に出すため、この場合は全員がトレンドライドの判定を受けるという特殊な状況となる
+        List<Player> initialWinners = CheckForTrendRide(gameMaster);
+        if(initialWinners.Count>0)
+        {
+            // 誰かが勝利していた場合
+            Debug.Log($"ゲーム開始時マッチ（テンホウ）が検出されました。ラウンド終了シーケンスに移行します。");
+            // 即座に勝利シーケンスを起動
+            // gameMasterをactionPlayerとして渡す
+            StartCoroutine(StartRoundEndSequence(initialWinners, gameMaster));
+            return; // リターンで最初のターンが開始するのを防ぐ
+        }
         // プレイヤー（0番目）の手札をUIに反映
         UIManager.Instance.UpdateAllHandVisuals();
         UIManager.Instance.UpdateCurrentTrend(currentTrendValue);
@@ -201,7 +214,7 @@ public class GameManager : MonoBehaviour
         {
             // Bribe/Censor/Interrogateが出た直後は
             // currentTrendValueは「前のカード」の値を保持したまま。
-            // これにより、CheckForMatchが誤作動なくなる。
+            // これにより、CheckForMatchの誤作動がなくなる。
         }
         else
         {
@@ -266,20 +279,27 @@ public class GameManager : MonoBehaviour
         UIManager.Instance.UpdateAllHandVisuals();
         UIManager.Instance.UpdateDeckVisual(deck.Count);
 
-        // 4. マッチ判定（ドローした時にセルフマッチする可能性はあるよね...?）
-        List<Player> roundWinners = CheckForMatch(humanPlayer);
-        if (roundWinners.Count > 0)
+        // 4. マッチ判定
+        // トレンドライドを先にチェック
+        List<Player> trendRideWinners = CheckForTrendRide(humanPlayer);
+        if (trendRideWinners.Count > 0)
         {
             // TODO: 勝利演出
             SetInputLock(true);
-            isWaitingForWinConfirmation = true;
-            UIManager.Instance.ShowWinButton(true);
-            return; // ターンを終了せず、ボタン入力を待つ。
+            StartCoroutine(StartRoundEndSequence(trendRideWinners, humanPlayer));
+            return;
         }
-        else
+        // セルフマッチをチェック
+        if (CheckForSelfMatch(humanPlayer))
         {
-            NextTurn();
+            SetInputLock(true);
+            isWaitingForWinConfirmation = true;
+            // 勝利確認ボタンを表示
+            UIManager.Instance.ShowWinButton(true);
+            return; // ターン終了をせず、ボタン入力を待つ
         }
+        // 勝利しなかった場合、ターンを次に回す
+        NextTurn();
     }
     // Bribeの5つのボタンから呼ばれるメソッド
     public void PlayerSelectBribeTrend(int trend)
@@ -340,14 +360,24 @@ public class GameManager : MonoBehaviour
         PlayCardToField(cardToPlay, humanPlayer); // UI更新もこの中で行われる
 
         // 4. マッチ判定
-        List<Player> roundWinners = CheckForMatch(humanPlayer);
-        if (roundWinners.Count > 0)
+        // トレンドライドを先にチェック
+        List<Player> trendRideWinners = CheckForTrendRide(humanPlayer);
+        if (trendRideWinners.Count > 0)
         {
             SetInputLock(true);
             Debug.Log($"セルフマッチ! {humanPlayer.playerName} が勝利!");
             // 勝利シーケンスを開始（引数に「行動した人」を渡す）
-            StartCoroutine(StartRoundEndSequence(roundWinners, humanPlayer));
+            StartCoroutine(StartRoundEndSequence(trendRideWinners, humanPlayer));
             return; // 勝利したのでターンを回さない
+        }
+        // セルフマッチをチェック
+        if(CheckForSelfMatch(humanPlayer))
+        {
+            SetInputLock(true);
+            isWaitingForWinConfirmation = true;
+            // 勝利確認ボタンを表示
+            UIManager.Instance.ShowWinButton(true);
+            return; // ターン終了をせず、ボタン入力を待つ
         }
         // 5. マッチしなかった場合、効果処理とターン送り
         // 操作をロックし、効果処理コルーチン開始
@@ -500,52 +530,49 @@ public class GameManager : MonoBehaviour
             SetInputLock(false);
         }
     }
-    // マッチ（勝利）判定を行うメソッド
-    public List<Player> CheckForMatch(Player cardPlayer)
+    // トレンドライド判定を行うメソッド
+    private List<Player> CheckForTrendRide(Player actionPlayer)
     {
         List<Player> winners = new List<Player>();
-        // 1. トレンドライド（他人ドボン）のチェック
         foreach (Player player in players)
         {
-            if (player == cardPlayer)
+            if (player == actionPlayer)
             {
-                continue; // カードを出した人は他人ドボンの対象には論理的にならないので除く
+                continue; // 行動者自身を除外
             }
             if (GetHandValue(player.hand) == currentTrendValue)
             {
-                // 手札0枚での「0」マッチは禁止
+                // 0-0マッチ禁止ルール
                 if (player.hand.Count > 0 || currentTrendValue != 0)
                 {
-                    // 0-0マッチ禁止ルールを適用する。
-                    if (player.hand.Count > 0 || currentTrendValue != 0)
-                    {
-                        Debug.Log($"トレンドライド! {player.id} が勝利!");
-                        winners.Add(player);
-                        // TODO: 勝利したplayerのポイントを加算
-                    }
+                    Debug.Log($"トレンドライド: {player.playerName} が勝利条件を満たしました。");
+                    winners.Add(player);
                 }
             }
         }
-        if (winners.Count > 0) return winners; // 他人ドボンが最優先
-        // 2. セルフマッチ（自分ドボン）のチェック
-        if (GetHandValue(cardPlayer.hand) == currentTrendValue)
+        return winners;
+    }
+    // セルフマッチの確認を行うメソッド
+    private bool CheckForSelfMatch(Player actionPlayer)
+    {
+        if (GetHandValue(actionPlayer.hand) == currentTrendValue)
         {
-            if (cardPlayer.hand.Count > 0 || currentTrendValue != 0)
+            // 0-0マッチ禁止ルール
+            if (actionPlayer.hand.Count > 0 || currentTrendValue != 0)
             {
                 // Bribeでの上がり禁止チェック
                 if (currentCardOnField.effect == CardEffect.Bribe)
                 {
-                    Debug.Log("Bribe（賄賂）では上がれません!");
-                    return winners; // 空のリスト
+                    Debug.Log($"Bribe(賄賂)では上がれません");
+                    return false;
                 }
-
-                Debug.Log($"セルフマッチ! {cardPlayer.id} が勝利!");
-                // TODO: cardPlayerのポイントを加算
-                winners.Add(cardPlayer);
+                Debug.Log($"セルフマッチ: {actionPlayer.playerName} が勝利できます。");
+                return true;
             }
         }
-        return winners; // 誰もマッチしなかった場合
+        return false;
     }
+    
     // ポイント計算（仮実装）
     private void CalculatePoints(List<Player> winners, Player actionPlayer)
     {
@@ -623,6 +650,7 @@ public class GameManager : MonoBehaviour
         isTurnClockwise = true;
 
         // 7. 最初のプレイヤーのターンの開始
+        StartCoroutine(TurnTransitionRoutine(CardEffect.None));
     }
     public void RestartGame()
     {
@@ -658,15 +686,23 @@ public class GameManager : MonoBehaviour
             currentCPU.hand.Remove(cardToPlay);
             PlayCardToField(cardToPlay, currentCPU);
 
-            // 3. マッチ判定と次のターン
-            List<Player> roundWinners = CheckForMatch(currentCPU);
-            if (roundWinners.Count > 0)
+            // 3. マッチ判定と次のターン（ロジックを分離）
+            List<Player> trendRideWinners = CheckForTrendRide(currentCPU);
+            if (trendRideWinners.Count > 0)
             {
                 SetInputLock(true);
                 Debug.Log($"[CPU] {currentCPU.playerName} が勝利しました!");
                 // TODO: 勝利演出
-                StartCoroutine(StartRoundEndSequence(roundWinners, currentCPU));
+                StartCoroutine(StartRoundEndSequence(trendRideWinners, currentCPU));
                 return; // 勝利したらターンを回さない
+            }
+            // CPUのセルフマッチ判定
+            if(CheckForSelfMatch(currentCPU))
+            {
+                SetInputLock(true);
+                List<Player> winners = new List<Player> { currentCPU };
+                StartCoroutine(StartRoundEndSequence(winners, currentCPU));
+                return;
             }
             // 効果処理コルーチンを呼ぶ
             StartCoroutine(HandleCardEffectAndTransition(cardToPlay.effect));
@@ -676,6 +712,22 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log($"[CPU] {currentCPU.id} はカードを出せず、一枚引く");
             DrawCards(currentCPU.hand, 1);
+
+            // CPUドロー時の勝利判定
+            List<Player> trendRideWinners = CheckForTrendRide(currentCPU);
+            if (trendRideWinners.Count > 0)
+            {
+                SetInputLock(true);
+                StartCoroutine(StartRoundEndSequence(trendRideWinners, currentCPU));
+                return;
+            }
+            if(CheckForSelfMatch(currentCPU))
+            {
+                SetInputLock(true);
+                List<Player> winners = new List<Player> { currentCPU };
+                StartCoroutine(StartRoundEndSequence(winners, currentCPU));
+                return;
+            }
             UIManager.Instance.UpdateAllHandVisuals(); // UI（CPUの手札枚数）を更新
             UIManager.Instance.UpdateDeckVisual(deck.Count);
 

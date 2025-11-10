@@ -224,12 +224,14 @@ public class UIManager : MonoBehaviour
             child.SetParent(null);
             Destroy(child.gameObject);
         }
+        // 表示する枚数の上限を設定
+        int visualCardCount = Mathf.Min(deckCount, 70);
         // 2. 山札の枚数分、1ピクセルずつずらして生成
-        for(int i=0; i<deckCount; i++)
+        for(int i=0; i<visualCardCount; i++)
         {
             GameObject cardBack = Instantiate(cardBackPrefab, deckVisualContainer);
             // 1ピクセルずつY方向にずらす
-            float xOffset = i * 0.5f; // 0.5ピクセルずつ下へ
+            float xOffset = i * 0.2f; // 0.2ピクセルずつ下へ
             float yOffset = 0;
             float rotation = 0; // 傾きは設定しない
 
