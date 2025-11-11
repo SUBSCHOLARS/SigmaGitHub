@@ -367,7 +367,7 @@ public class GameManager : MonoBehaviour
         if (trendRideWinners.Count > 0)
         {
             SetInputLock(true);
-            Debug.Log($"セルフマッチ! {humanPlayer.playerName} が勝利!");
+            Debug.Log($"トレンドライド {humanPlayer.playerName} の行動で勝利が発生");
             // 勝利シーケンスを開始（引数に「行動した人」を渡す）
             StartCoroutine(StartRoundEndSequence(trendRideWinners, humanPlayer, WinType.TrendRide));
             return; // 勝利したのでターンを回さない
@@ -405,7 +405,7 @@ public class GameManager : MonoBehaviour
         yield return StartCoroutine(UIManager.Instance.ShowWinnerAnimation(
             winners,
             winType,
-            GetHandValue(winners[0].hand) // 勝利ハンドの合計値
+            currentTrendValue // 勝利ハンドの合計値
             ));
 
         // ポイント計算（actionPlayerを渡して分岐）
