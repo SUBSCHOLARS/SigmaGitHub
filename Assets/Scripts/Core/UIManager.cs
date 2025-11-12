@@ -61,6 +61,8 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI cpu2ScoreText; // CPU2ScoreTextをアタッチ
     public TextMeshProUGUI currentTrendText; // CurrentTrendTextをアタッチ
     public TextMeshProUGUI yourTrendText; // YourTrendTextをアタッチ
+    [Header("汎用")]
+    public GameObject continueButton;
 
     void Awake()
     {
@@ -93,13 +95,11 @@ public class UIManager : MonoBehaviour
         targetSelectionPanel?.SetActive(false);
         winnerPanel?.SetActive(false);
         trendRideAlertPanel?.SetActive(false);
+        continueButton?.SetActive(false);
         // 勝利確認ボタンの初期設定
-        if(winButton!=null)
-        {
-            // CanvasGroupを取得
-            winButtonCanvasGroup = winButton.GetComponent<CanvasGroup>();
-            winButton.SetActive(false);
-        }
+        // CanvasGroupを取得
+        winButtonCanvasGroup = winButton?.GetComponent<CanvasGroup>();
+        winButton?.SetActive(false);
     }
     public void ShowBribeSelectionUI()
     {
@@ -234,7 +234,7 @@ public class UIManager : MonoBehaviour
         {
             GameObject cardBack = Instantiate(cardBackPrefab, deckVisualContainer);
             // 1ピクセルずつY方向にずらす
-            float xOffset = i * 0.2f; // 0.2ピクセルずつ下へ
+            float xOffset = i * 0.02f; // 0.02ピクセルずつ下へ
             float yOffset = 0;
             float rotation = 0; // 傾きは設定しない
 
@@ -490,31 +490,38 @@ public class UIManager : MonoBehaviour
         }
     }
     // 勝利演出の本体
-    public IEnumerator ShowWinnerAnimation(List<Player> winners, WinType winType, int winningHandValue)
+    public void ShowWinnerAnimation(bool show, List<Player> winners, WinType winType, int winningHandValue)
     {
-        string winnerNames = "";
-        foreach (Player player in winners)
+        if (winnerPanel == null)
         {
-            winnerNames += player.playerName + "\n"; // 複数勝利対応
+            return;
         }
-        // 表示する内容をリッチにする
-        string winReason = "";
-        if (winType == WinType.TrendRide)
+        if (show)
         {
-            winReason = "TREND RIDE";
+            string winnerNames = "";
+            foreach (Player player in winners)
+            {
+                winnerNames += player.playerName + "\n"; // 複数勝利対応
+            }
+            // 表示する内容をリッチにする
+            string winReason = "";
+            if (winType == WinType.TrendRide)
+            {
+                winReason = "TREND RIDE";
+            }
+            else
+            {
+                winReason = "SELF MATCH";
+            }
+            winnerText.text = $"{winReason}\n" +
+                            $"WINNER:\n{winnerNames}" +
+                            $"HAND VALUE: {winningHandValue}";
+            winnerPanel.SetActive(true);
         }
         else
         {
-            winReason = "SELF MATCH";
+            winnerPanel.SetActive(false);
         }
-        winnerText.text = $"{winReason}\n" + 
-                        $"WINNER:\n{winnerNames}" +
-                        $"HAND VALUE: {winningHandValue}";
-        winnerPanel.SetActive(true);
-
-        // ここにDOTweenなどでの演出
-        yield return new WaitForSeconds(4.0f); // 4秒待機、要修正
-        winnerPanel.SetActive(false);
     }
     // 全員の手札を公開する（CPUの手札を表にする）
     public void RevealAllHands()
@@ -551,14 +558,22 @@ public class UIManager : MonoBehaviour
             roundText.text = $"ROUND {round}";
         }
     }
-    // ゲーム終了演出（ダミー）
-    public IEnumerator ShowGameEndAnimation(Player winner)
+    // ゲーム終了演出
+    public void ShowGameEndAnimation(bool show, Player winner)
     {
-        winnerText.text = $"OVERALL WINNER:\n{winner.playerName}";
-        winnerPanel.SetActive(true);
-        // 実際はメインメニューに戻るボタンなどを表示
-        yield return new WaitForSeconds(10.0f);
-        winnerPanel.SetActive(false);
+        if (winnerPanel == null)
+        {
+            return;
+        }
+        if (show)
+        {
+            winnerText.text = $"OVERALL WINNER:\n{winner.playerName}";
+            winnerPanel.SetActive(true);
+        }
+        else
+        {
+            winnerPanel.SetActive(false);
+        }
     }
     // 場のトレンドを更新するメソッド
     public void UpdateCurrentTrend(int trendValue)
@@ -580,7 +595,7 @@ public class UIManager : MonoBehaviour
             {
                 // レトロゲーム風の点滅アニメーション
                 // TODO: ピコピコ音追加
-                // CanvasGroupのAlpha（透明度）を1.0 -> 0 -> 1.0と往復させる
+                // CanvasGroupのAlpha（透明度）を1.0 => 0 => 1.0と往復させる
                 if (winButtonCanvasGroup != null)
                 {
                     winButtonCanvasGroup.alpha = 1f;
@@ -605,22 +620,37 @@ public class UIManager : MonoBehaviour
     {
         GameManager.Instance.PlayerConfirmWin();
     }
-    // トレンドライドアラートを表示するコルーチン
-    public IEnumerator ShowTrendRideAlert(List<Player> winners, Player actionPlayer)
+    // トレンドライドアラートを表示するメソッド
+    public void ShowTrendRideAlert(bool show, List<Player> winners, Player actionPlayer)
     {
         if (trendRideAlertPanel == null)
         {
-            yield break;
+            return;
         }
-        string winnerNames = "";
-        foreach (Player player in winners)
+        if (show)
         {
-            winnerNames += player.playerName + " ";
+            string winnerNames = "";
+            foreach (Player player in winners)
+            {
+                winnerNames += player.playerName + " ";
+            }
+            trendRideAlertText.text = $"--- TREND RIDE ---\n{actionPlayer.playerName}'s action causes\n{winnerNames}to WIN!";
+            // TODO: ピコピコ音追加
+            trendRideAlertPanel.SetActive(true);
         }
-        trendRideAlertText.text = $"--- TREND RIDE ---\n{actionPlayer.playerName}'s action causes\n{winnerNames}to WIN!";
-        // TODO: ピコピコ音追加
-        trendRideAlertPanel.SetActive(true);
-        yield return new WaitForSeconds(3.0f); // 3秒間表示
-        trendRideAlertPanel.SetActive(false);
+        else
+        {
+            trendRideAlertPanel.SetActive(false);
+        }
+    }
+    // 汎用的なクリック待ちUIの表示
+    public void ShowContinueButton(bool show)
+    {
+        continueButton?.SetActive(show);
+    }
+    // continueButtonオブジェクトのButtonコンポーネントから呼ばれる
+    public void OnContinuePromptClick()
+    {
+        GameManager.Instance.OnContinueClicked();
     }
 }

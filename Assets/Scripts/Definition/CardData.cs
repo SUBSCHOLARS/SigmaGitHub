@@ -11,6 +11,6 @@ public class CardData : ScriptableObject
     public CardSector sector; // スート（アイ、チェーン、ギア、マスク）
     public CardEffect effect; // 特殊効果（None, Suspend, Reject, Audit, Bribe, Censor, Interrogate）
     [Header("数値")]
-    public int numberValue; // 場に出た時の「トレンド」数値（0, 1-5, 10, 12）
-    public int handValue; // 手札にある時の「合計値」（0, 1-5, 10, 12, 15）
+    public int numberValue; // 場に出た時の「トレンド」数値
+    public int handValue; // 手札にある時の「合計値」
 }

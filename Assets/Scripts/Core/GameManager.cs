@@ -15,9 +15,9 @@ public class GameManager : MonoBehaviour
     public List<CardData> deck = new List<CardData>();
     public List<CardData> discardPile = new List<CardData>();
     // （デバッグ用）現在の場のカード
-    [SerializeField] private CardData currentCardOnField;
+    private CardData currentCardOnField;
     // 現在の「トレンド（場の数字）」
-    [SerializeField] private int currentTrendValue = 0;
+    private int currentTrendValue = 0;
 
     // プレイヤーの管理（本実装）
     public List<Player> players = new List<Player>();
@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
     public bool isPlayerInputLocked = false; // 操作ロック用のフラグ
     private bool isWaitingForWinConfirmation = false;
     private bool isNextPlayWild = false;
+    private bool isWaitingForContinueClick = false;
     private Player gameMaster;
     // どの調査カードが使われたか記憶する変数
     private CardEffect pendingSurveyEffect = CardEffect.None;
@@ -60,9 +61,14 @@ public class GameManager : MonoBehaviour
         // ゲーム開始時に山札を準備
         SetUpDeck();
         // 全プレイヤーにカードを配る
-        foreach(Player player in players)
+        // ラウンドロビンロジックを使用する
+        // つまり、一人に一枚ずつ渡すという動作を7回繰り返すということ
+        for(int i=0; i<7; i++)
         {
-            DrawCards(player.hand, 7);
+            foreach(Player player in players) // 各プレイヤーに一枚ずつ
+            {
+                DrawCards(player.hand, 1);
+            }
         }
         // 最初の1枚を場に出す
         StartGame();
@@ -397,35 +403,36 @@ public class GameManager : MonoBehaviour
         // 1. 勝利演出（UIに任せる）
         // 他のプレイヤーの手札も全て公開する
         UIManager.Instance.RevealAllHands();
-        if(winType==WinType.TrendRide)
+        if (winType == WinType.TrendRide)
         {
-            // トレンドライドであった場合、アラートを表示して待機
-            yield return StartCoroutine(UIManager.Instance.ShowTrendRideAlert(winners, actionPlayer));
+            // 2. トレンドライドであった場合、アラートを表示して待機
+            UIManager.Instance.ShowTrendRideAlert(true, winners, actionPlayer);
+            yield return StartCoroutine(WaitForContinueCLick());
+            UIManager.Instance.ShowTrendRideAlert(false, null, null);
         }
-        yield return StartCoroutine(UIManager.Instance.ShowWinnerAnimation(
-            winners,
-            winType,
-            currentTrendValue // 勝利ハンドの合計値
-            ));
+        // 3. 勝利者パネルを表示してクリックを待つ
+        UIManager.Instance.ShowWinnerAnimation(true, winners, winType, currentPlayerIndex);
+        yield return StartCoroutine(WaitForContinueCLick());
+        UIManager.Instance.ShowWinnerAnimation(false, null, WinType.SelfMatch, 0);
 
-        // ポイント計算（actionPlayerを渡して分岐）
+        // 4. ポイント計算（actionPlayerを渡して分岐）
         CalculatePoints(winners, actionPlayer);
         UIManager.Instance.UpdateScoreboard(players); // スコアボードUIを更新
 
-        // 3. 最終勝利判定
+        // 5. 最終勝利判定
         Player overallWinner = CheckForOverallWinner();
         if (overallWinner != null)
         {
             // ゲーム終了
-            yield return StartCoroutine(UIManager.Instance.ShowGameEndAnimation(overallWinner));
+            UIManager.Instance.ShowGameEndAnimation(true, overallWinner);
+            yield return StartCoroutine(WaitForContinueCLick());
+            UIManager.Instance.ShowGameEndAnimation(false, null);
             Debug.Log($"最終勝者: {overallWinner.playerName}");
             // ゲームを最初からリスタート
             RestartGame();
         }
         else
         {
-            // 4. 次ラウンドへの移行準備
-            yield return new WaitForSeconds(3.0f); // 結果表示
             StartNextRound();
         }
     }
@@ -633,6 +640,8 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("--- 次のラウンドを開始します ---");
         currentRound++; // ラウンド数を増やす
+        // UI更新
+        UIManager.Instance.UpdateRoundText(currentRound);
 
         // 1. 全員の手札をクリア
         foreach (Player player in players)
@@ -653,6 +662,7 @@ public class GameManager : MonoBehaviour
         UIManager.Instance.UpdateAllHandVisuals();
         UIManager.Instance.HideBribeSelectionUI();
         UIManager.Instance.HideTargetSelectionUI();
+        UIManager.Instance.ResetLog();
         // 最初の1枚を場に出す
         StartGame(); // 既存のロジックを再利用
 
@@ -861,6 +871,26 @@ public class GameManager : MonoBehaviour
         // 勝利シーケンスを開始（引数に「行動した人」を渡す）
         List<Player> roundWinners = new List<Player> { humanPlayer };
         StartCoroutine(StartRoundEndSequence(roundWinners, humanPlayer, WinType.SelfMatch));
+    }
+    // UIManagerのボタンから呼ばれるメソッド
+    public void OnContinueClicked()
+    {
+        isWaitingForContinueClick = true;
+    }
+    // クリック待ちを行う汎用コルーチン
+    public IEnumerator WaitForContinueCLick()
+    {
+        // 1. クリックを促すUIを表示
+        UIManager.Instance.ShowContinueButton(true);
+        // 2. フラグをリセット
+        isWaitingForContinueClick = false;
+        // 3. フラグが立つまで待機
+        while (!isWaitingForContinueClick)
+        {
+            yield return null; // 次のフレームまで待つ
+        }
+        // 4. UIを非表示
+        UIManager.Instance.ShowContinueButton(false);
     }
 }
 public enum PlayerID
