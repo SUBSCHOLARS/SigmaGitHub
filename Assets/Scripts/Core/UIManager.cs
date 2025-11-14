@@ -234,7 +234,7 @@ public class UIManager : MonoBehaviour
         {
             GameObject cardBack = Instantiate(cardBackPrefab, deckVisualContainer);
             // 1ピクセルずつY方向にずらす
-            float xOffset = i * 0.02f; // 0.02ピクセルずつ下へ
+            float xOffset = i * 0.15f; // 0.15ピクセルずつ下へ
             float yOffset = 0;
             float rotation = 0; // 傾きは設定しない
 
