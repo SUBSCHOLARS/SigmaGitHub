@@ -419,7 +419,7 @@ public class GameManager : MonoBehaviour
             UIManager.Instance.ShowTrendRideAlert(false, null, null);
         }
         // 3. 勝利者パネルを表示してクリックを待つ
-        UIManager.Instance.ShowWinnerAnimation(true, winners, winType, currentPlayerIndex);
+        UIManager.Instance.ShowWinnerAnimation(true, winners, winType, currentTrendValue);
         yield return StartCoroutine(WaitForContinueCLick());
         UIManager.Instance.ShowWinnerAnimation(false, null, WinType.SelfMatch, 0);
 
@@ -473,14 +473,32 @@ public class GameManager : MonoBehaviour
             pendingSurveyEffect = playedEffect;
             if (cardPlayer.isCPU)
             {
-                int targetIndex = (currentPlayerIndex == 1) ? 2 : 1;
-                // CPUは即座に実行するが、見せるために少し待つ
-                yield return new WaitForSeconds(1.0f);
-                PlayerSelectTarget(targetIndex);
-                yield break; // PlayerSelelctTargetがNextTurn()を呼ぶ
+                List<Player> possibleTargets=new List<Player>();
+                for(int i=0; i<players.Count; i++)
+                {
+                    if(i!=currentPlayerIndex)
+                    {
+                        possibleTargets.Add(players[i]);
+                    }
+                }
+                Player targetPlayer=possibleTargets[UnityEngine.Random.Range(0, possibleTargets.Count)];
+                Debug.Log($"[CPU] {cardPlayer.playerName}が{targetPlayer.playerName}をターゲットに選択");
+                // UIManagerのアニメーションコルーチンを呼び出して待機
+                if(playedEffect==CardEffect.Censor)
+                {
+                    yield return StartCoroutine(UIManager.Instance.ShowCensorAnimation(targetPlayer));
+                }
+                else // Interrogate
+                {
+                    yield return StartCoroutine(UIManager.Instance.ShowInterrogateAnimation(targetPlayer));
+                }
+                // アニメーションが終わったら次のターンへ
+                StartCoroutine(TurnTransitionRoutine(playedEffect));
+                yield break;
             }
-            else
+            else // プレイヤーが使った場合
             {
+                // ターゲット選択UIを表示
                 UIManager.Instance.ShowTargetSelectionUI();
                 yield break; // PlayerSelectTargetがNextTurn()を呼ぶ
             }
@@ -820,39 +838,33 @@ public class GameManager : MonoBehaviour
     }
     public void PlayerSelectTarget(int targetPlayerIndex)
     {
-        if (isPlayerInputLocked == false || targetPlayerIndex < 1 || targetPlayerIndex >= players.Count)
+        if (isPlayerInputLocked == false || targetPlayerIndex < 1 || targetPlayerIndex >= players.Count || targetPlayerIndex == currentPlayerIndex)
         {
             // 不正な呼び出し
+            Debug.LogWarning("不正なターゲットです");
             return;
         }
         UIManager.Instance.HideTargetSelectionUI();
-        Player targetPlayer = players[targetPlayerIndex];
-
-        // 記憶していた効果によって処理を分岐
-        if (pendingSurveyEffect == CardEffect.Censor)
+        // アニメーションとターン遷移を行うコルーチンを起動
+        StartCoroutine(SurveyTargetAndEndTurn(targetPlayerIndex));
+    }
+    // PlayerSelectTargetから呼ばれるコルーチン
+    private IEnumerator SurveyTargetAndEndTurn(int targetPlayerIndex)
+    {
+        Player targetPlayer=players[targetPlayerIndex];
+        CardEffect effect=pendingSurveyEffect;
+        pendingSurveyEffect=CardEffect.None; // 記憶をリセット
+        // UIManagerのアニメーションコルーチンを呼び出して待機
+        if(effect==CardEffect.Censor)
         {
-            // Censor（ランダム1枚開示）のロジック
-            if (targetPlayer.hand.Count == 0)
-            {
-                StartCoroutine(UIManager.Instance.ShowEffectResult("対象の手札は0枚です"));
-            }
-            else
-            {
-                CardData randomCard = targetPlayer.hand[UnityEngine.Random.Range(0, targetPlayer.hand.Count)];
-                string resultMessage = $"{targetPlayer.playerName} の手札を検閲: [{randomCard.cardName}]";
-                StartCoroutine(UIManager.Instance.ShowEffectResult(resultMessage));
-            }
+            yield return StartCoroutine(UIManager.Instance.ShowCensorAnimation(targetPlayer));
         }
-        else if (pendingSurveyEffect == CardEffect.Interrogate)
+        else // Interrogate
         {
-            // Interrogate（上下質問）のロジック
-            int targetValue = GetHandValue(targetPlayer.hand);
-            string resultMessage = (targetValue > 15) ? "合計値は15[以上]です" : "合計値は15未満です";
-            StartCoroutine(UIManager.Instance.ShowEffectResult(resultMessage));
+            yield return StartCoroutine(UIManager.Instance.ShowInterrogateAnimation(targetPlayer));
         }
-        pendingSurveyEffect = CardEffect.None; // 記憶をリセット
-        // 使ったカードはPlayCardToFieldの時点で捨て札に送られているのでOK
-        NextTurn(); // ターン終了
+        // アニメーションが終わったら次のターンへ
+        StartCoroutine(TurnTransitionRoutine(CardEffect.None));
     }
     // 入力ロックとUIを同期させる
     private void SetInputLock(bool isLocked)

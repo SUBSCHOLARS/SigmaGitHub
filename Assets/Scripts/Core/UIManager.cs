@@ -38,6 +38,11 @@ public class UIManager : MonoBehaviour
     public GameObject bribeSelectionPanel; // BribeSelectionPanelをアタッチ
     public GameObject targetSelectionPanel; // TargetSelectionPanelをアタッチ
     public TextMeshProUGUI effectResultText; // 結果表示用テキスト
+    [Header("検閲・尋問UI")]
+    public GameObject surveyPanel; // SurveyPanelをアタッチ
+    public TextMeshProUGUI surveyTitleText; // SurveyTitleTextをアタッチ
+    public Transform surveyCardDisplayArea; // SuveryCardDisplayAreaをアタッチ
+    public TextMeshProUGUI surveyResultValueText; // SurveyResultValueTextをアタッチ
     private HandHoverDetector handHoverDetector;
     [Header("ログ")]
     public Transform logContentArea;
@@ -96,6 +101,8 @@ public class UIManager : MonoBehaviour
         winnerPanel?.SetActive(false);
         trendRideAlertPanel?.SetActive(false);
         continueButton?.SetActive(false);
+        surveyPanel?.SetActive(false);
+        surveyResultValueText?.gameObject.SetActive(false);
         // 勝利確認ボタンの初期設定
         // CanvasGroupを取得
         winButtonCanvasGroup = winButton?.GetComponent<CanvasGroup>();
@@ -146,6 +153,107 @@ public class UIManager : MonoBehaviour
                 }
             }
         }
+    }
+    // 検閲（Censor）のアニメーションコルーチン
+    public IEnumerator ShowCensorAnimation(Player targetPlayer)
+    {
+        // 1. 準備
+        surveyTitleText.text = "CENSOR";
+        surveyPanel.SetActive(true);
+
+        CardData randomCard = null;
+        if(targetPlayer.hand.Count>0)
+        {
+            // ターゲットの手札からランダムに一枚選ぶ
+            randomCard=targetPlayer.hand[Random.Range(0, targetPlayer.hand.Count)];
+        }
+        // ターゲットの手札を震わせる
+        Transform targetHand=GetHandContainerForPlayer(targetPlayer);
+        if(targetHand!=null)
+        {
+            // 0.5秒間、強さ10、振動数20で震わせる
+            targetHand.DOShakePosition(0.5f, new Vector3(10f, 10f, 0), 20);
+        }
+        // 2. 演出（ターゲットの手札を振るわせるなど）
+        yield return new WaitForSeconds(0.5f); // 演出のためのタメ
+        if(randomCard==null)
+        {
+            // ログと結果表示
+            string msg=$"{targetPlayer.playerName}の手札は0枚です。";
+            AddLogMessage(msg, null);
+            StartCoroutine(ShowEffectResult(msg));
+        }
+        else
+        {
+            // 3. カードを表向きに生成
+            GameObject cardObj=Instantiate(cardPrefab, surveyCardDisplayArea);
+            cardObj.GetComponent<CardController>().Setup(randomCard);
+            // マウス操作を無効化
+            cardObj.GetComponent<Image>().raycastTarget=false;
+            // 4. ログ
+            string msg=$"{targetPlayer.playerName}の手札[{randomCard.cardName}]を検閲";
+            AddLogMessage(msg, null); // TODO: 検閲アイコンを渡す
+        }
+        // 5. 表示
+        yield return new WaitForSeconds(2.5f);
+        // 6. クリーンアップ
+        foreach(Transform child in surveyCardDisplayArea)
+        {
+            Destroy(child.gameObject);
+        }
+        surveyPanel.SetActive(false);
+    }
+    // 尋問（Interrogate）のアニメーションコルーチン
+    public IEnumerator ShowInterrogateAnimation(Player targetPlayer)
+    {
+        // 1. 準備
+        surveyTitleText.text="INTERROGATE";
+        surveyPanel.SetActive(true);
+        int maxVal=int.MinValue;
+        bool isHandEmpty=true;
+        if(targetPlayer.hand.Count>0)
+        {
+            isHandEmpty=false;
+            // 最大価値のカードを探す
+            foreach(CardData card in targetPlayer.hand)
+            {
+                if(card.handValue>maxVal)
+                {
+                    maxVal=card.handValue;
+                }
+            }
+        }
+        // ターゲットの手札を震わせる
+        Transform targetHand=GetHandContainerForPlayer(targetPlayer);
+        if(targetHand!=null)
+        {
+            // 0.5秒間、強さ10、振動数20で震わせる
+            targetHand.DOShakePosition(0.5f, new Vector3(10f, 10f, 0), 20);
+        }
+        // 2. 演出
+        yield return new WaitForSeconds(0.5f); // 演出のためのタメ
+        string msg;
+        if(isHandEmpty)
+        {
+            // ログと結果表示
+            msg=$"{targetPlayer.playerName}の手札は0枚です";
+            surveyResultValueText.text="HAND: 0";
+            surveyResultValueText.gameObject.SetActive(true);
+        }
+        else
+        {
+            // 3. 最大価値のカードの数価を表示
+            surveyResultValueText.text=$"MAX VALUE: {maxVal}";
+            surveyResultValueText.gameObject.SetActive(true);
+            // 4. ログ表示
+            msg=$"{targetPlayer.playerName}の最大の手札価値は[{maxVal}]です";
+        }
+        AddLogMessage(msg, null);
+        // 5. 表示
+        yield return new WaitForSeconds(2.5f);
+        // 6. クリーンアップ
+        surveyResultValueText.gameObject.SetActive(false);
+        surveyPanel.SetActive(false);
     }
     // 結果を一定時間表示するコルーチンも追加
     public IEnumerator ShowEffectResult(string message)
@@ -514,7 +622,7 @@ public class UIManager : MonoBehaviour
                 winReason = "SELF MATCH";
             }
             winnerText.text = $"{winReason}\n" +
-                            $"WINNER:\n{winnerNames}" +
+                            $"WINNER: {winnerNames}\n" +
                             $"HAND VALUE: {winningHandValue}";
             winnerPanel.SetActive(true);
         }
@@ -642,6 +750,30 @@ public class UIManager : MonoBehaviour
         {
             trendRideAlertPanel.SetActive(false);
         }
+    }
+    // ターゲットプレイヤーのHand Container Transformを取得するヘルパーメソッド
+    private Transform GetHandContainerForPlayer(Player targetPlayer)
+    {
+        // プレイヤーIDで判別
+        if(targetPlayer.id==PlayerID.Player)
+        {
+            return playerHandContainer;
+        }
+        // CPUの場合はGameManagerのリストのインデックスで判別
+        // プレイヤーが0番目、CPU1が1番目、CPU2が2番目と仮定
+        if(GameManager.Instance.players.Count>2)
+        {
+            if(targetPlayer==GameManager.Instance.players[1])
+            {
+                return cpu1HandContainer;
+            }
+            else if(targetPlayer==GameManager.Instance.players[2])
+            {
+                return cpu2HandContainer;
+            }
+        }
+        Debug.Log("GetHandContainerForPlayer: 該当するHand Containerが見つかりませんでした");
+        return null;
     }
     // 汎用的なクリック待ちUIの表示
     public void ShowContinueButton(bool show)
