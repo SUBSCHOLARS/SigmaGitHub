@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Eye_Suspend
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Eye_Suspend
-  cardSprite: {fileID: -6543088085413894792, guid: 2580d859503874b0c942c435a8ed2147, type: 3}
+  cardSprite: {fileID: 1426796751619301940, guid: 3d806cfec72744043b85ef637b4ea47e, type: 3}
   cardIcon: {fileID: 21300000, guid: fbd09ea74bd2e4134a4a1cfc4c9de335, type: 3}
   sector: 0
   effect: 1
