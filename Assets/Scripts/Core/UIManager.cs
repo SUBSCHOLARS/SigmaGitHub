@@ -243,7 +243,7 @@ public class UIManager : MonoBehaviour
         else
         {
             // 3. 最大価値のカードの数価を表示
-            surveyResultValueText.text=$"MAX VALUE: {maxVal}";
+            surveyResultValueText.text=$"MAX VALUE: \n{maxVal}";
             surveyResultValueText.gameObject.SetActive(true);
             // 4. ログ表示
             msg=$"{targetPlayer.playerName}の最大の手札価値は[{maxVal}]です";
