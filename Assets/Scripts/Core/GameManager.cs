@@ -212,7 +212,7 @@ public class GameManager : MonoBehaviour
         string playerName = player.playerName;
         string message = $"{DateTime.Now} [{playerName}] played [{card.cardName}]";
         // UIManagerにログ表示を依頼
-        UIManager.Instance.AddLogMessage(message, card.cardIcon);
+        UIManager.Instance.AddLogMessage(message, card);
         // TODO: Bribeの場合の数字設定の処理を追加
         if(card.effect==CardEffect.Censor||card.effect==CardEffect.Interrogate)
         {

@@ -44,10 +44,12 @@ public class UIManager : MonoBehaviour
     public Transform surveyCardDisplayArea; // SuveryCardDisplayAreaをアタッチ
     public TextMeshProUGUI surveyResultValueText; // SurveyResultValueTextをアタッチ
     private HandHoverDetector handHoverDetector;
-    [Header("ログ")]
-    public Transform logContentArea;
-    public GameObject logMessagePrefab;
-    public ScrollRect logScrollRect; // ログのスクロールビュー
+    [Header("ターミナルUI")]
+    [SerializeField] private GameObject terminalWindow; // TerminalWindowパネル
+    [SerializeField] private GameObject unreadBadge; // 未読バッジ
+    [SerializeField] private TextMeshProUGUI terminalLogText; // ログを表示する1つの巨大なテキスト
+    [SerializeField] private ScrollRect terminalScrollRect; // Scroll View
+    [SerializeField] private TMP_InputField commandInput; // コマンド入力欄
     [Header("操作UI")]
     public Button drawButton; // DrawButton
     private Image playerHandRaycaster; // Player_HandContainerのImage（透明な壁）
@@ -68,7 +70,6 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI yourTrendText; // YourTrendTextをアタッチ
     [Header("汎用")]
     public GameObject continueButton;
-
     void Awake()
     {
         if (Instance == null)
@@ -96,17 +97,53 @@ public class UIManager : MonoBehaviour
         {
             Debug.LogError("UIManagerのplayerHandAreaがインスペクタで設定されていません。");
         }
-        bribeSelectionPanel?.SetActive(false);
-        targetSelectionPanel?.SetActive(false);
-        winnerPanel?.SetActive(false);
-        trendRideAlertPanel?.SetActive(false);
-        continueButton?.SetActive(false);
-        surveyPanel?.SetActive(false);
-        surveyResultValueText?.gameObject.SetActive(false);
+        if(bribeSelectionPanel!=null)
+        {
+            bribeSelectionPanel.SetActive(false);
+        }
+        if(targetSelectionPanel!=null)
+        {
+            targetSelectionPanel.SetActive(false);
+        }
+        if(winnerPanel!=null)
+        {
+            winnerPanel.SetActive(false);
+        }
+        if(trendRideAlertPanel!=null)
+        {
+            trendRideAlertPanel.SetActive(false);
+        }
+        if(continueButton!=null)
+        {
+            continueButton.SetActive(false);
+        }
+        if(surveyPanel!=null)
+        {
+            surveyPanel.SetActive(false);
+        }
+        if(surveyResultValueText!=null)
+        {
+            surveyResultValueText.gameObject.SetActive(false);
+        }
+        if(terminalWindow!=null)
+        {
+            terminalWindow.SetActive(false);
+        }
+        if(unreadBadge!=null)
+        {
+            unreadBadge.SetActive(false);
+        }
+        terminalLogText.text=""; // ログを空にする
         // 勝利確認ボタンの初期設定
         // CanvasGroupを取得
-        winButtonCanvasGroup = winButton?.GetComponent<CanvasGroup>();
-        winButton?.SetActive(false);
+        if(winButton!=null)
+        {
+            winButtonCanvasGroup = winButton.GetComponent<CanvasGroup>();
+            winButton.SetActive(false);
+        }
+        // 起動時にシステムメッセージを入れてみる
+        AddLogMessage("--- SYSTEM BOOT SEQQUENCE INITIATED ---", null);
+        AddLogMessage("--- WELCOME TO SIGMA TERMINAL ---", null);
     }
     public void ShowBribeSelectionUI()
     {
@@ -263,56 +300,86 @@ public class UIManager : MonoBehaviour
         yield return new WaitForSeconds(2.0f); // 2秒間表示
         effectResultText.gameObject.SetActive(false);
     }
-    public void AddLogMessage(string message, Sprite icon)
+    private string GetSectorIconName(CardSector sector)
     {
-        // 1. PrefabをLogContentAreaの子として生成
-        GameObject logEntry = Instantiate(logMessagePrefab, logContentArea);
-        // 2. IconとTextを設定
-        // Findは非推奨だが、Prefabが単純なため使用
-        Image iconImage = logEntry.transform.Find("Icon").GetComponent<Image>();
-        TextMeshProUGUI messageText = logEntry.transform.Find("MessageText").GetComponent<TextMeshProUGUI>();
-        if (icon != null)
+        // Sprite Assetで設定したアイコン名を返す
+        switch(sector)
         {
-            iconImage.sprite = icon;
-            iconImage.enabled = true;
+            case CardSector.Eye: return "CardSectorAtlas_0";
+            case CardSector.Chain: return "CardSectorAtlas_1";
+            case CardSector.Gear: return "CardSectorAtlas_2";
+            case CardSector.Mask: return "CardSectorAtlas_3";
+            default: return "";
+        }
+    }
+    public void AddLogMessage(string message, CardData cardInfo=null)
+    {
+        // 1. テキストを追記する（HTMLタグで色付けも可能）
+        // 時刻を追加
+        string timeStr=System.DateTime.Now.ToString("HH:mm:ss");
+        string newLine=$"\n<color=#FFFFFF>[{timeStr}]</color>";
+        // カード情報がある場合は。色付きテキストの代わりにスプライトを埋め込む
+        if(cardInfo!=null)
+        {
+            string iconName=GetSectorIconName(cardInfo.sector);
+            // スプライトタグを埋め込む
+            string spriteTag=$"<sprite name=\"{iconName}\">";
+            newLine+=$"{spriteTag} {message}";
         }
         else
         {
-            iconImage.enabled = false;
+            newLine+=message;
         }
-        messageText.text = message;
-        // TODO: スクロールを一番下に移動させる処理を追加
-        // TODO: 古いログを一定数超えたら削除する処理を追加
-        StartCoroutine(ScrollToBottom());
-    }
-    // ログを一番下にスクロールさせるコルーチン
-    public IEnumerator ScrollToBottom()
-    {
-        // 1フレーム待機して、レイアウトが更新されるのを待つ
-        yield return new WaitForEndOfFrame();
-        if (logScrollRect != null)
+        terminalLogText.text+=newLine;
+        // 2. ウィンドウが開いているか閉じているかで挙動を変える
+        if(terminalWindow.activeSelf)
         {
-            // verticalNormalizedPositionはoが一番下
-            logScrollRect.verticalNormalizedPosition = 0f;
+            // ウィンドウが開いている場合、自動で一番下にスクロール
+            StartCoroutine(ForceScrollToBottom());
+        }
+        else
+        {
+            // ウィンドウが閉じている場合、未読バッジを表示
+            unreadBadge.SetActive(true);
+        }
+    }
+    // TerminalButton(LOGボタン)のOnClickに割り当てる
+    public void ToggleTerminal()
+    {
+        bool isActive=!terminalWindow.activeSelf;
+        terminalWindow.SetActive(isActive);
+        if(isActive)
+        {
+            // 開いた瞬間
+            unreadBadge.SetActive(false); // バッジを消す
+            StartCoroutine(ForceScrollToBottom()); // スクロール位置をリセット
+
+            // コマンド入力欄にフォーカスを合わせる（UX向上）
+            if(commandInput!=null)
+            {
+                commandInput.ActivateInputField();
+            }
+        }
+    }
+    // ログスクロールを一番下に移動するコルーチン
+    public IEnumerator ForceScrollToBottom()
+    {
+        // 1. まず1フレーム待ってレイアウト更新を完了させる
+        yield return new WaitForEndOfFrame();
+        // 2. レイアウトの強制更新
+        // TextMeshProの文字数による「折り返し（改行）」計算をここで確定させる
+        Canvas.ForceUpdateCanvases();
+         // 4. 完全に計算が終わった状態で、一番下にスクロール
+         if(terminalScrollRect!=null)
+        {
+            terminalScrollRect.verticalNormalizedPosition=0f;
         }
     }
     // ログをリセットするメソッド
     public void ResetLog()
     {
-        List<Transform> oldLogs = new List<Transform>();
-        if (logContentArea == null)
-        {
-            return;
-        }
-        foreach (Transform child in logContentArea)
-        {
-            oldLogs.Add(child);
-        }
-        foreach(Transform child in oldLogs)
-        {
-            child.SetParent(null);
-            Destroy(child.gameObject);
-        }
+        terminalLogText.text="";
+        AddLogMessage("--- NEW ROUND STARTED", null);
         // 必要であれば「Round X Start」のようなログをAddLogMessageで追加
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
