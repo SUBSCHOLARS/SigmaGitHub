@@ -300,15 +300,24 @@ public class UIManager : MonoBehaviour
         yield return new WaitForSeconds(2.0f); // 2秒間表示
         effectResultText.gameObject.SetActive(false);
     }
-    private string GetSectorIconName(CardSector sector)
+    private string GetSectorIconName(CardSector sector, CardEffect effect)
     {
         // Sprite Assetで設定したアイコン名を返す
+        switch(effect)
+        {
+            case CardEffect.Bribe: return "Refined_CardSectorAtlas_4";
+            case CardEffect.Audit: return "Refined_CardSectorAtlas_5";
+            case CardEffect.Censor: return "Refined_CardSectorAtlas_6";
+            case CardEffect.Interrogate: return "Refined_CardSectorAtlas_7";
+            case CardEffect.Reject: return "Refined_CardSectorAtlas_8";
+            case CardEffect.Suspend: return "Refined_CardSectorAtlas_9";
+        }
         switch(sector)
         {
-            case CardSector.Eye: return "CardSectorAtlas_0";
-            case CardSector.Chain: return "CardSectorAtlas_1";
-            case CardSector.Gear: return "CardSectorAtlas_2";
-            case CardSector.Mask: return "CardSectorAtlas_3";
+            case CardSector.Eye: return "Refined_CardSectorAtlas_0";
+            case CardSector.Chain: return "Refined_CardSectorAtlas_1";
+            case CardSector.Gear: return "Refined_CardSectorAtlas_2";
+            case CardSector.Mask: return "Refined_CardSectorAtlas_3";
             default: return "";
         }
     }
@@ -321,7 +330,7 @@ public class UIManager : MonoBehaviour
         // カード情報がある場合は。色付きテキストの代わりにスプライトを埋め込む
         if(cardInfo!=null)
         {
-            string iconName=GetSectorIconName(cardInfo.sector);
+            string iconName=GetSectorIconName(cardInfo.sector, cardInfo.effect);
             // スプライトタグを埋め込む
             string spriteTag=$"<sprite name=\"{iconName}\">";
             newLine+=$"{spriteTag} {message}";
