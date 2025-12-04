@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4225d8cb72d5c4a0bb6519732f34a999, type: 3}
+  m_Name: Silence
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardName: Silence
+  cardSprite: {fileID: 6533903776672825005, guid: e11c3074e86454a29b73b16a81d70a66, type: 3}
+  cardIcon: {fileID: 7178341657827451841, guid: 1a337cf7a146d4ec3ab1b563289c5aa8, type: 3}
+  sector: 4
+  effect: 7
+  numberValue: 11
+  handValue: 11

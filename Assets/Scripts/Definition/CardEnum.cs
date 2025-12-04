@@ -26,5 +26,7 @@ public enum CardEffect
     // ランダム1枚開示
     Censor,
     // 上下質問
-    Interrogate
+    Interrogate,
+    // パス
+    Silence
 }

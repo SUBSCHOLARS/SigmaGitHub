@@ -224,6 +224,7 @@ public class UIManager : MonoBehaviour
         {
             // 3. カードを表向きに生成
             GameObject cardObj=Instantiate(cardPrefab, surveyCardDisplayArea);
+            cardObj.transform.localPosition=Vector3.zero;
             cardObj.GetComponent<CardController>().Setup(randomCard);
             // マウス操作を無効化
             cardObj.GetComponent<Image>().raycastTarget=false;
@@ -305,19 +306,20 @@ public class UIManager : MonoBehaviour
         // Sprite Assetで設定したアイコン名を返す
         switch(effect)
         {
-            case CardEffect.Bribe: return "Refined_CardSectorAtlas_4";
-            case CardEffect.Audit: return "Refined_CardSectorAtlas_5";
-            case CardEffect.Censor: return "Refined_CardSectorAtlas_6";
-            case CardEffect.Interrogate: return "Refined_CardSectorAtlas_7";
-            case CardEffect.Reject: return "Refined_CardSectorAtlas_8";
-            case CardEffect.Suspend: return "Refined_CardSectorAtlas_9";
+            case CardEffect.Bribe: return "Refined_Silence_Added_CardSectorAtlas_4";
+            case CardEffect.Audit: return "Refined_Silence_Added_CardSectorAtlas_5";
+            case CardEffect.Censor: return "Refined_Silence_Added_CardSectorAtlas_6";
+            case CardEffect.Interrogate: return "Refined_Silence_Added_CardSectorAtlas_7";
+            case CardEffect.Reject: return "Refined_Silence_Added_CardSectorAtlas_8";
+            case CardEffect.Suspend: return "Refined_Silence_Added_CardSectorAtlas_9";
+            case CardEffect.Silence: return "Refined_Silence_Added_CardSectorAtlas_10";
         }
         switch(sector)
         {
-            case CardSector.Eye: return "Refined_CardSectorAtlas_0";
-            case CardSector.Chain: return "Refined_CardSectorAtlas_1";
-            case CardSector.Gear: return "Refined_CardSectorAtlas_2";
-            case CardSector.Mask: return "Refined_CardSectorAtlas_3";
+            case CardSector.Eye: return "Refined_Silence_Added_CardSectorAtlas_0";
+            case CardSector.Chain: return "Refined_Silence_Added_CardSectorAtlas_1";
+            case CardSector.Gear: return "Refined_Silence_Added_CardSectorAtlas_2";
+            case CardSector.Mask: return "Refined_Silence_Added_CardSectorAtlas_3";
             default: return "";
         }
     }

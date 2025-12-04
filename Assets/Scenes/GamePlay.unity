@@ -2793,7 +2793,7 @@ GameObject:
   - component: {fileID: 763512089}
   - component: {fileID: 763512088}
   m_Layer: 5
-  m_Name: SurvayPanel
+  m_Name: SurveyPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4928,7 +4928,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 100, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1406957000
 GameObject:
@@ -5354,7 +5354,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 11400000, guid: 5e031781382b0420b9816186e4e46cfa, type: 2}
+  m_spriteAsset: {fileID: 11400000, guid: a7f03881da95b49e8aefbdd84b63a20b, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: -1183493901

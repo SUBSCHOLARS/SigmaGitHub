@@ -53,15 +53,4 @@ public class CardController : MonoBehaviour
             transform.SetSiblingIndex(siblingIndex); // 元の重なり順に戻す
         }
     }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 }
