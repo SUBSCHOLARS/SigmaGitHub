@@ -239,10 +239,6 @@ public class GameManager : MonoBehaviour
         {
             return true;
         }
-        if(cardToPlay.effect==CardEffect.Silence)
-        {
-            return true;
-        }
         // 1. cardToPlay.effect == CardEffect.Bribe (賄賂) なら true
         if (cardToPlay.effect == CardEffect.Bribe ||
             cardToPlay.effect == CardEffect.Censor ||
