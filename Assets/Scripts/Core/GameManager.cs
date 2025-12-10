@@ -32,6 +32,8 @@ public class GameManager : MonoBehaviour
     private CardEffect pendingSurveyEffect = CardEffect.None;
     private int winningScore = 50; // 勝利に必要なスコア
     private int currentRound = 1; // 現在のラウンド
+    private Sprite initialSprite;
+    [SerializeField] private Sprite bribeSprite;
 
     void Awake()
     {
@@ -87,7 +89,7 @@ public class GameManager : MonoBehaviour
         }
         // プレイヤー（0番目）の手札をUIに反映
         UIManager.Instance.UpdateAllHandVisuals();
-        UIManager.Instance.UpdateCurrentTrend(currentTrendValue);
+        UIManager.Instance.UpdateCurrentTrend(initialSprite, currentTrendValue);
     }
 
     // Update is called once per frame
@@ -183,6 +185,7 @@ public class GameManager : MonoBehaviour
         {
             // 見つかった場合
             CardData firstCard = deck[firstCardIndex];
+            initialSprite= firstCard.cardIcon;
             deck.RemoveAt(firstCardIndex); // 見つけた場所から削除
             PlayCardToField(firstCard, gameMaster); // 最初のカードを場に出す
             Debug.Log("ゲーム開始！最初のカード: " + firstCard.cardName);
@@ -226,7 +229,7 @@ public class GameManager : MonoBehaviour
             isNextPlayWild = false;
         }
         // 場のトレンドが更新されたのでUIに反映
-        UIManager.Instance.UpdateCurrentTrend(currentTrendValue);
+        UIManager.Instance.UpdateCurrentTrend(card.cardIcon, currentTrendValue);
         Debug.Log("場に " + card.cardName + " が出されました。現在のトレンド: " + currentTrendValue);
         UIManager.Instance.UpdateFieldPileUI(card);
         UIManager.Instance.UpdateAllHandVisuals(); // ここで自動的にYourTrendも更新される
@@ -334,7 +337,7 @@ public class GameManager : MonoBehaviour
         Debug.Log($"Bribe: プレイヤーがトレンドを {currentTrendValue} に設定しました。");
 
         // 場のトレンドが更新されたのでUIに反映
-        UIManager.Instance.UpdateCurrentTrend(currentTrendValue);
+        UIManager.Instance.UpdateCurrentTrend(bribeSprite, currentTrendValue);
 
         UIManager.Instance.HideBribeSelectionUI();
 
@@ -456,7 +459,7 @@ public class GameManager : MonoBehaviour
                 currentTrendValue = chosenTrend;
                 Debug.Log($"Bribe: CPUがトレンドを{currentTrendValue} に設定しました。");
                 // 場のトレンドが更新されたのでUIに反映
-                UIManager.Instance.UpdateCurrentTrend(currentTrendValue);
+                UIManager.Instance.UpdateCurrentTrend(bribeSprite, currentTrendValue);
                 StartCoroutine(TurnTransitionRoutine(playedEffect));
             }
             else

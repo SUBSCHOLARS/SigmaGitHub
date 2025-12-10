@@ -68,6 +68,12 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI cpu2ScoreText; // CPU2ScoreTextをアタッチ
     public TextMeshProUGUI currentTrendText; // CurrentTrendTextをアタッチ
     public TextMeshProUGUI yourTrendText; // YourTrendTextをアタッチ
+    [Header("絵柄・数字表示")]
+    [SerializeField] private Image sectorIcon; // 絵柄アイコン表示用
+    [Header("検閲・尋問カードを出した際のUI")]
+    [SerializeField] private Sprite errorSprite; // ?の絵柄アイコン
+    [SerializeField] private Color normalColor=Color.white;
+    [SerializeField] private Color errorColor=Color.red;
     [Header("汎用")]
     public GameObject continueButton;
     void Awake()
@@ -762,11 +768,12 @@ public class UIManager : MonoBehaviour
         }
     }
     // 場のトレンドを更新するメソッド
-    public void UpdateCurrentTrend(int trendValue)
+    public void UpdateCurrentTrend(Sprite icon, int trendValue)
     {
-        if (currentTrendText != null)
+        if (currentTrendText != null && sectorIcon != null)
         {
             currentTrendText.text = $"TREND: {trendValue}";
+            sectorIcon.sprite = icon;
         }
     }
     // 勝利確認ボタンを表示/非表示にするメソッド
