@@ -15,6 +15,7 @@ MonoBehaviour:
   cardName: Gear_Suspend
   cardSprite: {fileID: -2231462214677881968, guid: df782e648eb6c4004b0c9bc2200e638c, type: 3}
   cardIcon: {fileID: 21300000, guid: 53719873aa14d45b8b7853374656abf5, type: 3}
+  rawSectorIcon: {fileID: 4658342076437320494, guid: a76277a260e424418ae8c982034e7f82, type: 3}
   sector: 2
   effect: 1
   numberValue: 10

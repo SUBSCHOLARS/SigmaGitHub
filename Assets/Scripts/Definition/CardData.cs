@@ -7,6 +7,7 @@ public class CardData : ScriptableObject
     public string cardName; // カード名
     public Sprite cardSprite; // 画像
     public Sprite cardIcon; // ログ表示用の小さなアイコン
+    public Sprite rawSectorIcon;
     [Header("ルール情報")]
     public CardSector sector; // スート（アイ、チェーン、ギア、マスク）
     public CardEffect effect; // 特殊効果（None, Suspend, Reject, Audit, Bribe, Censor, Interrogate）

@@ -15,6 +15,7 @@ MonoBehaviour:
   cardName: Mask_Suspend
   cardSprite: {fileID: -6543088085413894792, guid: 2580d859503874b0c942c435a8ed2147, type: 3}
   cardIcon: {fileID: 21300000, guid: 5103e6563000c4728b82f46960b79d8c, type: 3}
+  rawSectorIcon: {fileID: -3032423481802380067, guid: 66f988e3808dc48d7842c395e3b18a12, type: 3}
   sector: 3
   effect: 1
   numberValue: 10

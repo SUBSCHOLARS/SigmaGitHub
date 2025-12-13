@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4225d8cb72d5c4a0bb6519732f34a999, type: 3}
+  m_Name: Gear_Bribe
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardName: Gear_Bribe
+  cardSprite: {fileID: 4704422255676583422, guid: 7a9e291f119874651836847b97bbc604, type: 3}
+  cardIcon: {fileID: 6938428024278276195, guid: 9178a1d1738944515a67c00fc54fddbf, type: 3}
+  rawSectorIcon: {fileID: 4658342076437320494, guid: a76277a260e424418ae8c982034e7f82, type: 3}
+  sector: 2
+  effect: 4
+  numberValue: 0
+  handValue: 15

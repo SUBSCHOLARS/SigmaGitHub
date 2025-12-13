@@ -15,6 +15,7 @@ MonoBehaviour:
   cardName: Mask_Reject
   cardSprite: {fileID: 8127521252971018266, guid: cc6cd0ba1205d464db6f09036899a128, type: 3}
   cardIcon: {fileID: 21300000, guid: 315248dda4f24424c89d15e1faf90d06, type: 3}
+  rawSectorIcon: {fileID: -3032423481802380067, guid: 66f988e3808dc48d7842c395e3b18a12, type: 3}
   sector: 3
   effect: 2
   numberValue: 10

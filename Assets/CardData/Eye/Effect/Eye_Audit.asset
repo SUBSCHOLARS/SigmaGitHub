@@ -15,6 +15,7 @@ MonoBehaviour:
   cardName: Eye_Audit
   cardSprite: {fileID: 1601535589612220980, guid: 7aa941fcd8e39401a8b1be15eefde7a0, type: 3}
   cardIcon: {fileID: 21300000, guid: 8ed197e38e0fe426dab8eddb1f5fcc27, type: 3}
+  rawSectorIcon: {fileID: -630199938930177095, guid: 483323afb5a1e48fcad7a1629494bc19, type: 3}
   sector: 0
   effect: 3
   numberValue: 10

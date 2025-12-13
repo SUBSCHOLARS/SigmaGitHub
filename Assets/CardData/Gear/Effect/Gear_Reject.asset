@@ -15,6 +15,7 @@ MonoBehaviour:
   cardName: Gear_Reject
   cardSprite: {fileID: -7942001613715410866, guid: 9c1e823844f994b749897a836261c14b, type: 3}
   cardIcon: {fileID: 21300000, guid: 364d949f7cbb84b46b38430c3b9a1ee2, type: 3}
+  rawSectorIcon: {fileID: 4658342076437320494, guid: a76277a260e424418ae8c982034e7f82, type: 3}
   sector: 2
   effect: 2
   numberValue: 10

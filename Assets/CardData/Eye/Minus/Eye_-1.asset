@@ -15,6 +15,7 @@ MonoBehaviour:
   cardName: Eye_-1
   cardSprite: {fileID: -659254094923469901, guid: 705f4e9f0abdf49e0bece040ed79b0bc, type: 3}
   cardIcon: {fileID: 21300000, guid: aa1e34144d8ae477f91cbab625f99fea, type: 3}
+  rawSectorIcon: {fileID: -630199938930177095, guid: 483323afb5a1e48fcad7a1629494bc19, type: 3}
   sector: 0
   effect: 0
   numberValue: -1

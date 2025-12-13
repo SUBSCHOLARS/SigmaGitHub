@@ -15,6 +15,7 @@ MonoBehaviour:
   cardName: Chain_Reject
   cardSprite: {fileID: -8505375685105998717, guid: 18cd4d798aed643ff83a1acc7dd9bfc8, type: 3}
   cardIcon: {fileID: 21300000, guid: 572d3e21d30644dbf900cbae8086d1fc, type: 3}
+  rawSectorIcon: {fileID: -8836576340095815701, guid: f4bf796c9e23a42d4b85a92b84d85a4e, type: 3}
   sector: 1
   effect: 2
   numberValue: 10
