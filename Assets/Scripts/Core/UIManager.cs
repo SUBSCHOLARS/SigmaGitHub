@@ -72,10 +72,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Image sectorIcon; // 絵柄アイコン表示用
     [Header("検閲・尋問カードを出した際のUI")]
     [SerializeField] private Sprite errorSprite; // ?の絵柄アイコン
-    [SerializeField] private Color normalColor=Color.white;
-    [SerializeField] private Color errorColor=Color.red;
     [Header("汎用")]
     public GameObject continueButton;
+    [Header("スタンプエフェクト制御")]
+    public CardStampEffect fieldTopStampEffect;
     void Awake()
     {
         if (Instance == null)
@@ -581,10 +581,26 @@ public class UIManager : MonoBehaviour
             // リストの末尾(count-1)が最新のカード
             fieldCardTop.sprite = pile[count - 1].cardSprite;
             fieldCardTop.enabled = true;
+            // ここでスタンプ判定を行う
+            if(fieldTopStampEffect!=null)
+            {
+                if(cardData.effect==CardEffect.Bribe)
+                {
+                    fieldTopStampEffect.ActivateStamp(sectorIcon.sprite);
+                }
+                else
+                {
+                    fieldTopStampEffect.ResetStamp();
+                }
+            }
         }
         else
         {
             // 該当カードがなければ非表示
+            if(fieldTopStampEffect!=null)
+            {
+                fieldTopStampEffect.ResetStamp();
+            }
         }
         // 2. 1ターン前のカード
         if (count >= 2)
@@ -696,7 +712,7 @@ public class UIManager : MonoBehaviour
                 winnerNames += player.playerName + "\n"; // 複数勝利対応
             }
             // 表示する内容をリッチにする
-            string winReason = "";
+            string winReason;
             if (winType == WinType.TrendRide)
             {
                 winReason = "TREND RIDE";
@@ -774,6 +790,36 @@ public class UIManager : MonoBehaviour
         {
             currentTrendText.text = $"TREND: {trendValue}";
             sectorIcon.sprite = icon;
+        }
+    }
+    // Bribe用の場のトレンド更新&スタンプエフェクトメソッド
+    public void UpdateCurrentTrendWhenBribe(Sprite targetCardSprite, Sprite targetCardIcon, int trendValue)
+    {
+        // 1. 画面端のトレンド表示を更新
+        // ここでは、Bribeカード自体のアイコンではなく、
+        // 「Bribeによって変化した結果のコード（例: Gear 7）」のアイコンを表示するのがわかりやすい
+        if(currentTrendText != null && sectorIcon != null && targetCardIcon != null)
+        {
+            currentTrendText.text = $"TREND: {trendValue}";
+            sectorIcon.preserveAspect = true; // アスペクト比を維持
+            sectorIcon.sprite = targetCardIcon;
+        }
+        // 2. 場のカードの上にスタンプを押す
+        if(fieldTopStampEffect != null && targetCardSprite != null)
+        {
+            // 検索したカードを渡す
+            fieldTopStampEffect.ActivateStamp(targetCardSprite);
+        }
+    }
+    // Censor/Interrogate用の場のトレンド更新メソッド
+    public void UpdateCurrentTrendWhenSurvey()
+    {
+        if (currentTrendText != null && sectorIcon != null)
+        {
+            // トレンド値も不明にする
+            currentTrendText.text = $"TREND: ERROR";
+            // ?アイコンに変更
+            sectorIcon.sprite = errorSprite;
         }
     }
     // 勝利確認ボタンを表示/非表示にするメソッド

@@ -185,7 +185,7 @@ public class GameManager : MonoBehaviour
         {
             // 見つかった場合
             CardData firstCard = deck[firstCardIndex];
-            initialSprite= firstCard.cardIcon;
+            initialSprite= firstCard.rawSectorIcon;
             deck.RemoveAt(firstCardIndex); // 見つけた場所から削除
             PlayCardToField(firstCard, gameMaster); // 最初のカードを場に出す
             Debug.Log("ゲーム開始！最初のカード: " + firstCard.cardName);
@@ -221,16 +221,20 @@ public class GameManager : MonoBehaviour
         {
             // 次のプレイがワイルドになる
             isNextPlayWild = true;
+            Debug.Log("調査カードが出されました。次のプレイはワイルドになります。");
+            // 特殊な場合の場のUI更新を行う
+            UIManager.Instance.UpdateCurrentTrendWhenSurvey();
+            Debug.Log("場のUIを調査カード用に更新しました。");
         }
         else
         {
             // 場のトレンド（数字）を更新
             currentTrendValue = card.numberValue;
             isNextPlayWild = false;
+            // 場のトレンドが更新されたのでUIに反映
+            UIManager.Instance.UpdateCurrentTrend(card.rawSectorIcon, currentTrendValue);
+            Debug.Log("場に " + card.cardName + " が出されました。現在のトレンド: " + currentTrendValue);
         }
-        // 場のトレンドが更新されたのでUIに反映
-        UIManager.Instance.UpdateCurrentTrend(card.cardIcon, currentTrendValue);
-        Debug.Log("場に " + card.cardName + " が出されました。現在のトレンド: " + currentTrendValue);
         UIManager.Instance.UpdateFieldPileUI(card);
         UIManager.Instance.UpdateAllHandVisuals(); // ここで自動的にYourTrendも更新される
     }
@@ -336,8 +340,19 @@ public class GameManager : MonoBehaviour
         currentTrendValue = trend;
         Debug.Log($"Bribe: プレイヤーがトレンドを {currentTrendValue} に設定しました。");
 
-        // 場のトレンドが更新されたのでUIに反映
-        UIManager.Instance.UpdateCurrentTrend(bribeSprite, currentTrendValue);
+        // 現在場に出ているBribeカードの絵柄を取得
+        // PlayCardToFieldですでにcurrentCardOnFieldは更新されているはず
+        CardSector bribeSector=currentCardOnField.sector;
+        Debug.Log($"Bribe: {bribeSector} の数字 {currentTrendValue} を設定しました。");
+        // その絵柄かつ指定した数字のカードデータを検索して取得
+        CardData targetCard=GetCarddDataBySectorAndNumber(bribeSector, currentTrendValue);
+
+        // 画像が見つかればそれをUIに渡す（見つからなければnull）
+        Sprite stampSprite=(targetCard != null) ? targetCard.cardIcon: null;
+        Sprite stampIcon=(targetCard!=null) ? targetCard.rawSectorIcon: null;
+
+        // 場のトレンドが更新されたのでUIに反映（Bribe用）
+        UIManager.Instance.UpdateCurrentTrendWhenBribe(stampSprite, stampIcon, currentTrendValue);
 
         UIManager.Instance.HideBribeSelectionUI();
 
@@ -401,7 +416,7 @@ public class GameManager : MonoBehaviour
         // 5. マッチしなかった場合、効果処理とターン送り
         // 操作をロックし、効果処理コルーチン開始
         SetInputLock(true);
-        StartCoroutine(HandleCardEffectAndTransition(cardToPlay.effect));
+        StartCoroutine(HandleCardEffectAndTransition(cardToPlay));
     }
     // 効果なしでターンを終える時専用
     public void NextTurn()
@@ -447,20 +462,25 @@ public class GameManager : MonoBehaviour
             StartNextRound();
         }
     }
-    private IEnumerator HandleCardEffectAndTransition(CardEffect playedEffect)
+    private IEnumerator HandleCardEffectAndTransition(CardData playedCard)
     {
         // 1. カードを出した本人が実行する効果処理
         Player cardPlayer = players[currentPlayerIndex];
-        if (playedEffect == CardEffect.Bribe)
+        if (playedCard.effect == CardEffect.Bribe)
         {
             if (cardPlayer.isCPU)
             {
                 int chosenTrend = UnityEngine.Random.Range(1, 6); // AIはあとで賢くする
                 currentTrendValue = chosenTrend;
                 Debug.Log($"Bribe: CPUがトレンドを{currentTrendValue} に設定しました。");
+                // CPUの場合も同様に画像を取得して反映
+                CardSector bribeSector=playedCard.sector;
+                CardData targetCard=GetCarddDataBySectorAndNumber(bribeSector, currentTrendValue);
+                Sprite stampSprite=(targetCard != null) ? targetCard.cardIcon : null;
+                Sprite stampIcon=(targetCard!=null) ? targetCard.rawSectorIcon:null;
                 // 場のトレンドが更新されたのでUIに反映
-                UIManager.Instance.UpdateCurrentTrend(bribeSprite, currentTrendValue);
-                StartCoroutine(TurnTransitionRoutine(playedEffect));
+                UIManager.Instance.UpdateCurrentTrendWhenBribe(stampSprite, stampIcon, currentTrendValue);
+                StartCoroutine(TurnTransitionRoutine(playedCard.effect));
             }
             else
             {
@@ -471,9 +491,9 @@ public class GameManager : MonoBehaviour
                 yield break; // コルーチンを終了し、ボタン入力を終了し、ボタン入力を待つ
             }
         }
-        else if (playedEffect == CardEffect.Censor || playedEffect == CardEffect.Interrogate)
+        else if (playedCard.effect == CardEffect.Censor || playedCard.effect == CardEffect.Interrogate)
         {
-            pendingSurveyEffect = playedEffect;
+            pendingSurveyEffect = playedCard.effect;
             if (cardPlayer.isCPU)
             {
                 List<Player> possibleTargets=new List<Player>();
@@ -487,7 +507,7 @@ public class GameManager : MonoBehaviour
                 Player targetPlayer=possibleTargets[UnityEngine.Random.Range(0, possibleTargets.Count)];
                 Debug.Log($"[CPU] {cardPlayer.playerName}が{targetPlayer.playerName}をターゲットに選択");
                 // UIManagerのアニメーションコルーチンを呼び出して待機
-                if(playedEffect==CardEffect.Censor)
+                if(playedCard.effect==CardEffect.Censor)
                 {
                     yield return StartCoroutine(UIManager.Instance.ShowCensorAnimation(targetPlayer));
                 }
@@ -496,7 +516,7 @@ public class GameManager : MonoBehaviour
                     yield return StartCoroutine(UIManager.Instance.ShowInterrogateAnimation(targetPlayer));
                 }
                 // アニメーションが終わったら次のターンへ
-                StartCoroutine(TurnTransitionRoutine(playedEffect));
+                StartCoroutine(TurnTransitionRoutine(playedCard.effect));
                 yield break;
             }
             else // プレイヤーが使った場合
@@ -510,7 +530,7 @@ public class GameManager : MonoBehaviour
         {
             // 2. ターン遷移（Bribe/Censor/Interrogate 以外の場合）
             // 以前のNextTurn(playedEffect)のロジックをここに持ってくる
-            StartCoroutine(TurnTransitionRoutine(playedEffect));
+            StartCoroutine(TurnTransitionRoutine(playedCard.effect));
         }
     }
     // ターン遷移アニメーション用コルーチン
@@ -755,7 +775,7 @@ public class GameManager : MonoBehaviour
                 return;
             }
             // 効果処理コルーチンを呼ぶ
-            StartCoroutine(HandleCardEffectAndTransition(cardToPlay.effect));
+            StartCoroutine(HandleCardEffectAndTransition(cardToPlay));
         }
         // 4. 出せるカードがなかった場合
         else
@@ -914,6 +934,19 @@ public class GameManager : MonoBehaviour
         }
         // 4. UIを非表示
         UIManager.Instance.ShowContinueButton(false);
+    }
+    // 絵柄と数字を指定して、データベースから該当するカードデータを探すメソッド
+    public CardData GetCarddDataBySectorAndNumber(CardSector sector, int number)
+    {
+        foreach(CardData data in allCardDatabase)
+        {
+            // 効果なしカード（数字カード）で、かつセクターと数字が一致するものを探す
+            if(data.effect==CardEffect.None && data.sector==sector&&data.numberValue==number)
+            {
+                return data;
+            }
+        }
+        return null; // 見つからなかった場合
     }
 }
 public enum PlayerID
