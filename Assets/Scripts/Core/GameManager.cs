@@ -11,6 +11,12 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
     [Header("カードデータ")]
     public List<CardData> allCardDatabase;
+    [Header("Audio")]
+    public AudioClip drawSound;
+    public AudioClip playCardSound;
+    public AudioClip winSound;
+    public AudioClip trendRideSound;
+
     [Header("ゲームの状態")]
     public List<CardData> deck = new List<CardData>();
     public List<CardData> discardPile = new List<CardData>();
@@ -98,7 +104,7 @@ public class GameManager : MonoBehaviour
 
     }
     // 山札を初期化し、シャッフルするメソッド
-    public void SetUpDeck()
+    public virtual void SetUpDeck()
     {
         deck.Clear();
         discardPile.Clear();
@@ -155,6 +161,7 @@ public class GameManager : MonoBehaviour
             if (hand == players[0].hand)
             {
                 Debug.Log("プレイヤーが引いたカード: " + drawnCard.cardName);
+                SoundManager.Instance.PlaySound(drawSound);
             }
         }
     }
@@ -167,7 +174,7 @@ public class GameManager : MonoBehaviour
         return new List<CardData>(); // 該当なし。
     } 
     // ゲームの開始（最初の1枚を場に出す）
-    public void StartGame()
+    public virtual void StartGame()
     {
         // 山札から「効果なし(None)」のカードを「探す」
 
@@ -211,6 +218,7 @@ public class GameManager : MonoBehaviour
     {
         discardPile.Add(card);
         currentCardOnField = card;
+        SoundManager.Instance.PlaySound(playCardSound);
         // メッセージを作成
         string playerName = player.playerName;
         string message = $"{DateTime.Now} [{playerName}] played [{card.cardName}]";
@@ -279,7 +287,7 @@ public class GameManager : MonoBehaviour
         return false;
     }
     // DrawButtonから呼ばれるメソッド
-    public void PlayerDrawCard()
+    public virtual void PlayerDrawCard()
     {
         // 1. 操作ロックとターンをチェック
         if (isPlayerInputLocked)
@@ -369,7 +377,7 @@ public class GameManager : MonoBehaviour
         }
         return totalValue;
     }
-    public void TryPlayCard(CardData cardToPlay)
+    public virtual void TryPlayCard(CardData cardToPlay)
     {
         // 1. 操作ロックをチェック
         if (isPlayerInputLocked)
@@ -431,10 +439,15 @@ public class GameManager : MonoBehaviour
         UIManager.Instance.RevealAllHands();
         if (winType == WinType.TrendRide)
         {
+            SoundManager.Instance.PlaySound(trendRideSound);
             // 2. トレンドライドであった場合、アラートを表示して待機
             UIManager.Instance.ShowTrendRideAlert(true, winners, actionPlayer);
             yield return StartCoroutine(WaitForContinueCLick());
             UIManager.Instance.ShowTrendRideAlert(false, null, null);
+        }
+        else
+        {
+             SoundManager.Instance.PlaySound(winSound);
         }
         // 3. 勝利者パネルを表示してクリックを待つ
         UIManager.Instance.ShowWinnerAnimation(true, winners, winType, currentTrendValue);
@@ -649,6 +662,7 @@ public class GameManager : MonoBehaviour
         {
             // セルフマッチ
             winners[0].totalPoints += 20; // セルフマッチは20クレジット
+            winners[0].wins++;
             Debug.Log($"{winners[0].playerName} がセルフマッチで20クレジット獲得!");
         }
         else
@@ -657,6 +671,7 @@ public class GameManager : MonoBehaviour
             foreach (Player winner in winners)
             {
                 winner.totalPoints += 10; // 勝者は10クレジット
+                winner.wins++;
                 Debug.Log($"{winner.playerName}が10クレジット獲得!");
             }
         }
@@ -737,7 +752,7 @@ public class GameManager : MonoBehaviour
         StartNextRound();
     }
     // CPUのターンを実行する（NextTurnから呼ばれる）
-    private void ExecuteCPUTurn()
+    protected virtual void ExecuteCPUTurn()
     {
         // CPUが考えているように見せるため、数秒後に実行する
         Invoke("CPUTurnLogic", UnityEngine.Random.Range(2f, 4.5f));

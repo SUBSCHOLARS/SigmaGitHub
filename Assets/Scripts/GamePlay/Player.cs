@@ -13,5 +13,7 @@ public class Player
         this.isCPU = isCPU;
         this.playerName = playerName;
         this.totalPoints = totalPoints;
+        this.wins = 0; // 初期化
     }
+    public int wins;
 }

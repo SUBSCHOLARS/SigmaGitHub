@@ -725,9 +725,16 @@ public class UIManager : MonoBehaviour
                             $"WINNER: {winnerNames}\n" +
                             $"HAND VALUE: {winningHandValue}";
             winnerPanel.SetActive(true);
+            
+            // ポップアップアニメーション
+            winnerPanel.transform.localScale = Vector3.zero;
+            winnerPanel.transform.DOScale(1f, 0.5f).SetEase(Ease.OutBack);
+            // テキストの色をピカピカさせる
+            winnerText.DOColor(Color.yellow, 0.5f).SetLoops(-1, LoopType.Yoyo);
         }
         else
         {
+            winnerText.DOKill(); // アニメーション停止
             winnerPanel.SetActive(false);
         }
     }
@@ -752,9 +759,9 @@ public class UIManager : MonoBehaviour
         // TODO: スコアボードUIに各プレイヤーのtotalPointsを反映する
         if (players.Count >= 3)
         {
-            playerScoreText.text = $"P1 [{players[0].playerName}]: \n{players[0].totalPoints} CR";
-            cpu1ScoreText.text = $"P2 [{players[1].playerName}]: \n{players[1].totalPoints} CR";
-            cpu2ScoreText.text = $"P3 [{players[2].playerName}]: \n{players[2].totalPoints} CR";
+            playerScoreText.text = $"P1 [{players[0].playerName}]: \n{players[0].totalPoints} CR / {players[0].wins} Wins";
+            cpu1ScoreText.text = $"P2 [{players[1].playerName}]: \n{players[1].totalPoints} CR / {players[1].wins} Wins";
+            cpu2ScoreText.text = $"P3 [{players[2].playerName}]: \n{players[2].totalPoints} CR / {players[2].wins} Wins";
         }
         Debug.Log($"スコア更新: P1({players[0].totalPoints}), P2({players[1].totalPoints}), P3({players[2].totalPoints})");
     }
