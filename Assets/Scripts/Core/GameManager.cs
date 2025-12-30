@@ -156,12 +156,12 @@ public class GameManager : MonoBehaviour
             CardData drawnCard = deck[0];
             deck.RemoveAt(0);
             hand.Add(drawnCard);
+            SoundManager.Instance.PlaySound(drawSound);
 
             // (デバッグログはコンソールが荒れるので、必要な方だけ残します)
             if (hand == players[0].hand)
             {
                 Debug.Log("プレイヤーが引いたカード: " + drawnCard.cardName);
-                SoundManager.Instance.PlaySound(drawSound);
             }
         }
     }
