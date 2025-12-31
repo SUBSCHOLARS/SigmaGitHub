@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
     // どの調査カードが使われたか記憶する変数
     private CardEffect pendingSurveyEffect = CardEffect.None;
     private int winningScore = 50; // 勝利に必要なスコア
-    private int currentRound = 1; // 現在のラウンド
+    public int currentRound = 1; // 現在のラウンド
     private Sprite initialSprite;
     private const int FIRST_DECK_DISTRIBUTION_COUNT=21;
     private int distributionCount=0;
@@ -48,21 +48,29 @@ public class GameManager : MonoBehaviour
     {
         gameMaster = new Player(PlayerID.GameMaster, false, "GameMaster", 0);
         // シングルトンの設定
+        // シングルトンの設定
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // シーンを跨いでも消えない
+            // DontDestroyOnLoadは削除しました。シーン遷移ごとに新しいGameManagerを使用します。
         }
         else
         {
             Destroy(gameObject); // 既にインスタンスが存在する場合は破棄
         }
     }
-    void Start()
+    protected virtual void Start()
+    {
+        InitializeGame();
+    }
+
+    protected virtual void InitializeGame()
     {
         // 3人対戦のセットアップ
         players.Clear();
-        players.Add(new Player(PlayerID.Player, false, "Ian", 0)); // 0番目が人間
+        string pName = PersistentDataManager.Instance != null ? PersistentDataManager.Instance.PlayerName : "Ian";
+        
+        players.Add(new Player(PlayerID.Player, false, pName, 0)); // 0番目が人間
         players.Add(new Player(PlayerID.CPU, true, "CPU_1", 0));    // 1番目がCPU
         players.Add(new Player(PlayerID.CPU, true, "CPU_2", 0));    // 2番目がCPU
         // ゲーム開始時にUIを初期化
