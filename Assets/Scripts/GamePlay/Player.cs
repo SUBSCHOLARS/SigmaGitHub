@@ -7,6 +7,7 @@ public class Player
     public bool isCPU;
     public string playerName;
     public int totalPoints;
+    public int wins;
     public Player(PlayerID id, bool isCPU, string playerName, int totalPoints)
     {
         this.id = id;
@@ -15,5 +16,4 @@ public class Player
         this.totalPoints = totalPoints;
         this.wins = 0; // 初期化
     }
-    public int wins;
 }
