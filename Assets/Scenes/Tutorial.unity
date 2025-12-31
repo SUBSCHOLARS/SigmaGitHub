@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 44678134}
   - component: {fileID: 44678133}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: g
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -176,7 +176,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: G
+  m_text: g
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -600,7 +600,7 @@ GameObject:
   - component: {fileID: 130343079}
   - component: {fileID: 130343078}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: e
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -645,7 +645,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: E
+  m_text: e
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -1262,7 +1262,7 @@ GameObject:
   - component: {fileID: 188485428}
   - component: {fileID: 188485427}
   m_Layer: 5
-  m_Name: Key_C
+  m_Name: Key_c
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1981,7 +1981,7 @@ GameObject:
   - component: {fileID: 327371200}
   - component: {fileID: 327371199}
   m_Layer: 5
-  m_Name: Key_Y
+  m_Name: Key_y
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2101,7 +2101,7 @@ GameObject:
   - component: {fileID: 338803944}
   - component: {fileID: 338803943}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: f
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2146,7 +2146,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: F
+  m_text: f
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -2238,7 +2238,7 @@ GameObject:
   - component: {fileID: 341210351}
   - component: {fileID: 341210350}
   m_Layer: 5
-  m_Name: Key_P
+  m_Name: Key_p
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3044,7 +3044,7 @@ GameObject:
   - component: {fileID: 451301335}
   - component: {fileID: 451301334}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3089,9 +3089,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'A
-
-'
+  m_text: a
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -3754,7 +3752,7 @@ GameObject:
   - component: {fileID: 585198762}
   - component: {fileID: 585198761}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: m
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3799,7 +3797,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: M
+  m_text: m
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -3891,7 +3889,7 @@ GameObject:
   - component: {fileID: 603750158}
   - component: {fileID: 603750157}
   m_Layer: 5
-  m_Name: Key_J
+  m_Name: Key_j
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4358,7 +4356,7 @@ GameObject:
   - component: {fileID: 648345571}
   - component: {fileID: 648345570}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: p
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4403,7 +4401,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: P
+  m_text: p
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -4494,7 +4492,7 @@ GameObject:
   - component: {fileID: 659915714}
   - component: {fileID: 659915713}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: t
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4539,7 +4537,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: T
+  m_text: t
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -4969,7 +4967,7 @@ GameObject:
   - component: {fileID: 799846931}
   - component: {fileID: 799846930}
   m_Layer: 5
-  m_Name: Key_G
+  m_Name: Key_g
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5134,7 +5132,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Z
+  m_text: z
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -5561,7 +5559,7 @@ GameObject:
   - component: {fileID: 852865925}
   - component: {fileID: 852865924}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: b
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5606,9 +5604,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'B
-
-'
+  m_text: b
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -5699,7 +5695,7 @@ GameObject:
   - component: {fileID: 865768400}
   - component: {fileID: 865768399}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: s
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5744,7 +5740,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: S
+  m_text: s
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -5835,7 +5831,7 @@ GameObject:
   - component: {fileID: 871031496}
   - component: {fileID: 871031495}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: i
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5880,7 +5876,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: I
+  m_text: i
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -6108,7 +6104,7 @@ GameObject:
   - component: {fileID: 877641319}
   - component: {fileID: 877641318}
   m_Layer: 5
-  m_Name: Key_S
+  m_Name: Key_s
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6228,7 +6224,7 @@ GameObject:
   - component: {fileID: 878693073}
   - component: {fileID: 878693072}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: q
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6273,7 +6269,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Q
+  m_text: q
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -7137,7 +7133,7 @@ GameObject:
   - component: {fileID: 1066175276}
   - component: {fileID: 1066175275}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: r
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7182,7 +7178,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: R
+  m_text: r
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -8356,7 +8352,7 @@ GameObject:
   - component: {fileID: 1188177674}
   - component: {fileID: 1188177673}
   m_Layer: 5
-  m_Name: Key_L
+  m_Name: Key_l
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8476,7 +8472,7 @@ GameObject:
   - component: {fileID: 1210882708}
   - component: {fileID: 1210882707}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: y
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8521,7 +8517,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Y
+  m_text: y
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -8613,7 +8609,7 @@ GameObject:
   - component: {fileID: 1216195710}
   - component: {fileID: 1216195709}
   m_Layer: 5
-  m_Name: Key_F
+  m_Name: Key_f
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8861,7 +8857,7 @@ GameObject:
   - component: {fileID: 1303572097}
   - component: {fileID: 1303572096}
   m_Layer: 5
-  m_Name: Key_E
+  m_Name: Key_e
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8982,7 +8978,7 @@ GameObject:
   - component: {fileID: 1316380299}
   - component: {fileID: 1316380298}
   m_Layer: 5
-  m_Name: Key_K
+  m_Name: Key_k
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9103,7 +9099,7 @@ GameObject:
   - component: {fileID: 1326741553}
   - component: {fileID: 1326741552}
   m_Layer: 5
-  m_Name: Key_I
+  m_Name: Key_i
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9379,7 +9375,7 @@ GameObject:
   - component: {fileID: 1361562232}
   - component: {fileID: 1361562231}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: c
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9424,9 +9420,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'C
-
-'
+  m_text: c
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -9518,7 +9512,7 @@ GameObject:
   - component: {fileID: 1378619064}
   - component: {fileID: 1378619063}
   m_Layer: 5
-  m_Name: Key_N
+  m_Name: Key_n
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9638,7 +9632,7 @@ GameObject:
   - component: {fileID: 1393346491}
   - component: {fileID: 1393346490}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: w
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9683,7 +9677,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: W
+  m_text: w
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -9896,7 +9890,7 @@ GameObject:
   - component: {fileID: 1404841874}
   - component: {fileID: 1404841873}
   m_Layer: 5
-  m_Name: Key_R
+  m_Name: Key_r
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10348,7 +10342,7 @@ GameObject:
   - component: {fileID: 1425371282}
   - component: {fileID: 1425371281}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: v
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10393,7 +10387,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: V
+  m_text: v
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -10484,7 +10478,7 @@ GameObject:
   - component: {fileID: 1425909180}
   - component: {fileID: 1425909179}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: d
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10529,7 +10523,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: D
+  m_text: d
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -10765,7 +10759,7 @@ GameObject:
   - component: {fileID: 1448013008}
   - component: {fileID: 1448013007}
   m_Layer: 5
-  m_Name: Key_M
+  m_Name: Key_m
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11022,7 +11016,7 @@ GameObject:
   - component: {fileID: 1490805030}
   - component: {fileID: 1490805029}
   m_Layer: 5
-  m_Name: Key_U
+  m_Name: Key_u
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11223,7 +11217,7 @@ GameObject:
   - component: {fileID: 1514906312}
   - component: {fileID: 1514906311}
   m_Layer: 5
-  m_Name: Key_W
+  m_Name: Key_w
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11683,7 +11677,7 @@ GameObject:
   - component: {fileID: 1586877717}
   - component: {fileID: 1586877716}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: o
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11728,7 +11722,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: O
+  m_text: o
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -11819,7 +11813,7 @@ GameObject:
   - component: {fileID: 1593916815}
   - component: {fileID: 1593916814}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: u
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11864,7 +11858,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: U
+  m_text: u
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -12389,7 +12383,7 @@ GameObject:
   - component: {fileID: 1696673723}
   - component: {fileID: 1696673722}
   m_Layer: 5
-  m_Name: Key_T
+  m_Name: Key_t
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12645,7 +12639,7 @@ GameObject:
   - component: {fileID: 1703658928}
   - component: {fileID: 1703658927}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: h
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12690,7 +12684,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: H
+  m_text: h
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -13050,7 +13044,7 @@ GameObject:
   - component: {fileID: 1778714230}
   - component: {fileID: 1778714229}
   m_Layer: 5
-  m_Name: Key_V
+  m_Name: Key_v
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13171,7 +13165,7 @@ GameObject:
   - component: {fileID: 1790722690}
   - component: {fileID: 1790722689}
   m_Layer: 5
-  m_Name: Key_Z
+  m_Name: Key_z
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13388,32 +13382,32 @@ MonoBehaviour:
   backspaceButton: {fileID: 159042634}
   capsLockButton: {fileID: 1399481401}
   characterButtons:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 1900580416}
+  - {fileID: 1971144558}
+  - {fileID: 188485427}
+  - {fileID: 1908856107}
+  - {fileID: 1303572096}
+  - {fileID: 1216195709}
+  - {fileID: 799846930}
+  - {fileID: 2114212508}
+  - {fileID: 1326741552}
+  - {fileID: 603750157}
+  - {fileID: 1316380298}
+  - {fileID: 1188177673}
+  - {fileID: 1448013007}
+  - {fileID: 1378619063}
+  - {fileID: 1952454507}
+  - {fileID: 341210350}
+  - {fileID: 2108354241}
+  - {fileID: 1404841873}
+  - {fileID: 877641318}
+  - {fileID: 1696673722}
+  - {fileID: 1490805029}
+  - {fileID: 1778714229}
+  - {fileID: 1514906311}
+  - {fileID: 2136486610}
+  - {fileID: 327371199}
+  - {fileID: 1790722689}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -13495,7 +13489,7 @@ GameObject:
   - component: {fileID: 1870655281}
   - component: {fileID: 1870655280}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: k
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13540,7 +13534,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: K
+  m_text: k
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -13765,7 +13759,7 @@ GameObject:
   - component: {fileID: 1900580417}
   - component: {fileID: 1900580416}
   m_Layer: 5
-  m_Name: Key_A
+  m_Name: Key_a
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13886,7 +13880,7 @@ GameObject:
   - component: {fileID: 1908856108}
   - component: {fileID: 1908856107}
   m_Layer: 5
-  m_Name: Key_D
+  m_Name: Key_d
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14339,7 +14333,7 @@ GameObject:
   - component: {fileID: 1949947542}
   - component: {fileID: 1949947541}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: l
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14384,7 +14378,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: L
+  m_text: l
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -14475,7 +14469,7 @@ GameObject:
   - component: {fileID: 1950450846}
   - component: {fileID: 1950450845}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: j
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14520,7 +14514,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: J
+  m_text: j
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -14612,7 +14606,7 @@ GameObject:
   - component: {fileID: 1952454508}
   - component: {fileID: 1952454507}
   m_Layer: 5
-  m_Name: Key_O
+  m_Name: Key_o
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14865,7 +14859,7 @@ GameObject:
   - component: {fileID: 1971144559}
   - component: {fileID: 1971144558}
   m_Layer: 5
-  m_Name: Key_B
+  m_Name: Key_b
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14985,7 +14979,7 @@ GameObject:
   - component: {fileID: 1979381237}
   - component: {fileID: 1979381236}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: n
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15030,7 +15024,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: N
+  m_text: n
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -15196,7 +15190,7 @@ GameObject:
   - component: {fileID: 2004822525}
   - component: {fileID: 2004822524}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: x
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15241,7 +15235,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: X
+  m_text: x
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -15642,7 +15636,7 @@ GameObject:
   - component: {fileID: 2108354242}
   - component: {fileID: 2108354241}
   m_Layer: 5
-  m_Name: Key_Q
+  m_Name: Key_q
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15763,7 +15757,7 @@ GameObject:
   - component: {fileID: 2114212509}
   - component: {fileID: 2114212508}
   m_Layer: 5
-  m_Name: Key_H
+  m_Name: Key_h
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16016,7 +16010,7 @@ GameObject:
   - component: {fileID: 2136486611}
   - component: {fileID: 2136486610}
   m_Layer: 5
-  m_Name: Key_X
+  m_Name: Key_x
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
