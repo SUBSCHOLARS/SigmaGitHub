@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 public class TutorialGameManager : GameManager
 {
-    [Header("Tutorial UI Assets")]
+    [Header("チュートリアルUI構成")]
     [SerializeField] private GameObject dogSide; // NavigatorDog_0
     [SerializeField] private GameObject dogFront; // NavigatorDogFront_0
     [SerializeField] private GameObject tutorialCanvas;
@@ -16,17 +16,19 @@ public class TutorialGameManager : GameManager
     [SerializeField] private TextMeshProUGUI speechText;
     [SerializeField] private Button continueButton; // 画面全体のタップを検知する透明ボタンでも可
 
-    [Header("Input UI")]
+    [Header("入力UI")]
     [SerializeField] private GameObject nameInputPanel;
     [SerializeField] private VirtualKeyboard virtualKeyboard; // InputFieldの代わりにKeyboard
     [SerializeField] private TextMeshProUGUI nameErrorText;
 
-    [Header("Typewriter")]
+    [Header("タイプライター")]
     [SerializeField] private TypewriterEffect typewriter;
 
-    [Header("Tutorial State")]
+    [Header("チュートリアルの状態")]
     private int tutorialStep = 0;
     private bool isWaitingForClick = false;
+    [Header("サウンド")]
+    [SerializeField] private AudioClip dogNotice;
 
     // ゲーム状態制御用
     private List<string> tutorialDeckOrder = new List<string>
@@ -59,6 +61,7 @@ public class TutorialGameManager : GameManager
         // 2. 犬が気づく
         // TODO: ここでちょっとしたアニメーションやSEを入れると良い
         dogSide.SetActive(false);
+        SoundManager.Instance.PlaySound(dogNotice);
         dogFront.SetActive(true);
         yield return new WaitForSeconds(0.5f);
 
