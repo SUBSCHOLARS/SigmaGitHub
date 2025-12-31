@@ -18,8 +18,7 @@ public class TutorialGameManager : GameManager
 
     [Header("Input UI")]
     [SerializeField] private GameObject nameInputPanel;
-    [SerializeField] private TMP_InputField nameInputField;
-    [SerializeField] private Button confirmNameButton;
+    [SerializeField] private VirtualKeyboard virtualKeyboard; // InputFieldの代わりにKeyboard
     [SerializeField] private TextMeshProUGUI nameErrorText;
 
     [Header("Typewriter")]
@@ -73,10 +72,31 @@ public class TutorialGameManager : GameManager
         
         speechBubble.SetActive(false); // 一旦吹き出しを消す
         nameInputPanel.SetActive(true);
+        virtualKeyboard.ResetInput(); // 入力リセット
         
+        // キーボードのイベント登録
+        bool nameSubmitted = false;
+        System.Action<string> onNameSubmitAction = (name) => {
+             // バリデーション: 英語5文字以内
+            if (Regex.IsMatch(name, @"^[a-zA-Z]{1,5}$"))
+            {
+                PersistentDataManager.Instance.SetPlayerName(name);
+                nameErrorText.text = "";
+                nameSubmitted = true;
+            }
+            else
+            {
+                nameErrorText.text = "Error: Alpha only, max 5 chars.";
+            }
+        };
+        virtualKeyboard.OnConfirm = onNameSubmitAction;
+
         // 名前入力待ち
-        yield return new WaitUntil(() => PersistentDataManager.Instance.PlayerName != "Ian"); // Ian以外になるまで待つ（初期値Ian）
+        yield return new WaitUntil(() => nameSubmitted); 
         
+        // イベント解除（重複防止）
+        virtualKeyboard.OnConfirm = null;
+
         nameInputPanel.SetActive(false);
         speechBubble.SetActive(true);
 
@@ -182,23 +202,6 @@ public class TutorialGameManager : GameManager
                 }
             }
             yield return null;
-        }
-    }
-
-    // InputFieldのOnEndEditなどに割り当てる
-    public void OnNameSubmit()
-    {
-        string input = nameInputField.text;
-        // バリデーション: 英語5文字以内
-        if (Regex.IsMatch(input, @"^[a-zA-Z]{1,5}$"))
-        {
-            PersistentDataManager.Instance.SetPlayerName(input);
-            nameErrorText.text = "";
-        }
-        else
-        {
-            nameErrorText.text = "Error: Alpha only, max 5 chars.";
-            // 名前をリセットしない
         }
     }
 
