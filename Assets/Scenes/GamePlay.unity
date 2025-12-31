@@ -5318,7 +5318,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -6723,10 +6723,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c38de017aa993480d991f54ac2d63ee5, type: 2}
   - {fileID: 11400000, guid: f6c965e82d6e0407cb413fb080566820, type: 2}
   - {fileID: 11400000, guid: 688c95ac5655c4721ae1878b5e85d3e1, type: 2}
-  drawSound: {fileID: 8300000, guid: 7a4b07f4b25b642e997bec969c39aff7, type: 3}
+  drawSound: {fileID: 8300000, guid: c96d6c23a815e4e51bf8d1b1a722dd9c, type: 3}
   playCardSound: {fileID: 8300000, guid: 7a63a4602902a42f38ec2925153fec9e, type: 3}
   winSound: {fileID: 8300000, guid: 40b6ab62ba0b346c3aae463a5cfc7ded, type: 3}
   trendRideSound: {fileID: 8300000, guid: 40b6ab62ba0b346c3aae463a5cfc7ded, type: 3}
+  firstSetupSound: {fileID: 8300000, guid: b9895483ac66d454fb9f8aeab1f7e403, type: 3}
   deck: []
   discardPile: []
   isPlayerInputLocked: 0

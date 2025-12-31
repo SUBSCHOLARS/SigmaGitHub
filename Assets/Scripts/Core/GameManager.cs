@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     public AudioClip playCardSound;
     public AudioClip winSound;
     public AudioClip trendRideSound;
+    public AudioClip firstSetupSound;
 
     [Header("ゲームの状態")]
     public List<CardData> deck = new List<CardData>();
@@ -39,6 +40,8 @@ public class GameManager : MonoBehaviour
     private int winningScore = 50; // 勝利に必要なスコア
     private int currentRound = 1; // 現在のラウンド
     private Sprite initialSprite;
+    private const int FIRST_DECK_DISTRIBUTION_COUNT=21;
+    private int distributionCount=0;
     [SerializeField] private Sprite bribeSprite;
 
     void Awake()
@@ -68,6 +71,8 @@ public class GameManager : MonoBehaviour
         UIManager.Instance.UpdateScoreboard(players); // 初期スコア(0)を表示
         // ゲーム開始時に山札を準備
         SetUpDeck();
+        // カード配布の音を鳴らす
+        SoundManager.Instance.PlaySound(firstSetupSound);
         // 全プレイヤーにカードを配る
         // ラウンドロビンロジックを使用する
         // つまり、一人に一枚ずつ渡すという動作を7回繰り返すということ
@@ -76,6 +81,7 @@ public class GameManager : MonoBehaviour
             foreach(Player player in players) // 各プレイヤーに一枚ずつ
             {
                 DrawCards(player.hand, 1);
+                distributionCount++;
             }
         }
         // 最初の1枚を場に出す
@@ -96,12 +102,6 @@ public class GameManager : MonoBehaviour
         // プレイヤー（0番目）の手札をUIに反映
         UIManager.Instance.UpdateAllHandVisuals();
         UIManager.Instance.UpdateCurrentTrend(initialSprite, currentTrendValue);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
     // 山札を初期化し、シャッフルするメソッド
     public virtual void SetUpDeck()
@@ -156,7 +156,10 @@ public class GameManager : MonoBehaviour
             CardData drawnCard = deck[0];
             deck.RemoveAt(0);
             hand.Add(drawnCard);
-            SoundManager.Instance.PlaySound(drawSound);
+            if(distributionCount>FIRST_DECK_DISTRIBUTION_COUNT)
+            {
+                SoundManager.Instance.PlaySound(drawSound);
+            }
 
             // (デバッグログはコンソールが荒れるので、必要な方だけ残します)
             if (hand == players[0].hand)
