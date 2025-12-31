@@ -280,9 +280,9 @@ public class GameManager : MonoBehaviour
             return true;
         }
         // 5. cardToPlay.numberValue == currentTrendValue（数字が同じ）かつffectがReject, Audit, Suspendのいずれかであればtrue
-        if(cardToPlay.effect == CardEffect.Audit ||
+        if((cardToPlay.effect == CardEffect.Audit ||
             cardToPlay.effect == CardEffect.Reject ||
-            cardToPlay.effect == CardEffect.Suspend &&
+            cardToPlay.effect == CardEffect.Suspend) &&
             (cardToPlay.numberValue == currentTrendValue))
         {
             return true;
