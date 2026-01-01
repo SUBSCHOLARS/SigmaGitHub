@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Text.RegularExpressions;
+using UnityEngine.InputSystem;
 
 public class VirtualKeyboard : MonoBehaviour
 {
@@ -33,12 +34,28 @@ public class VirtualKeyboard : MonoBehaviour
     public System.Action<string> OnConfirm;
 
     private string currentInput = "";
-    private bool isCaps = true; // デフォルトは大文字
+    private bool isCaps = false; // デフォルトは大文字
 
     private void Start()
     {
         InitializeButtons();
         UpdateDisplay();
+    }
+
+    private void OnEnable()
+    {
+        if (Keyboard.current != null)
+        {
+            Keyboard.current.onTextInput += OnTextInput;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (Keyboard.current != null)
+        {
+            Keyboard.current.onTextInput -= OnTextInput;
+        }
     }
 
     private void Update()
@@ -91,34 +108,25 @@ public class VirtualKeyboard : MonoBehaviour
 
     private void HandlePhysicalInput()
     {
+        if (Keyboard.current == null) return;
+
         // バックスペース
-        if (Input.GetKeyDown(KeyCode.Backspace))
+        if (Keyboard.current.backspaceKey.wasPressedThisFrame)
         {
             OnBackspace();
         }
         // Enter
-        else if (Input.GetKeyDown(KeyCode.Return))
+        else if (Keyboard.current.enterKey.wasPressedThisFrame || Keyboard.current.numpadEnterKey.wasPressedThisFrame)
         {
             OnConfirmPress();
         }
-        else
+    }
+
+    private void OnTextInput(char c)
+    {
+        if (char.IsLetter(c))
         {
-            // 文字入力
-            string input = Input.inputString;
-            if (!string.IsNullOrEmpty(input))
-            {
-                foreach (char c in input)
-                {
-                    if (char.IsLetter(c)) // アルファベットのみ
-                    {
-                        // 物理キーボードの入力は大文字小文字をそのまま反映するが、
-                        // 仮想キーボードの状態(isCaps)に合わせるか、物理入力を優先するか。
-                        // ここでは「物理入力はそのまま」受け付け、仮想キーボードのCaps設定は無視する（あるいは同期させる）
-                        // 仕様書には「英語5文字まで」とあるので、大文字小文字は区別する前提で追加する。
-                        AddCharacter(c.ToString()); 
-                    }
-                }
-            }
+            AddCharacter(c.ToString());
         }
     }
 

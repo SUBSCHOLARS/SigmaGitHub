@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Text.RegularExpressions;
+using UnityEngine.InputSystem;
 
 public class TutorialGameManager : GameManager
 {
@@ -193,7 +194,7 @@ public class TutorialGameManager : GameManager
         // クリック待ち（タイピング中はスキップ、完了後は次へ）
         while(isWaitingForClick)
         {
-            if(Input.GetMouseButtonDown(0))
+            if(Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
             {
                 if(typewriter.IsTyping)
                 {
