@@ -1573,7 +1573,7 @@ GameObject:
   - component: {fileID: 259976808}
   - component: {fileID: 259976807}
   m_Layer: 5
-  m_Name: TargetSeleectionPanel
+  m_Name: TargetSelectionPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1982,6 +1982,11 @@ MonoBehaviour:
   nameErrorText: {fileID: 612045640}
   typewriter: {fileID: 433041819}
   dogNotice: {fileID: 8300000, guid: e69c7a613dfd349c2aab3259182e4a7b, type: 3}
+  roundText: {fileID: 449989649}
+  scoreBoardPanel: {fileID: 73119776}
+  currentTrendText: {fileID: 1457230951}
+  yourTrendText: {fileID: 1093734476}
+  statusPanel: {fileID: 1121527023}
 --- !u!4 &297428467
 Transform:
   m_ObjectHideFlags: 0
@@ -7555,7 +7560,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpeechBubbleResizer
   bubbleBackground: {fileID: 1109174799}
   textComponent: {fileID: 433041817}
-  padding: {x: 30, y: 20}
+  padding: {x: 30, y: 30}
   minSize: {x: 100, y: 50}
   maxWidth: 250
   continueButton: {fileID: 1416606668}

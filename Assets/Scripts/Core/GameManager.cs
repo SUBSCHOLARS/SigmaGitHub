@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour
     private int currentPlayerIndex = 0;
     private bool isTurnClockwise = true; // ターン進行方向（Reject用）
     public bool isPlayerInputLocked = false; // 操作ロック用のフラグ
-    private bool isWaitingForWinConfirmation = false;
+    protected bool isWaitingForWinConfirmation = false;
     private bool isNextPlayWild = false;
     private bool isWaitingForContinueClick = false;
     private Player gameMaster;
