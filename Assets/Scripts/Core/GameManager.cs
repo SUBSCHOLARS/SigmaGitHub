@@ -39,7 +39,7 @@ public class GameManager : MonoBehaviour
     private CardEffect pendingSurveyEffect = CardEffect.None;
     private int winningScore = 50; // 勝利に必要なスコア
     public int currentRound = 1; // 現在のラウンド
-    private Sprite initialSprite;
+    protected Sprite initialSprite;
     private const int FIRST_DECK_DISTRIBUTION_COUNT=21;
     private int distributionCount=0;
     [SerializeField] private Sprite bribeSprite;
@@ -52,7 +52,7 @@ public class GameManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            // DontDestroyOnLoadは削除しました。シーン遷移ごとに新しいGameManagerを使用します。
+            // DontDestroyOnLoadは削除。シーン遷移ごとに新しいGameManagerを使用される。
         }
         else
         {

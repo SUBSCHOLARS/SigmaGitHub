@@ -31,6 +31,8 @@ public class TutorialGameManager : GameManager
     [Header("サウンド")]
     [SerializeField] private AudioClip dogNotice;
 
+    private Player tutorialMaster=new Player(PlayerID.GameMaster, false, "TutorialMaster", 0);
+
     // ゲーム状態制御用
     private List<string> tutorialDeckOrder = new List<string>
     {
@@ -119,7 +121,7 @@ public class TutorialGameManager : GameManager
 
         // 6. ドローの練習
         // 矢印などで強調表示するとベスト
-        yield return StartCoroutine(ShowDialogue("まずは手札を増やす必要がある。\n右下の「DRAW」ボタンを押して、カードを引いてみてくれ。"));
+        yield return StartCoroutine(ShowDialogue("まずは手札を増やしてみよう。\n右上の山札から「DRAW」ボタンを押して、カードを引いてみてくれ。"));
         
         isPlayerInputLocked = false; // ロック解除
         UIManager.Instance.SetPlayerControlsActive(true);
@@ -178,7 +180,7 @@ public class TutorialGameManager : GameManager
         // StartGame()の代わりに手動で場に出す
         // CardData startCard = ...;
         // PlayCardToField(startCard, ...);
-        // base.StartGame(); // ランダムスタート（後で調整）
+        StartGame(); // ランダムスタート（後で調整）
         
         UIManager.Instance.UpdateAllHandVisuals();
     }
@@ -188,6 +190,14 @@ public class TutorialGameManager : GameManager
        discardPile.Clear();
        deck.AddRange(allCardDatabase);
        UIManager.Instance.UpdateDeckVisual(deck.Count);
+    }
+    public override void StartGame()
+    {
+        CardData firstCard = deck[0];
+        initialSprite= firstCard.rawSectorIcon;
+        deck.RemoveAt(0); // 一番上を削除
+        PlayCardToField(firstCard, tutorialMaster); // 最初のカードを場に出す
+        Debug.Log("ゲーム開始！最初のカード: " + firstCard.cardName);
     }
 
     // ---------------------------------------------------------
