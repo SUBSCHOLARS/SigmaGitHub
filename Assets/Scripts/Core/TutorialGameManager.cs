@@ -39,16 +39,6 @@ public class TutorialGameManager : GameManager
 
     private Player tutorialMaster=new Player(PlayerID.GameMaster, false, "TutorialMaster", 0);
 
-    // ゲーム状態制御用
-    private List<string> tutorialDeckOrder = new List<string>
-    {
-        // プレイヤーに引かせるカード: 簡単な数字合わせ用
-        "Eye_5", "Gear_5", // 山札の上から順
-        // CPUに引かせるカード
-        "Mask_1", "Chain_1",
-        // 以降はランダムで良いが、今回は固定
-    };
-
     protected override void InitializeGame()
     {
         // GameManagerのStart()から呼ばれるが、何もしない（手動で制御するため）
@@ -82,11 +72,12 @@ public class TutorialGameManager : GameManager
 
         // 3. 自己紹介
         speechBubble.SetActive(true);
-        yield return StartCoroutine(ShowDialogue("...おや？\n見かけない顔だね。新入りかい？"));
+        yield return StartCoroutine(ShowDialogue("..."));
+        yield return StartCoroutine(ShowDialogue("やあ。"));
         yield return StartCoroutine(ShowDialogue("私の名前は...まあ、好きに呼んでくれ。\nこの端末のナビゲーターのようなものさ。"));
 
         // 4. 名前入力
-        yield return StartCoroutine(ShowDialogue("君の名前を教えてくれないか？\n管理局のデータベースに登録する必要があるんだ。"));
+        yield return StartCoroutine(ShowDialogue("君の名前を教えてくれないか？\nデータベースに登録する必要があるんだ。"));
         
         speechBubble.SetActive(false); // 一旦吹き出しを消す
         nameInputPanel.SetActive(true);
@@ -120,54 +111,62 @@ public class TutorialGameManager : GameManager
 
         string pName = PersistentDataManager.Instance.PlayerName;
         yield return StartCoroutine(ShowDialogue($"なるほど... {pName} だね。\n悪くない名前だ。"));
+        yield return StartCoroutine(ShowDialogue("おっと。"));
+        yield return StartCoroutine(ShowDialogue("もちろんこの名前は悪用なんてしないさ。\nただゲームのユーザー名にするだけだよ。"));
 
         // 5. ゲーム開始準備
-        yield return StartCoroutine(ShowDialogue("さて、早速だが「ゲーム」の時間だ。"));
-        yield return StartCoroutine(ShowDialogue("この世界で生き残るための、唯一の手段を教えてやろう。"));
+        // ロードマップに従い、世界観（皮肉）と「ダウンロード」設定を反映
+        yield return StartCoroutine(ShowDialogue("丁度いいタイミングだったな。\n数日前から、管理局のファイアウォールがダウンしていただろう?"));
+        yield return StartCoroutine(ShowDialogue("もう復旧したようだが、君を含め何人かがこのゲームをダウンロードしたようだね。"));
+        yield return StartCoroutine(ShowDialogue("早速ゲームを始めようじゃないか。"));
 
         roundText.SetActive(true);
         scoreBoardPanel.SetActive(true);
         currentTrendText.SetActive(true);
         yourTrendText.SetActive(true);
         statusPanel.SetActive(true);
+        
         // ここで実際のゲーム初期化処理（2人対戦）
         SetupTutorialGame();
 
-        yield return StartCoroutine(ShowDialogue("画面下にあるのが君の「社会的価値」...手札だ。\n中央にある数字が、管理局の定める「トレンド」だ。"));
-        yield return StartCoroutine(ShowDialogue("君の目的は簡単だ。\n自分の価値（手札の合計）を、トレンドに適合させること。"));
-        yield return StartCoroutine(ShowDialogue("これを **「マッチ」** と呼ぶ。\n体制に適合できない者は...どうなるか想像がつくだろう？"));
+        yield return StartCoroutine(ShowDialogue("画面下にあるのが君の「社会的価値」...手札となる。\n中央にある数字が、「トレンド」だ。"));
+        yield return StartCoroutine(ShowDialogue("このゲームのルールは単純さ。\n「トレンドに迎合すること」。それだけだよ。"));
 
-        // 6. ドローの練習
-        // 現在の状態: P1手札(Eye_1, Mask_2 = 3), トレンド(Gear_10 = 10) -> 不一致
-        yield return StartCoroutine(ShowDialogue("...今の君の価値は「3」だ。\nトレンドは「10」。全く足りていないな。"));
-        yield return StartCoroutine(ShowDialogue("何、心配することはない。\n価値が足りないなら、外部から調達すればいい。"));
-        yield return StartCoroutine(ShowDialogue("右上の山札からカードを引け。\nこれを **「ドロー」** と呼ぶ。"));
+        // 6. ドローの練習 (Turn 1)
+        // 状態: P1手札[Eye_2] (Sum 2), Field[Mask_6] (Trend 6) -> 不一致
+        yield return StartCoroutine(ShowDialogue("...今の君の価値は「2」。トレンドは「6」。\n全く一致していない。これでは粛清対象だね。"));
+        yield return StartCoroutine(ShowDialogue("手札の中に、場のトレンドと絵柄か数字が合うカードもない。\nこういう時は「ドロー」するしかない。"));
+        yield return StartCoroutine(ShowDialogue("右の山札からカードを引くんだ。\n...ただし、引いたらそのターンは何もできずに終わる。"));
 
         isPlayerInputLocked = false; // ロック解除
         UIManager.Instance.SetPlayerControlsActive(true);
         tutorialStep = 1; // ドロー待ち
 
-        int previousCount = players[0].hand.Count;
-        yield return new WaitUntil(() => players[0].hand.Count > previousCount); // 手札が増えるのを待つ
-        
-        // カードを引いた後
-        // P1手札: Eye_1, Mask_2, Gear_5 (Sum 8) -> まだ10ではない
-        isPlayerInputLocked = true;
-        yield return StartCoroutine(ShowDialogue("ふむ、カードを引いたか。\n...だが、それでもまだ合計は「8」。トレンドの「10」には届かない。"));
-        yield return StartCoroutine(ShowDialogue("こういう時は、手札を出してトレンドそのものを操作するんだ。"));
-        yield return StartCoroutine(ShowDialogue("トレンドと同じ「絵柄」か「数字」のカードなら場に出せる。\n今引いた **「Gear_5」** を出してみろ。"));
+        // 手番がCPUに移るのを待つ（プレイヤーがドローするとNextTurn経由でCPUターンになる）
+        yield return new WaitUntil(() => players[currentPlayerIndex].isCPU); 
 
-        // 7. カードプレイの練習
-        tutorialStep = 2; // プレイ待ち
-        isPlayerInputLocked = false;
-        
-        int previousHandCount = players[0].hand.Count;
-        yield return new WaitUntil(() => players[0].hand.Count < previousHandCount); // 手札が減るのを待つ
-        
-        // P1が出した: Gear_5 -> トレンド 5
+        // 7. CPUプレイ (Turn 2)
         isPlayerInputLocked = true;
-        yield return StartCoroutine(ShowDialogue("そうだ。\nこれでトレンドは「5」に書き換わった。"));
-        yield return StartCoroutine(ShowDialogue("カードを出せば、自分の手番は終了する。\n次は私の番だ。"));
+        yield return StartCoroutine(ShowDialogue("カードを引いてターン終了...。\n次は私の番だね。"));
+        
+        // CPUアクション実行
+        CallCPUTurnAction();
+        
+        // CPUがMask_2を出して、トレンドが2になるのを待つ。
+        // CPUのカードプレイ後、NextTurnで再びプレイヤー(index 0)のターンになるはず。
+        yield return new WaitUntil(() => players[currentPlayerIndex] == players[0]);
+
+        // 8. 勝利 (Turn 3: Self Match)
+        // 状態: P1手札[Eye_2, Gear_2] (Sum 4). Trend 2.
+        isPlayerInputLocked = true;
+        yield return StartCoroutine(ShowDialogue("私が「Mask_2」を出したことで、トレンドは「2」に変わった。"));
+        yield return StartCoroutine(ShowDialogue("では君の手札をよく見てくれ。「2」と「2」...合計「4」だ。"));
+        yield return StartCoroutine(ShowDialogue("ここで「Eye_2」を出せばどうなる？\nトレンドは「2」になる。君の手元に残る「Gear_2」の価値も「2」。"));
+        yield return StartCoroutine(ShowDialogue("出したカードによる新しいトレンドと、残った手札の合計値が一致する。\nこれを **「セルフマッチ」** と呼ぶ。"));
+        yield return StartCoroutine(ShowDialogue("これこそがこのゲームのゴール。\nさあ、カードを出してマッチしてみせろ。"));
+
+        tutorialStep = 3; // 勝利プレイ待ち
+        isPlayerInputLocked = false;
 
         // CPU (DOG) のターン
         CallCPUTurnAction();
@@ -181,8 +180,7 @@ public class TutorialGameManager : GameManager
         yield return StartCoroutine(ShowDialogue("私がカードを出したことで、トレンドは「3」になったな。"));
         yield return StartCoroutine(ShowDialogue("...気づいたか？\n君の残りの手札を見てみろ。"));
         yield return StartCoroutine(ShowDialogue("1と2...合計は「3」。\n今のトレンドと完全に一致している。"));
-        yield return StartCoroutine(ShowDialogue("この状態でカードを出せば、君は勝利する。\nこれを **「セルフマッチ」** と呼ぶ。"));
-        yield return StartCoroutine(ShowDialogue("さあ、どちらでもいい。カードを出して証明してみせろ。\n君がこの世界に適合できる人間であることを。"));
+        yield return StartCoroutine(ShowDialogue("この状態でカードを出せば、君は勝利する。\nこれを **「トレンドライド」** と呼ぶ。"));
 
         isPlayerInputLocked = false;
         // マッチ判定はGameManager側で行われ、勝利演出が出るはず
@@ -192,10 +190,21 @@ public class TutorialGameManager : GameManager
          // 9. エンディング
         yield return new WaitForSeconds(2.0f); // 勝利演出の余韻
         yield return StartCoroutine(ShowDialogue("...見事だ。\nそれがこのゲーム...『ΣIGMA』の基本だ。"));
-        yield return StartCoroutine(ShowDialogue("トレンドを見極め、利用し、そして最後には出し抜く。\nそれができなければ、君も前の被験者たちと同じ末路を辿るだろう。"));
-        yield return StartCoroutine(ShowDialogue("...ああ、言い忘れていたな。"));
-        yield return StartCoroutine(ShowDialogue("このアプリケーションは、なぜかアンインストールできないらしい。\n...君が「適合者」として認められるまで、逃げ場はないということさ。"));
-        
+        yield return StartCoroutine(ShowDialogue("他にもいろいろカードがあるけど、\n取り敢えず「セルフマッチ」と「トレンドライド」だけ覚えておいてくれ。"));
+        yield return StartCoroutine(ShowDialogue("..."));
+        yield return StartCoroutine(ShowDialogue("「このゲーム」そのものについて少し話しておこうか。"));
+        yield return StartCoroutine(ShowDialogue("君もこの世界の住人だ。\n管理局というものはすでにご存知だろう。"));
+        yield return StartCoroutine(ShowDialogue("ではその「管理局」が世間の流行を操作しているという噂は知っているかな？"));
+        yield return StartCoroutine(ShowDialogue("ファッションから料理、果ては国際間の関係、人種まで..."));
+        yield return StartCoroutine(ShowDialogue("そしてそんな世間の風潮に適合している市民を奴らは「評価」しているらしい。"));
+        yield return StartCoroutine(ShowDialogue("これはそんな管理局の奴らを風刺するために作られたゲームソフトなのさ。"));
+        yield return StartCoroutine(ShowDialogue("ちなみに制作者は国家転覆未遂かなんかで粛清済みらしい。"));
+        yield return StartCoroutine(ShowDialogue("おっと。怖がらせちゃったかな？"));
+        yield return StartCoroutine(ShowDialogue("安心しなって。\nこのゲームは一度ローカルにダウンロードすればうまい具合に存在を隠してくれる。"));
+        yield return StartCoroutine(ShowDialogue("たとえあっちから支給されたコンピュータでも、ね。"));
+        yield return StartCoroutine(ShowDialogue("ま、気が済むまで遊んでみなよ。"));
+        yield return StartCoroutine(ShowDialogue("トレンドを見極め、利用し、そして最後には出し抜く。"));
+        yield return StartCoroutine(ShowDialogue("さあ、どちらでもいい。カードを出して証明してみせろ。\n君がこの世界に適合できる人間であることを。"));
         yield return StartCoroutine(ShowDialogue("健闘を祈るよ。\n...せいぜい、私を楽しませてくれ。"));
 
         // ロビーに戻るボタンなどを表示
@@ -218,25 +227,25 @@ public class TutorialGameManager : GameManager
         // デッキ構築
         SetUpDeck();
 
-        // 手札のリグ（固定）
-        // P1 (Player): Eye_1, Mask_2 (Sum 3) -> Trend 10に対して無力
-        // P2 (Dog): Gear_3 (Sum 3) -> Trend 10に対して無力だが、後で使う
+        // 手札のリグ（固定）- ロードマップ変更（最大値6に対応、ペア勝利シナリオ）
+        // P1 (Player): Eye_2 (Sum 2) -> Trend 6 (Mask_6) に合わない
+        // P2 (Dog): Mask_2 (Sum 2) -> FieldのMask_6にSuitが合う
         
         players[0].hand.Clear();
-        players[0].hand.Add(GetCard("Eye_1"));
-        players[0].hand.Add(GetCard("Mask_2"));
+        players[0].hand.Add(GetCard("Eye_2"));
         
         players[1].hand.Clear();
-        players[1].hand.Add(GetCard("Gear_3"));
+        players[1].hand.Add(GetCard("Mask_2")); // 後で出す用
 
-        // フィールド初期化: Gear_10 (Trend 10)
-        // StartGameを呼ぶとdeck[0]が使われてしまうので、手動でセットする
-        CardData startCard = GetCard("Gear_10");
-        // デッキに含まれているなら削除しておく（重複防止）
-        deck.Remove(startCard); 
+        // フィールド初期化: Mask_6 (Trend 6)
+        CardData startCard = GetCard("Mask_6"); 
         
+        if(startCard==null) startCard = GetCard("Mask_5"); // フォールバック
+
+        deck.Remove(startCard); 
         PlayCardToField(startCard, tutorialMaster);
         initialSprite = startCard.rawSectorIcon;
+        Debug.Log("ゲーム開始！最初のカード: " + startCard.cardName);
 
         UIManager.Instance.UpdateAllHandVisuals();
     }
@@ -252,9 +261,9 @@ public class TutorialGameManager : GameManager
        // 必要なカードリスト
        string[] riggedDeckList = {
            // --- 以下、山札（上から順） ---
-           "Gear_5",  // プレイヤーが最初に引くカード (Step 1)
-           "Reject_10", // 予備
-           "Audit_10", // 予備
+           "Gear_2",  // プレイヤーが最初に引くカード (Step 1)
+           "Chain_Reject", // 予備
+           "Mask_Audit", // 予備
            // ... その他適当なカード
        };
        
@@ -274,11 +283,10 @@ public class TutorialGameManager : GameManager
        
        deck = riggedDeck;
        UIManager.Instance.UpdateDeckVisual(deck.Count);
-       CardData firstCard = deck[0];
-       initialSprite= firstCard.rawSectorIcon;
-       deck.RemoveAt(0);
-       PlayCardToField(firstCard, tutorialMaster);
-       Debug.Log("ゲーム開始！最初のカード: " + firstCard.cardName);
+    //    CardData firstCard = deck[0];
+    //    initialSprite= firstCard.rawSectorIcon;
+    //    deck.RemoveAt(0);
+    //    PlayCardToField(firstCard, tutorialMaster);
     }
 
     // デッキから特定のカードを検索して取得するヘルパー
@@ -324,8 +332,8 @@ public class TutorialGameManager : GameManager
     // ---------------------------------------------------------
     protected override void ExecuteCPUTurn()
     {
-        // チュートリアルでは何もしない
-        // 明示的にCallCPUTurnActionから呼ぶか、ここでの処理を空にする
+        // チュートリアルでは何もしない（GameManagerからの自動呼び出しを無視）
+        // CallCPUTurnAction() によって手動で動かす
         Debug.Log("CPU Turn blocked by Tutorial Manager");
     }
 
@@ -340,22 +348,21 @@ public class TutorialGameManager : GameManager
         Player dog = players[1];
         yield return new WaitForSeconds(1.0f);
         
-        // 決め打ちでカードを出す（Gear_3を想定）
+        // 決め打ちでカードを出す（Mask_2を想定）
         // 手札から探す
-        CardData cardToPlay = dog.hand.Find(c => c.cardName == "Gear_3");
-        if(cardToPlay == null) cardToPlay = dog.hand[0]; // 万が一のためのフォールバック
+        CardData cardToPlay = dog.hand.Find(c => c.cardName == "Mask_2");
+        if(cardToPlay == null) cardToPlay = dog.hand[0]; 
 
-        yield return StartCoroutine(ShowDialogue("私の番だ。見ていろ。"));
-        yield return StartCoroutine(ShowDialogue("「トレンド」に合わせる...これこそが優秀な市民の振る舞いだ。"));
+        // yield return StartCoroutine(ShowDialogue("私の番だな。見ていろ。"));
+        // yield return StartCoroutine(ShowDialogue("体制側が提示した「トレンド」に合わせる...。\nこれこそが、この腐敗した社会での模範的振る舞いだ。"));
 
         dog.hand.Remove(cardToPlay);
         PlayCardToField(cardToPlay, dog);
-
-        // CPUターンが終わったらプレイヤーのターンへ
-        // NextTurn()はPlayCardToField内で呼ばれるが、trendRideチェック等が入るので
-        // ここは通常通り流して良いが、TutorialStepを進める必要がある
-        tutorialStep = 4; // 勝利フェーズへ
+        NextTurn();
+        // PlayCardToField内でNextTurnが呼ばれ、再度ExecuteCPUTurnが呼ばれるが、
+        // Overrideしているので何も起きず、制御はここ（TutorialSequenceのWaitUntil）に戻る。
     }
+
 
     // ---------------------------------------------------------
     // ゲームロジックのオーバーライド
@@ -373,14 +380,16 @@ public class TutorialGameManager : GameManager
 
     public override void TryPlayCard(CardData cardToPlay)
     {
-        if (tutorialStep == 2) // プレイフェーズ
+        if (tutorialStep == 2)
         {
              if (CanPlayCard(cardToPlay))
              {
                  base.TryPlayCard(cardToPlay);
+                 // 勝利フェーズではないので、ここでtutorialStepが進むわけではない
+                 // 本来ならここでCPUターンへ行くはずだが、TutorialSequenceが管理する
              }
         }
-        else if(tutorialStep == 4) // 勝利フェーズ
+        else if(tutorialStep == 3) // 勝利プレイ
         {
             if (CanPlayCard(cardToPlay))
             {

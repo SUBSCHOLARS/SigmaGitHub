@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
 
     // プレイヤーの管理（本実装）
     public List<Player> players = new List<Player>();
-    private int currentPlayerIndex = 0;
+    protected int currentPlayerIndex = 0;
     private bool isTurnClockwise = true; // ターン進行方向（Reject用）
     public bool isPlayerInputLocked = false; // 操作ロック用のフラグ
     protected bool isWaitingForWinConfirmation = false;
