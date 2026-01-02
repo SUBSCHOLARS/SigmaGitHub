@@ -1948,7 +1948,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 19e95188d8c50410e96295380e403754, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TutorialGameManager
-  allCardDatabase: []
+  allCardDatabase:
+  - {fileID: 11400000, guid: 205c118227a544c619bdc355f063ee22, type: 2}
+  - {fileID: 11400000, guid: bfc88ae82c820494089c9970ddf393cd, type: 2}
+  - {fileID: 11400000, guid: f69432d3beee0439982787bfca51410a, type: 2}
+  - {fileID: 11400000, guid: 9a551b96479014ffa84b4127dc6ce468, type: 2}
+  - {fileID: 11400000, guid: a1cfc35334f724fb7a56fa6a61fe4567, type: 2}
+  - {fileID: 11400000, guid: cd9bd86ee437e493994ca83ad9635547, type: 2}
+  - {fileID: 11400000, guid: ea1720dfa5dd3412f890d404086d5425, type: 2}
+  - {fileID: 11400000, guid: 556106b6ae7e1419eb9abf8e792c8bec, type: 2}
+  - {fileID: 11400000, guid: 69aa741b2011341c39e0baf20d385422, type: 2}
   drawSound: {fileID: 8300000, guid: c96d6c23a815e4e51bf8d1b1a722dd9c, type: 3}
   playCardSound: {fileID: 8300000, guid: 7a63a4602902a42f38ec2925153fec9e, type: 3}
   winSound: {fileID: 8300000, guid: 40b6ab62ba0b346c3aae463a5cfc7ded, type: 3}
@@ -4703,7 +4712,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &724213668
 RectTransform:
   m_ObjectHideFlags: 0
@@ -15454,7 +15463,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2032769464
 RectTransform:
   m_ObjectHideFlags: 0
@@ -15474,7 +15483,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 350, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 100, y: 101.56}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2085800998
 GameObject:

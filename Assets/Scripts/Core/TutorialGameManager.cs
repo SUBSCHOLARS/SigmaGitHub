@@ -155,7 +155,7 @@ public class TutorialGameManager : GameManager
         
         // 2人対戦（プレイヤー vs CPU）
         players.Add(new Player(PlayerID.Player, false, pName, 0));
-        players.Add(new Player(PlayerID.CPU, true, "CPU_1", 0));
+        players.Add(new Player(PlayerID.CPU, true, "DOG", 0));
         
         currentRound = 1;
         UIManager.Instance.UpdateRoundText(currentRound);
@@ -164,11 +164,13 @@ public class TutorialGameManager : GameManager
         // チュートリアル用固定デッキ
         // 実際にはCardDatabaseから検索して意図した順序でStackする処理が必要
         // 簡略化のため、通常Deck生成後に中身を入れ替える（あるいはID指定で生成）
-        base.SetUpDeck(); 
+        // base.SetUpDeck();
+        SetUpDeck();
         
         // とりあえず配る
         foreach(Player player in players)
         {
+            Debug.Log(player.playerName);
             DrawCards(player.hand, 4); // 少なめに配る
         }
         
@@ -176,9 +178,16 @@ public class TutorialGameManager : GameManager
         // StartGame()の代わりに手動で場に出す
         // CardData startCard = ...;
         // PlayCardToField(startCard, ...);
-        base.StartGame(); // ランダムスタート（後で調整）
+        // base.StartGame(); // ランダムスタート（後で調整）
         
         UIManager.Instance.UpdateAllHandVisuals();
+    }
+    public override void SetUpDeck()
+    {
+       deck.Clear();
+       discardPile.Clear();
+       deck.AddRange(allCardDatabase);
+       UIManager.Instance.UpdateDeckVisual(deck.Count);
     }
 
     // ---------------------------------------------------------

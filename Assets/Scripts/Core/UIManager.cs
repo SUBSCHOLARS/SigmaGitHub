@@ -506,6 +506,11 @@ public class UIManager : MonoBehaviour
             UpdateCPUHandVisuals(players[1], cpu1HandContainer, false, null);
             UpdateCPUHandVisuals(players[2], cpu2HandContainer, false, null);
         }
+        else if(players.Count==2)
+        {
+            // [1]番目はDOGとなっている。
+            UpdateCPUHandVisuals(players[1], cpu1HandContainer, false, null);
+        }
     }
     // CPUの手札ビジュアルを生成するメソッド
     public void UpdateCPUHandVisuals(Player cpu, Transform container, bool reveal, List<CardData> handData)
@@ -762,8 +767,14 @@ public class UIManager : MonoBehaviour
             playerScoreText.text = $"P1 [{players[0].playerName}]: \n{players[0].totalPoints} CR / {players[0].wins} Wins";
             cpu1ScoreText.text = $"P2 [{players[1].playerName}]: \n{players[1].totalPoints} CR / {players[1].wins} Wins";
             cpu2ScoreText.text = $"P3 [{players[2].playerName}]: \n{players[2].totalPoints} CR / {players[2].wins} Wins";
+            Debug.Log($"スコア更新: P1({players[0].totalPoints}), P2({players[1].totalPoints}), P3({players[2].totalPoints})");
         }
-        Debug.Log($"スコア更新: P1({players[0].totalPoints}), P2({players[1].totalPoints}), P3({players[2].totalPoints})");
+        else if(players.Count==2)
+        {
+            playerScoreText.text = $"P1 [{players[0].playerName}]: \n{players[0].totalPoints} CR / {players[0].wins} Wins";
+            cpu1ScoreText.text = $"P2 [{players[1].playerName}]: \n{players[1].totalPoints} CR / {players[1].wins} Wins";
+            Debug.Log($"スコア更新: P1({players[0].totalPoints}), P2({players[1].totalPoints})");
+        }
     }
     // ラウンド数更新メソッド
     public void UpdateRoundText(int round)

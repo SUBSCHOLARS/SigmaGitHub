@@ -34,6 +34,7 @@ public class TypewriterEffect : MonoBehaviour
                 StopCoroutine(typingCoroutine);
             }
             targetText.text = currentFullText;
+            targetText.maxVisibleCharacters = 99999;
             IsTyping = false;
         }
     }
