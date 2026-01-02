@@ -622,7 +622,7 @@ public class GameManager : MonoBehaviour
         }
     }
     // トレンドライド判定を行うメソッド
-    private List<Player> CheckForTrendRide(Player actionPlayer)
+    protected List<Player> CheckForTrendRide(Player actionPlayer)
     {
         List<Player> winners = new List<Player>();
         foreach (Player player in players)
@@ -925,7 +925,7 @@ public class GameManager : MonoBehaviour
         }
     }
     // 勝利確認ボタンによって呼ばれるメソッド
-    public void PlayerConfirmWin()
+    public virtual void PlayerConfirmWin()
     {
         // 待機中以外は無視
         if (!isWaitingForWinConfirmation)

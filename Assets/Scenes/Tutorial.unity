@@ -2029,6 +2029,7 @@ MonoBehaviour:
   currentTrendText: {fileID: 1457230951}
   yourTrendText: {fileID: 1093734476}
   statusPanel: {fileID: 1121527023}
+  winButton: {fileID: 288124753}
 --- !u!4 &297428467
 Transform:
   m_ObjectHideFlags: 0
