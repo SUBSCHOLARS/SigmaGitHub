@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Text.RegularExpressions;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 // GameManagerを継承
 public class TutorialGameManager : GameManager
@@ -224,6 +225,7 @@ public class TutorialGameManager : GameManager
 
         // ロビーに戻るボタンなどを表示
         // UIManager.Instance.ShowGameEndAnimation(true, players[0]); // 仮の勝利演出
+        SceneManager.LoadSceneAsync("Lobby");
     }
 
     private void SetupTutorialGame()
