@@ -7586,8 +7586,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 276, y: -122}
-  m_SizeDelta: {x: 50, y: 35}
+  m_AnchoredPosition: {x: 276, y: -102}
+  m_SizeDelta: {x: 100, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1109174800
 MonoBehaviour:
@@ -7603,8 +7603,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SpeechBubbleResizer
   bubbleBackground: {fileID: 1109174799}
   textComponent: {fileID: 433041817}
-  padding: {x: 35, y: 30}
-  minSize: {x: 50, y: 35}
+  padding: {x: 30, y: 45}
+  minSize: {x: 100, y: 70}
   maxWidth: 250
   continueButton: {fileID: 1416606668}
   buttonOffset: {x: -20, y: 10}
@@ -10329,7 +10329,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 5, y: -7.5}
+  m_AnchoredPosition: {x: 30, y: -25}
   m_SizeDelta: {x: 1.73, y: 1.688}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1416606669

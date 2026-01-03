@@ -9,8 +9,8 @@ public class SpeechBubbleResizer : MonoBehaviour
     [SerializeField] private TextMeshProUGUI textComponent;
 
     [Header("Settings")]
-    [SerializeField] private Vector2 padding = new Vector2(40f, 30f);
-    [SerializeField] private Vector2 minSize = new Vector2(100f, 50f);
+    [SerializeField] private Vector2 padding = new Vector2(40f, 60f); // 垂直パディングを増やす
+    [SerializeField] private Vector2 minSize = new Vector2(100f, 120f); // 最低高さを増やす
     [SerializeField] private float maxWidth = 600f; // 最大幅設定
 
     [Header("Optional")]
