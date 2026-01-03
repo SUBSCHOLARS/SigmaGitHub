@@ -1422,6 +1422,7 @@ MonoBehaviour:
   fieldTopStampEffect: {fileID: 608672885}
   revealAllHandsPanel: {fileID: 1204147250}
   playerNameText: {fileID: 723047548488427418, guid: f4412ac59f09b46f98bd0ac6a9b62bb0, type: 3}
+  nextButtonSound: {fileID: 8300000, guid: 51c677061068a4a2492ad0c27a4f6015, type: 3}
 --- !u!1 &373105530
 GameObject:
   m_ObjectHideFlags: 0

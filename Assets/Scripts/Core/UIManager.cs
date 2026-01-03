@@ -79,6 +79,8 @@ public class UIManager : MonoBehaviour
     [Header("各手札を見せるUI")]
     [SerializeField] private GameObject revealAllHandsPanel;
     [SerializeField] private TextMeshProUGUI playerNameText;
+    [Header("オーディオ")]
+    [SerializeField] private AudioClip nextButtonSound;
     void Awake()
     {
         if (Instance == null)
@@ -1060,6 +1062,7 @@ public class UIManager : MonoBehaviour
     // continueButtonオブジェクトのButtonコンポーネントから呼ばれる
     public void OnContinuePromptClick()
     {
+        SoundManager.Instance.PlaySound(nextButtonSound);
         GameManager.Instance.OnContinueClicked();
     }
     // ログのパネルの表示
