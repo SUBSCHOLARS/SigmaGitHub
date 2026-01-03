@@ -445,6 +445,7 @@ public class GameManager : MonoBehaviour
     // 勝利演出　=> ポイント計算 => 次ラウンド準備の流れを管理
     private IEnumerator StartRoundEndSequence(List<Player> winners, Player actionPlayer, WinType winType)
     {
+        UIManager.Instance.ShowTerminalWindow(false);
         // 1. 勝利演出（UIに任せる）
         // 他のプレイヤーの手札も全て公開する
         UIManager.Instance.RevealAllHands();

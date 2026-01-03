@@ -947,4 +947,9 @@ public class UIManager : MonoBehaviour
     {
         GameManager.Instance.OnContinueClicked();
     }
+    // ログのパネルの表示
+    public void ShowTerminalWindow(bool show)
+    {
+        terminalWindow.SetActive(show);
+    }
 }
