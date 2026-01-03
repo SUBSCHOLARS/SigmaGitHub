@@ -724,6 +724,7 @@ public class GameManager : MonoBehaviour
         foreach (Player player in players)
         {
             player.hand.Clear();
+            player.revealedCards.Clear(); // ラウンド開始時に公開カードをクリア
         }
 
         // 2. 山札と捨て札をリセット

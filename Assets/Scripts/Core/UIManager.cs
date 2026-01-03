@@ -205,41 +205,73 @@ public class UIManager : MonoBehaviour
         surveyPanel.SetActive(true);
 
         CardData randomCard = null;
-        if(targetPlayer.hand.Count>0)
+        if(targetPlayer.hand.Count > 0)
         {
             // ターゲットの手札からランダムに一枚選ぶ
-            randomCard=targetPlayer.hand[Random.Range(0, targetPlayer.hand.Count)];
+            randomCard = targetPlayer.hand[UnityEngine.Random.Range(0, targetPlayer.hand.Count)];
+            // 公開リストに追加（永続化）
+            if(!targetPlayer.revealedCards.Contains(randomCard))
+            {
+                 targetPlayer.revealedCards.Add(randomCard);
+            }
         }
+
         // ターゲットの手札を震わせる
-        Transform targetHand=GetHandContainerForPlayer(targetPlayer);
-        if(targetHand!=null)
+        Transform targetHand = GetHandContainerForPlayer(targetPlayer);
+        if(targetHand != null)
         {
-            // 0.5秒間、強さ10、振動数20で震わせる
             targetHand.DOShakePosition(0.5f, new Vector3(10f, 10f, 0), 20);
         }
-        // 2. 演出（ターゲットの手札を振るわせるなど）
+        
         yield return new WaitForSeconds(0.5f); // 演出のためのタメ
-        if(randomCard==null)
+
+        if(randomCard == null)
         {
-            // ログと結果表示
-            string msg=$"{targetPlayer.playerName}の手札は0枚です。";
+            string msg = $"{targetPlayer.playerName}の手札は0枚です。";
             AddLogMessage(msg, null);
             StartCoroutine(ShowEffectResult(msg));
+            yield return new WaitForSeconds(2.0f);
         }
         else
         {
-            // 3. カードを表向きに生成
-            GameObject cardObj=Instantiate(cardPrefab, surveyCardDisplayArea);
-            cardObj.transform.localPosition=Vector3.zero;
-            cardObj.GetComponent<CardController>().Setup(randomCard);
+            // 3. カードを裏向きで生成
+            GameObject cardObj = Instantiate(cardBackPrefab, surveyCardDisplayArea);
+            cardObj.transform.localPosition = Vector3.zero;
+            cardObj.transform.localScale = Vector3.one * 1.5f; // 少し大きく
+            
             // マウス操作を無効化
-            cardObj.GetComponent<Image>().raycastTarget=false;
-            // 4. ログ
-            string msg=$"{targetPlayer.playerName}の手札[{randomCard.cardName}]を検閲";
-            AddLogMessage(msg, null); // TODO: 検閲アイコンを渡す
+            if(cardObj.GetComponent<Image>() != null) cardObj.GetComponent<Image>().raycastTarget = false;
+
+            // 4. フリップアニメーション (裏 -> 表)
+            float flipDuration = 0.4f;
+            
+            // Step 1: 90度まで回転（閉じる）
+            yield return cardObj.transform.DORotate(new Vector3(0, 90, 0), flipDuration).SetEase(Ease.InBack).WaitForCompletion();
+
+            // Step 2: オブジェクト差し替え（裏 -> 表）
+            Destroy(cardObj);
+            cardObj = Instantiate(cardPrefab, surveyCardDisplayArea);
+            cardObj.transform.localPosition = Vector3.zero;
+            cardObj.transform.localScale = Vector3.one * 1.5f;
+            cardObj.transform.localRotation = Quaternion.Euler(0, -90, 0); // 逆向きからスタート
+            
+            cardObj.GetComponent<CardController>().Setup(randomCard);
+            if(cardObj.GetComponent<Image>() != null) cardObj.GetComponent<Image>().raycastTarget = false;
+
+            // Step 3: 0度に戻す（開く）
+            // 注意: 新しいcardObjに対してTweenをかける
+            yield return cardObj.transform.DORotate(Vector3.zero, flipDuration).SetEase(Ease.OutBack).WaitForCompletion();
+            
+            // ログ
+            string msg = $"{targetPlayer.playerName}の手札[{randomCard.cardName}]を検閲";
+            AddLogMessage(msg, null);
+            
+            yield return new WaitForSeconds(1.5f); // 結果を見せる時間
+            
+            // 手札の表示を更新（ここでCPUの手札が表になる）
+            UpdateAllHandVisuals(); 
         }
-        // 5. 表示
-        yield return new WaitForSeconds(2.5f);
+
         // 6. クリーンアップ
         foreach(Transform child in surveyCardDisplayArea)
         {
@@ -538,8 +570,11 @@ public class UIManager : MonoBehaviour
             child.SetParent(null);
             Destroy(child.gameObject);
         }
-        // revealフラグに応じて、枚数を手札データから取るか、CPUの手札数から取るか変更
-        int childCount = (reveal && handData != null) ? handData.Count : cpu.hand.Count;
+        
+        // 表示するカードのリストを決定
+        List<CardData> targetHand = (handData != null) ? handData : cpu.hand;
+        int childCount = targetHand.Count;
+
         if (childCount == 0)
         {
             return;
@@ -552,19 +587,33 @@ public class UIManager : MonoBehaviour
         for(int i=0; i<childCount; i++)
         {
             GameObject cardObj;
-            if (reveal && handData != null)
+            CardData currentCard = targetHand[i]; // 現在のカードデータ
+            
+            // 全公開モード、もしくはこのカードが公開済みリストに含まれているか
+            bool isRevealed = reveal || (cpu.revealedCards.Contains(currentCard));
+
+            if (isRevealed)
             {
                 // 表向きで生成
                 cardObj = Instantiate(cardPrefab, container);
                 CardController cardController = cardObj.GetComponent<CardController>();
                 // カードデータを設定
-                cardController.Setup(handData[i]);
+                cardController.Setup(currentCard);
+                // "EYE" アイコン的なものを追加しても良いが、一旦表向きにするだけにする
+                // Colorを変えて少し強調する
+                if(!reveal && cpu.revealedCards.Contains(currentCard))
+                {
+                     // 公開されたカードは少し赤みがかった色にする（警告色）
+                     Image img = cardObj.GetComponent<Image>();
+                     if(img != null) img.color = new Color(1f, 0.8f, 0.8f);
+                }
             }
             else
             {
                 cardObj = Instantiate(cardBackPrefab, container);
             }
             RectTransform rect = cardObj.GetComponent<RectTransform>();
+            if(rect == null) continue;
 
             // アンカーとピボットを中央に設定
             rect.anchorMin = new Vector2(0.5f, 0.5f);
