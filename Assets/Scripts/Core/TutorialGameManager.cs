@@ -75,8 +75,8 @@ public class TutorialGameManager : GameManager
         // 3. 自己紹介
         speechBubble.SetActive(true);
         yield return StartCoroutine(ShowDialogue("..."));
-        yield return StartCoroutine(ShowDialogue("やあ。"));
-        yield return StartCoroutine(ShowDialogue("私の名前は...まあ、好きに呼んでくれ。\nこの端末のナビゲーターのようなものさ。"));
+        yield return StartCoroutine(ShowDialogue("やあ。\n『ΣIGMA』にようこそ。"));
+        yield return StartCoroutine(ShowDialogue("私の名前は...まあ、好きに呼んでくれ。\nこのソフトのナビゲーターのようなものさ。"));
 
         // 4. 名前入力
         yield return StartCoroutine(ShowDialogue("君の名前を教えてくれないか？\nデータベースに登録する必要があるんだ。"));
@@ -113,7 +113,7 @@ public class TutorialGameManager : GameManager
 
         string pName = PersistentDataManager.Instance.PlayerName;
         yield return StartCoroutine(ShowDialogue($"なるほど... {pName} だね。\n悪くない名前だ。"));
-        yield return StartCoroutine(ShowDialogue("おっと。"));
+        yield return StartCoroutine(ShowDialogue("おっと。\nそういえば。"));
         yield return StartCoroutine(ShowDialogue("もちろんこの名前は悪用なんてしないさ。\nただゲームのユーザー名にするだけだよ。"));
 
         // 5. ゲーム開始準備
@@ -132,6 +132,7 @@ public class TutorialGameManager : GameManager
         SetupTutorialGame();
 
         yield return StartCoroutine(ShowDialogue("画面下にあるのが君の「社会的価値」...手札となる。\n中央にある数字が、「トレンド」だ。"));
+        yield return StartCoroutine(ShowDialogue("トランプみたいに絵柄が4つあってそれぞれ\n「Eye」,「Mask」,「Chain」,「Gear」\nになっている。"));
         yield return StartCoroutine(ShowDialogue("本当は7枚ずつ、3人でやるんだけど、\nあくまでお試しだから簡単にやるよ。"));
         yield return StartCoroutine(ShowDialogue("このゲームのルールは単純さ。"));
         yield return StartCoroutine(ShowDialogue("「トレンドに迎合すること」。それだけだよ。"));
@@ -175,8 +176,6 @@ public class TutorialGameManager : GameManager
         yield return new WaitUntil(() => tutorialStep == 4); 
         SetupTutorialGameAgain();
 
-        // 8. 勝利 (Self Match)
-        // 現在: P1手札(Eye_1, Mask_2 = 3), トレンド(3) -> 一致！
         yield return StartCoroutine(ShowDialogue("さて、華々しく勝利してお祝い..といきたいところだけど。"));
         yield return StartCoroutine(ShowDialogue("もう一つ説明することがあるんだ。"));
         yield return StartCoroutine(ShowDialogue("さっきの説明を聞いていて思ったかもしれないけど。"));
@@ -187,9 +186,13 @@ public class TutorialGameManager : GameManager
         yield return StartCoroutine(ShowDialogue("たまには狙ってみてもいいかもね。"));
         yield return StartCoroutine(ShowDialogue("じゃあMask_3が出せそうだから出してみようか。"));
 
+        UIManager.Instance.SetPlayerControlsActive(true);
+        isPlayerInputLocked = false;
         yield return new WaitUntil(() => players[currentPlayerIndex].isCPU);
+        
         isPlayerInputLocked = true;
-        TutorialCPUTurn();
+        // yield return StartCoroutine(TutorialCPUTurn());
+        CallCPUTurnAction();
 
         yield return StartCoroutine(ShowDialogue("ちょうどこんな感じさ。"));
 
@@ -267,6 +270,10 @@ public class TutorialGameManager : GameManager
         // 2人対戦（プレイヤー vs CPU）
         players.Add(new Player(PlayerID.Player, false, pName, 0));
         players.Add(new Player(PlayerID.CPU, true, "DOG", 0));
+        
+        // 状態リセット
+        currentPlayerIndex = 0; // プレイヤーから開始
+        tutorialStep = 4; // 明示的にセット
         
         currentRound = 1;
         UIManager.Instance.UpdateRoundText(currentRound);
@@ -432,12 +439,13 @@ public class TutorialGameManager : GameManager
     public override void PlayerConfirmWin()
     {
         tutorialStep=4;
+        Debug.Log(tutorialStep);
         winButton.SetActive(false);
     }
 
     public override void TryPlayCard(CardData cardToPlay)
     {
-        if (tutorialStep == 2 || tutorialStep==4)
+        if (tutorialStep == 2)
         {
              if (CanPlayCard(cardToPlay))
              {
@@ -453,6 +461,21 @@ public class TutorialGameManager : GameManager
                  // ここでセルフマッチになるはず
                  base.TryPlayCard(cardToPlay);
             }
+        }
+        else if(tutorialStep==4) // トレンドライドプレイ
+        {
+            if(CanPlayCard(cardToPlay))
+            {
+                base.TryPlayCard(cardToPlay);
+            }
+            else
+            {
+                Debug.Log($"プレイ不可: {cardToPlay.cardName}. Step: {tutorialStep}");
+            }
+        }
+        else
+        {
+            Debug.Log($"TryPlayCard Ignored. Step: {tutorialStep}");
         }
     }
 }
