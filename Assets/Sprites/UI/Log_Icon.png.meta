@@ -14,6 +14,9 @@ TextureImporter:
   - first:
       213: 3716824932768318384
     second: Log_Icon_3
+  - first:
+      213: -6922319948004773929
+    second: Log_Icon_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -55,7 +58,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -113,9 +116,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 0
-        y: 2
-        width: 32
-        height: 24
+        y: 14
+        width: 91
+        height: 112
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -134,10 +137,10 @@ TextureImporter:
       name: Log_Icon_1
       rect:
         serializedVersion: 2
-        x: 16
-        y: 17
-        width: 6
-        height: 8
+        x: 84
+        y: 89
+        width: 22
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -156,10 +159,10 @@ TextureImporter:
       name: Log_Icon_2
       rect:
         serializedVersion: 2
-        x: 21
-        y: 17
-        width: 6
-        height: 8
+        x: 109
+        y: 89
+        width: 22
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -178,10 +181,10 @@ TextureImporter:
       name: Log_Icon_3
       rect:
         serializedVersion: 2
-        x: 26
-        y: 17
-        width: 6
-        height: 8
+        x: 134
+        y: 89
+        width: 22
+        height: 32
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -196,11 +199,33 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Log_Icon_4
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 19
+        width: 81
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7df239deeaafeef90800000000000000
+      internalID: -6922319948004773929
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -214,6 +239,7 @@ TextureImporter:
       Log_Icon_1: 3188653816687321161
       Log_Icon_2: -6093117573015247545
       Log_Icon_3: 3716824932768318384
+      Log_Icon_4: -6922319948004773929
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
