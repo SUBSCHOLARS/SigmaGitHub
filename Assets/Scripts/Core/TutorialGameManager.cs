@@ -141,7 +141,7 @@ public class TutorialGameManager : GameManager
         // 6. ドローの練習 (Turn 1)
         // 状態: P1手札[Eye_2] (Sum 2), Field[Mask_6] (Trend 6) -> 不一致
         yield return StartCoroutine(ShowDialogue("...今の君の価値は「2」。トレンドは「6」。\n全く一致していない。これではダメだね。"));
-        yield return StartCoroutine(ShowDialogue("手札の中に、場のトレンドと絵柄か数字が合うカードもない。\nこういう時は「ドロー」するしかない。"));
+        yield return StartCoroutine(ShowDialogue("手札の中に、場のトレンドと同じ絵柄か数字を持つカードもない。\nこういう時は「ドロー」するしかない。"));
         yield return StartCoroutine(ShowDialogue("右の山札からカードを引くんだ。\n...ただし、引いたらそのターンは何もできずに終わる。"));
 
         isPlayerInputLocked = false; // ロック解除
