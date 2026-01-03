@@ -410,6 +410,18 @@ public class UIManager : MonoBehaviour
     {
 
     }
+    
+    void OnDestroy()
+    {
+        // シーン遷移時に確実にTweenを殺す
+        if(winButtonAnimation != null && winButtonAnimation.IsActive())
+        {
+            winButtonAnimation.Kill();
+        }
+        // 他の全てのTweenもこのGameObjectに関連するものは殺す
+        DOTween.Kill(this.transform);
+        DOTween.Kill(this.gameObject);
+    }
     // 山札の見た目を更新するメソッド
     public void UpdateDeckVisual(int deckCount)
     {
@@ -859,7 +871,8 @@ public class UIManager : MonoBehaviour
                     winButtonAnimation = DOTween.Sequence()
                         .Append(winButtonCanvasGroup.DOFade(0f, 0.1f).SetEase(Ease.InOutQuad))
                         .Append(winButtonCanvasGroup.DOFade(1f, 0.1f).SetEase(Ease.InOutQuad))
-                        .SetLoops(-1); // 無限ループ
+                        .SetLoops(-1) // 無限ループ
+                        .SetLink(winButton.gameObject); // GameObjectが破棄されたらTweenも破棄
                 }
             }
             else
