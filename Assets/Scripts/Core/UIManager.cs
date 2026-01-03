@@ -101,8 +101,14 @@ public class UIManager : MonoBehaviour
         }
         else
         {
+        {
             Debug.LogError("UIManagerのplayerHandAreaがインスペクタで設定されていません。");
         }
+        
+        // CPUの手札エリアにもHoverDetectorを仕込む
+        SetupCPUHandHover(cpu1HandContainer);
+        SetupCPUHandHover(cpu2HandContainer);
+
         if(bribeSelectionPanel!=null)
         {
             bribeSelectionPanel.SetActive(false);
@@ -151,6 +157,7 @@ public class UIManager : MonoBehaviour
         AddLogMessage("--- SYSTEM BOOT SEQQUENCE INITIATED ---", null);
         AddLogMessage("--- WELCOME TO SIGMA TERMINAL ---", null);
     }
+    }
     public void ShowBribeSelectionUI()
     {
         bribeSelectionPanel.SetActive(true);
@@ -179,7 +186,7 @@ public class UIManager : MonoBehaviour
         if(drawButton!=null)
         {
             drawButton.interactable = isActive;
-            // もし非アクティブにする際、ボタンがホバーで光ったままなら今日背的に戻す
+            // もし非アクティブにする際、ボタンがホバーで光ったままなら強制的に戻す
             if (!isActive && drawButton.animator != null)
             {
                 // ボタンのハイライト状態を強制的にNormalに戻す
@@ -208,7 +215,7 @@ public class UIManager : MonoBehaviour
         if(targetPlayer.hand.Count > 0)
         {
             // ターゲットの手札からランダムに一枚選ぶ
-            randomCard = targetPlayer.hand[UnityEngine.Random.Range(0, targetPlayer.hand.Count)];
+            randomCard = targetPlayer.hand[Random.Range(0, targetPlayer.hand.Count)];
             // 公開リストに追加（永続化）
             if(!targetPlayer.revealedCards.Contains(randomCard))
             {
@@ -590,7 +597,7 @@ public class UIManager : MonoBehaviour
             CardData currentCard = targetHand[i]; // 現在のカードデータ
             
             // 全公開モード、もしくはこのカードが公開済みリストに含まれているか
-            bool isRevealed = reveal || (cpu.revealedCards.Contains(currentCard));
+            bool isRevealed = reveal || cpu.revealedCards.Contains(currentCard);
 
             if (isRevealed)
             {
@@ -633,6 +640,58 @@ public class UIManager : MonoBehaviour
             // 3. ベース回転（90度）と束の傾き（angle）を足す
             rect.localRotation = Quaternion.Euler(0, 0, angle);
         }
+
+        // CPU手札コンテナのサイズを調整（Raycast用）
+        RectTransform containerRect = container.GetComponent<RectTransform>();
+        if(containerRect != null)
+        {
+            float width = totalWidth + 150f; // カード幅分+余白
+            float height = 250f; // カード高さ+Arc分
+            containerRect.sizeDelta = new Vector2(width, height);
+        }
+
+        // HandHoverDetectorのリスト更新
+        HandHoverDetector detector = container.GetComponent<HandHoverDetector>();
+        if(detector != null)
+        {
+            detector.cardsInHand.Clear(); // 一旦クリア
+            // コンテナ内の全てのCardControllerを探して登録
+            // (RevealedのカードのみがCardControllerを持っている前提)
+            foreach(Transform child in container)
+            {
+                CardController cc = child.GetComponent<CardController>();
+                if(cc != null)
+                {
+                    detector.cardsInHand.Add(cc);
+                }
+            }
+        }
+    }
+
+    // CPUの手札エリアにHoverDetector等をセットアップするヘルパー
+    private void SetupCPUHandHover(Transform container)
+    {
+        if(container == null) return;
+        
+        // Image（RaycastTarget用）があるか確認、なければ追加
+        Image img = container.GetComponent<Image>();
+        if(img == null)
+        {
+            img = container.gameObject.AddComponent<Image>();
+            img.color = Color.clear; // 透明にする
+        }
+        
+        // HandHoverDetectorがあるか確認、なければ追加
+        HandHoverDetector detector = container.GetComponent<HandHoverDetector>();
+        if(detector == null)
+        {
+            detector = container.gameObject.AddComponent<HandHoverDetector>();
+        }
+        
+        // CPUの手札なのでクリックは無効化、でもホバーは有効化
+        detector.isInteractionEnabled = false;
+        
+        // カメラ参照などの初期化が必要ならStartで走るが、AddComponent直後なのでOK
     }
     // 場のカードを更新するメソッド
     public void UpdateFieldPileUI(CardData cardData)

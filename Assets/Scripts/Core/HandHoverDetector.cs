@@ -8,6 +8,7 @@ public class HandHoverDetector : MonoBehaviour, IPointerMoveHandler, IPointerExi
 {
     // UIManagerが手札のリストをここに設定する
     public List<CardController> cardsInHand = new List<CardController>();
+    public bool isInteractionEnabled = true; // クリック有効か
     private CardController currentlyHoveredCard = null;
     // カメラへの参照を追加
     private Camera mainCamera;
@@ -37,7 +38,7 @@ public class HandHoverDetector : MonoBehaviour, IPointerMoveHandler, IPointerExi
         {
             return;
         }
-        if (currentlyHoveredCard != null)
+        if (currentlyHoveredCard != null && isInteractionEnabled)
         {
             currentlyHoveredCard.HandleClick();
             // クリックしたカードは存在しなくなるので、参照をクリアする
