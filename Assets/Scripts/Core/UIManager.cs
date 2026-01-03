@@ -76,6 +76,9 @@ public class UIManager : MonoBehaviour
     public GameObject continueButton;
     [Header("スタンプエフェクト制御")]
     public CardStampEffect fieldTopStampEffect;
+    [Header("各手札を見せるUI")]
+    [SerializeField] private GameObject revealAllHandsPanel;
+    [SerializeField] private TextMeshProUGUI playerNameText;
     void Awake()
     {
         if (Instance == null)
@@ -145,6 +148,10 @@ public class UIManager : MonoBehaviour
         {
             unreadBadge.SetActive(false);
         }
+        if(revealAllHandsPanel!=null)
+            {
+                revealAllHandsPanel.SetActive(false);
+            }
         terminalLogText.text=""; // ログを空にする
         // 勝利確認ボタンの初期設定
         // CanvasGroupを取得
@@ -1059,5 +1066,93 @@ public class UIManager : MonoBehaviour
     public void ShowTerminalWindow(bool show)
     {
         terminalWindow.SetActive(show);
+    }
+
+    // 全員の手札を公開するパネルを表示
+    public void ShowRevealAllHandsPanel(List<Player> players)
+    {
+        if (revealAllHandsPanel == null) return;
+        revealAllHandsPanel.SetActive(true);
+
+        // 既存の子要素を削除
+        foreach (Transform child in revealAllHandsPanel.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // レイアウトグループの確認/追加（必要に応じて）
+        VerticalLayoutGroup vlg = revealAllHandsPanel.GetComponent<VerticalLayoutGroup>();
+        if (vlg == null)
+        {
+            vlg = revealAllHandsPanel.AddComponent<VerticalLayoutGroup>();
+            vlg.childControlHeight = false;
+            vlg.childControlWidth = false;
+            vlg.childForceExpandHeight = false;
+            vlg.childForceExpandWidth = false;
+            vlg.spacing = 30;
+            vlg.childAlignment = TextAnchor.MiddleCenter;
+        }
+
+        foreach (Player p in players)
+        {
+            CreateHandRevealRow(p, revealAllHandsPanel.transform);
+        }
+        
+        // 続けるボタンのガイドを表示するログを追加しても良い
+        AddLogMessage("[SYSTEM] 全プレイヤーの手札を公開します。確認したらクリックしてください。", null);
+    }
+
+    private void CreateHandRevealRow(Player p, Transform parent)
+    {
+        GameObject row = new GameObject($"Row_{p.playerName}");
+        row.transform.SetParent(parent, false);
+        HorizontalLayoutGroup hlg = row.AddComponent<HorizontalLayoutGroup>();
+        hlg.childControlWidth = false;
+        hlg.childControlHeight = false;
+        hlg.childForceExpandWidth = false;
+        hlg.childForceExpandHeight = false;
+        hlg.spacing = 10;
+        hlg.childAlignment = TextAnchor.MiddleLeft;
+
+        // 名前テキスト（SurveyTitleTextをテンプレートにする）
+        if (playerNameText != null)
+        {
+            GameObject textObj = Instantiate(playerNameText.gameObject, row.transform);
+            // テンプレートのRectTransform設定によっては巨大になるのでリセット
+            // RectTransform rt = textObj.GetComponent<RectTransform>();
+            // rt.sizeDelta = new Vector2(250, 50);
+            
+            TextMeshProUGUI tmp = textObj.GetComponent<TextMeshProUGUI>();
+            tmp.text = p.playerName;
+            tmp.alignment = TextAlignmentOptions.Right;
+            tmp.textWrappingMode = TextWrappingModes.NoWrap;
+            textObj.SetActive(true);
+        }
+
+        // 手札カード
+        foreach (CardData card in p.hand)
+        {
+            GameObject cardObj = Instantiate(cardPrefab, row.transform);
+            cardObj.transform.localScale = Vector3.one * 0.8f; // 縮小表示
+            CardController cc = cardObj.GetComponent<CardController>();
+            cc.Setup(card);
+            // Raycast無効
+            if (cardObj.GetComponent<Image>() != null) cardObj.GetComponent<Image>().raycastTarget = false;
+            
+            // LayoutElementでサイズ確保（LayoutGroup用）
+            // Prefabのサイズを取得
+            RectTransform rt = cardObj.GetComponent<RectTransform>();
+            LayoutElement le = cardObj.AddComponent<LayoutElement>();
+            le.preferredWidth = rt.sizeDelta.x * 0.8f;
+            le.preferredHeight = rt.sizeDelta.y * 0.8f;
+        }
+    }
+
+    public void HideRevealAllHandsPanel()
+    {
+        if (revealAllHandsPanel != null)
+        {
+            revealAllHandsPanel.SetActive(false);
+        }
     }
 }

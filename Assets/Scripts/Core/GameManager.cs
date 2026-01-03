@@ -466,11 +466,16 @@ public class GameManager : MonoBehaviour
         yield return StartCoroutine(WaitForContinueCLick());
         UIManager.Instance.ShowWinnerAnimation(false, null, WinType.SelfMatch, 0);
 
-        // 4. ポイント計算（actionPlayerを渡して分岐）
+        // 4. 各手札をここで見せる
+        UIManager.Instance.ShowRevealAllHandsPanel(players);
+        yield return StartCoroutine(WaitForContinueCLick());
+        UIManager.Instance.HideRevealAllHandsPanel();
+
+        // 5. ポイント計算（actionPlayerを渡して分岐）
         CalculatePoints(winners, actionPlayer);
         UIManager.Instance.UpdateScoreboard(players); // スコアボードUIを更新
 
-        // 5. 最終勝利判定
+        // 6. 最終勝利判定
         Player overallWinner = CheckForOverallWinner();
         if (overallWinner != null)
         {
