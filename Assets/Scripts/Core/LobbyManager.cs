@@ -6,10 +6,13 @@ public class LobbyManager : MonoBehaviour
     [Header("Scene Names")]
     [SerializeField] private string gameSceneName = "GamePlay";
     [SerializeField] private string tutorialSceneName = "Tutorial";
+    [Header("ボタンの押下サウンド")]
+    [SerializeField] private AudioClip nextButtonSound;
 
     public void OnStartGameClicked()
     {
         Debug.Log("Starting Game...");
+        SoundManager.Instance.PlaySound(nextButtonSound);
         SceneManager.LoadScene(gameSceneName);
     }
 
