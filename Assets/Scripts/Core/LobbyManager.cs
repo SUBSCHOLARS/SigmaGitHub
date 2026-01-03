@@ -20,12 +20,12 @@ public class LobbyManager : MonoBehaviour
     }
 
     public void OnQuitClicked()
-    {
-        Debug.Log("Quitting Game...");
-        Application.Quit();
-        
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#endif
+    {   
+        #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+        #else
+            Debug.Log("Quitting Game...");
+            Application.Quit();
+        #endif
     }
 }
