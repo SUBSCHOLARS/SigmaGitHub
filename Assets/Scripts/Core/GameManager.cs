@@ -494,9 +494,10 @@ public class GameManager : MonoBehaviour
         {
             if (cardPlayer.isCPU)
             {
-                int chosenTrend = UnityEngine.Random.Range(1, 6); // AIはあとで賢くする
+                // AIによる最適なトレンド選択
+                int chosenTrend = FindBestTrendForBribe(cardPlayer);
                 currentTrendValue = chosenTrend;
-                Debug.Log($"Bribe: CPUがトレンドを{currentTrendValue} に設定しました。");
+                Debug.Log($"[AI Bribe] {cardPlayer.playerName} selected Trend {currentTrendValue}");
                 // CPUの場合も同様に画像を取得して反映
                 CardSector bribeSector=playedCard.sector;
                 CardData targetCard=GetCarddDataBySectorAndNumber(bribeSector, currentTrendValue);
@@ -830,60 +831,196 @@ public class GameManager : MonoBehaviour
             NextTurn(); // 効果なしで次のターンへ
         }
     }
-    // CPUの「脳」（貪欲法）
+    // AI Helper Methods
+    
+    // 自分から見て「見えていないカード」（山札 + 他人の手札）を取得
+    private List<CardData> GetUnseenCards(Player me)
+    {
+        // 全カードのコピーを作成
+        List<CardData> unseen = new List<CardData>(allCardDatabase);
+        
+        // 自分の手札を除く
+        foreach(CardData card in me.hand)
+        {
+            unseen.Remove(card);
+        }
+        
+        // 捨て札（場に出たカード）を除く
+        foreach(CardData card in discardPile)
+        {
+            unseen.Remove(card);
+        }
+        
+        return unseen;
+    }
+
+    // 指定したトレンドになった場合、他プレイヤーが即座にトレンドライド（勝利）するリスクを計算 (0.0 - 1.0)
+    private float CalculateTrendRideRisk(int trendValue, Player me, List<CardData> unseenCards)
+    {
+        float maxRisk = 0f;
+        
+        foreach(Player player in players)
+        {
+            if(player == me || player.id == PlayerID.GameMaster) continue;
+            
+            // 相手の手札枚数
+            int handCount = player.hand.Count;
+            if(handCount == 0) continue;
+
+            // 簡易ヒューリスティック: 手札枚数が少なく、かつトレンド値が低いほど危険
+            float baseRisk = 0f;
+            
+            // トレンド値が「相手の手札枚数 * 6」以下なら作られる可能性がある
+            if (trendValue <= handCount * 6)
+            {
+                if (trendValue <= 6 && handCount <= 2) baseRisk = 0.8f; // 非常に危険
+                else if (trendValue <= 10 && handCount <= 3) baseRisk = 0.5f; // 注意
+                else baseRisk = 0.2f; // 低リスク
+            }
+            
+            if(baseRisk > maxRisk) maxRisk = baseRisk;
+        }
+        
+        return maxRisk;
+    }
+
+    // 次のターンのセットアップ（自分の手札とトレンドのマッチ）をスコアリング
+    private int CalculateSetupScore(int trendValue, Player me)
+    {
+        int score = 0;
+        foreach(CardData card in me.hand)
+        {
+             // トレンドと同じ数字を持っていれば、次に出しやすい
+             if(card.numberValue == trendValue)
+             {
+                 score += 10;
+             }
+        }
+        return score;
+    }
+
+    // Bribe使用時に最適なトレンドを探す
+    private int FindBestTrendForBribe(Player cpu)
+    {
+        List<CardData> unseenCards = GetUnseenCards(cpu);
+        int bestTrend = 1;
+        float bestScore = float.MinValue;
+        
+        // 1から6までを評価
+        for(int trend = 1; trend <= 6; trend++)
+        {
+            float score = 0f;
+            
+            // 1. リスク評価 (相手にTrend Rideされるか)
+            float risk = CalculateTrendRideRisk(trend, cpu, unseenCards);
+            score -= risk * 100f; // 自爆回避優先
+            
+            // 2. 攻撃評価 (自分の手札で次に勝てるか)
+            int myHandSum = GetHandValue(cpu.hand); // Bribe使用済み（この時点ではまだdiscardPileに入っていないかも？いやHandleCardEffect呼び出し前にRemove済み）
+                                                    // 念の為呼び出し元を確認すると、RunEffectの前にPlayCardToField等は終わっている
+            
+            int valDiff = myHandSum - trend;
+            bool canWinNextTurn = false;
+            foreach(CardData card in cpu.hand)
+            {
+                // 次に出すカード(card) == (残りの手札(HandSum) - Trend) つまり HandSum - card == Trend
+                // 移項して HandSum - Trend == card.HandValue ?
+                // 違う。勝利条件: (HandSum - cardVal) == Trend
+                // つまり cardVal == HandSum - Trend
+                
+                if(card.handValue == valDiff)
+                {
+                    canWinNextTurn = true; // 次ターンで上がれる
+                    break;
+                }
+            }
+            
+            if(canWinNextTurn) score += 200f; // リーチ
+            
+            // 3. 将来性 (数字出しできるか)
+            score += CalculateSetupScore(trend, cpu);
+
+            if(score > bestScore)
+            {
+                bestScore = score;
+                bestTrend = trend;
+            }
+        }
+        return bestTrend;
+    }
+
+    // CPUの「脳」（確率・リスク評価ベース）
     private CardData FindBestCardForCPU(Player cpu)
     {
         List<CardData> playableCards = new List<CardData>();
 
-        // 1. 出せるカードを全てリストアップ
         foreach (CardData card in cpu.hand)
         {
-            if (CanPlayCard(card))
-            {
-                playableCards.Add(card);
-            }
+            if (CanPlayCard(card)) playableCards.Add(card);
         }
-        if (playableCards.Count == 0)
-        {
-            return null; // 出せるカードがない
-        }
-        // 2. 貪欲法（Greedy Algorithm）で「最善」のカードを選ぶ
-        // 優先度1: セルフマッチできるカード（Bribe以外）
-        foreach (CardData card in playableCards)
-        {
-            if (card.effect == CardEffect.Bribe)
-            {
-                continue;
-            }
-            // もしこのカードを出したら...
-            int futureTrend = card.numberValue;
-            int futureHandValue = GetHandValue(cpu.hand) - card.handValue;
+        if (playableCards.Count == 0) return null;
 
-            if (futureHandValue == futureTrend && (cpu.hand.Count > 1 || futureHandValue != 0))
-            {
-                return card; // 勝利する
-            }
-        }
-        // 優先度2: 手札コストの高いカード（15）を捨てる（Bribe, Censor, Interrogate）
+        List<CardData> unseenCards = GetUnseenCards(cpu);
+        
+        CardData bestCard = null;
+        float bestScore = float.MinValue;
+
         foreach (CardData card in playableCards)
         {
-            if (card.handValue == 15)
+            float score = 0f;
+
+            // 1. 即勝利（Self Match）チェック (最優先)
+            int futureHandValue = GetHandValue(cpu.hand) - card.handValue; 
+            int futureTrend = (card.effect == CardEffect.Bribe) ? 0 : card.numberValue; 
+            
+            // 数字出しでの勝利確定
+            if (card.effect != CardEffect.Bribe && futureHandValue == futureTrend && (cpu.hand.Count > 1 || futureHandValue != 0))
             {
-                return card; // 高コストカードを素早く手放す
+                return card; // 即決
+            }
+
+            // 2. リスク評価 (Trend Rideされるリスク)
+            if (card.effect != CardEffect.Bribe) 
+            {
+                float risk = CalculateTrendRideRisk(futureTrend, cpu, unseenCards);
+                score -= risk * 50f;
+            }
+
+            // 3. コスト評価 (高コストカードの処理)
+            // 手札に高コストを残すと不利なので早めに出すと加点
+            score += card.handValue * 1.5f; 
+
+            // 4. 特殊カードの評価
+            if (card.effect == CardEffect.Bribe) score += 25f; // Bribeは強い
+            if (card.effect == CardEffect.Suspend) score += 15f; 
+            if (card.effect == CardEffect.Reject) score += 10f; 
+            if (card.effect == CardEffect.Censor || card.effect == CardEffect.Interrogate) score += 5f; 
+
+            // 5. セットアップ (自分の手札の他カードと合うか)
+            if (card.effect == CardEffect.None) 
+            {
+                 // このカードを出した「後」の場（FutureTrend）に対して、
+                 // 残りの手札で数字出し（Match）できるカードがあるか？
+                 foreach(CardData remaining in cpu.hand)
+                 {
+                     if(remaining == card) continue;
+                     if(remaining.numberValue == futureTrend)
+                     {
+                         score += 10f; // コンボがつながる
+                         break;
+                     }
+                 }
+            }
+
+            // Debug.Log($"[AI] Eval: {card.cardName}, Score: {score}");
+
+            if (score > bestScore)
+            {
+                bestScore = score;
+                bestCard = card;
             }
         }
-        // 優先度3: 効果付きカード（Audit, Suspend, Reject）
-        foreach (CardData card in playableCards)
-        {
-            if (card.effect == CardEffect.Audit ||
-                card.effect == CardEffect.Suspend ||
-                card.effect == CardEffect.Reject)
-            {
-                return card;
-            }
-        }
-        // 優先度4: 残った出せるカード（数字カード）からランダムに1枚
-        return playableCards[UnityEngine.Random.Range(0, playableCards.Count)];
+        return bestCard;
     }
     public void PlayerSelectTarget(int targetPlayerIndex)
     {
