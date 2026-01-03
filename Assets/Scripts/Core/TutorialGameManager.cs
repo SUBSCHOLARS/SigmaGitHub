@@ -39,6 +39,7 @@ public class TutorialGameManager : GameManager
     [SerializeField] private GameObject yourTrendText;
     [SerializeField] private GameObject statusPanel;
     [SerializeField] private GameObject winButton;
+    public static bool isTutorialFinish=false;
 
     private Player tutorialMaster=new Player(PlayerID.GameMaster, false, "TutorialMaster", 0);
 
@@ -225,6 +226,7 @@ public class TutorialGameManager : GameManager
 
         // ロビーに戻るボタンなどを表示
         // UIManager.Instance.ShowGameEndAnimation(true, players[0]); // 仮の勝利演出
+        isTutorialFinish=true;
         SceneManager.LoadSceneAsync("Lobby");
     }
 

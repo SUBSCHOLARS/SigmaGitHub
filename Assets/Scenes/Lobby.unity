@@ -1005,6 +1005,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LobbyManager
   gameSceneName: GamePlay
   tutorialSceneName: Tutorial
+  startButton: {fileID: 1435699827}
   nextButtonSound: {fileID: 8300000, guid: 51c677061068a4a2492ad0c27a4f6015, type: 3}
 --- !u!4 &1171492286
 Transform:
@@ -1314,7 +1315,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 1435699828}
   m_OnClick:
     m_PersistentCalls:

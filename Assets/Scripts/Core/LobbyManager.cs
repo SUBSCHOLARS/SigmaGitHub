@@ -1,14 +1,23 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class LobbyManager : MonoBehaviour
 {
     [Header("Scene Names")]
     [SerializeField] private string gameSceneName = "GamePlay";
     [SerializeField] private string tutorialSceneName = "Tutorial";
+    [Header("ボタン")]
+    [SerializeField] private Button startButton;
     [Header("ボタンの押下サウンド")]
     [SerializeField] private AudioClip nextButtonSound;
-
+    void Start()
+    {
+        if(TutorialGameManager.isTutorialFinish)
+        {
+            startButton.interactable=true;
+        }
+    }
     public void OnStartGameClicked()
     {
         Debug.Log("Starting Game...");
@@ -19,6 +28,7 @@ public class LobbyManager : MonoBehaviour
     public void OnTutorialClicked()
     {
         Debug.Log("Starting Tutorial...");
+         SoundManager.Instance.PlaySound(nextButtonSound);
         SceneManager.LoadScene(tutorialSceneName);
     }
 
@@ -27,6 +37,7 @@ public class LobbyManager : MonoBehaviour
         #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
         #else
+            SoundManager.Instance.PlaySound(nextButtonSound);
             Debug.Log("Quitting Game...");
             Application.Quit();
         #endif
