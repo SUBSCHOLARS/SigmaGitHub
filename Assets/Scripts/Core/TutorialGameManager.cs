@@ -183,7 +183,7 @@ public class TutorialGameManager : GameManager
         yield return StartCoroutine(ShowDialogue("なんて状況も考えられるよね。"));
         yield return StartCoroutine(ShowDialogue("勿論これも立派な「勝利」になる。\n「トレンドライド」って言うんだ。"));
         yield return StartCoroutine(ShowDialogue("しかもトレンドライドはセルフマッチよりも優先される。"));
-        yield return StartCoroutine(ShowDialogue("たまには狙ってみてもいいかもね。"));
+        yield return StartCoroutine(ShowDialogue("たまには狙ってみても\nいいかもね。"));
         yield return StartCoroutine(ShowDialogue("じゃあMask_3が出せそうだから出してみようか。"));
 
         UIManager.Instance.SetPlayerControlsActive(true);
