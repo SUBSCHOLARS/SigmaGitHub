@@ -181,7 +181,7 @@ public class TutorialGameManager : GameManager
         yield return StartCoroutine(ShowDialogue("さて、華々しく勝利してお祝い..といきたいところだけど。"));
         yield return StartCoroutine(ShowDialogue("もう一つ説明することがあるんだ。"));
         yield return StartCoroutine(ShowDialogue("さっきの説明を聞いていて思ったかもしれないけど。"));
-        yield return StartCoroutine(ShowDialogue("他人が上書きしたトレンドの値が\n偶然自分の手札の値と同じになる。"));
+        yield return StartCoroutine(ShowDialogue("他人が上書きしたトレンドの値が\n偶然自分の手札の合計値と同じになる。"));
         yield return StartCoroutine(ShowDialogue("なんて状況も考えられるよね。"));
         yield return StartCoroutine(ShowDialogue("勿論これも立派な「勝利」になる。\n「トレンドライド」って言うんだ。"));
         yield return StartCoroutine(ShowDialogue("しかもトレンドライドはセルフマッチよりも優先される。"));
@@ -205,8 +205,10 @@ public class TutorialGameManager : GameManager
 
          // 9. エンディング
         yield return new WaitForSeconds(2.0f); // 勝利演出の余韻
-        yield return StartCoroutine(ShowDialogue("どうだったかな？。\nそれがこのゲーム...『ΣIGMA』の基本になる。"));
-        yield return StartCoroutine(ShowDialogue("他にもいろいろなカードがあるけど、\n取り敢えず「セルフマッチ」と「トレンドライド」だけ覚えておいてくれ。"));
+        yield return StartCoroutine(ShowDialogue("どうだったかな？。\nこれがこのゲーム...『ΣIGMA』の基本になる。"));
+        yield return StartCoroutine(ShowDialogue("そして、ラウンドに勝利すると「クレジット」が貰える。\nクレジットが100を超えたらその時点で全体の勝者になる。"));
+        yield return StartCoroutine(ShowDialogue("逆に負けるとその時の手札の合計値分\nクレジットを失うから気をつけてね。"));
+        yield return StartCoroutine(ShowDialogue("まあこんなところかな？\n他にもいろいろなカードがあるけど、\n取り敢えず「セルフマッチ」と「トレンドライド」だけ覚えておいてくれ。"));
         yield return StartCoroutine(ShowDialogue("あとはやっていくうちに覚えられるさ。"));
         yield return new WaitForSeconds(1.5f);
         yield return StartCoroutine(ShowDialogue("..."));
