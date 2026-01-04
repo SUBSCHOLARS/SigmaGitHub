@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour
     private Player gameMaster;
     // どの調査カードが使われたか記憶する変数
     private CardEffect pendingSurveyEffect = CardEffect.None;
-    private int winningScore = 50; // 勝利に必要なスコア
+    private int winningScore = 100; // 勝利に必要なスコア
     public int currentRound = 1; // 現在のラウンド
     protected Sprite initialSprite;
     private const int FIRST_DECK_DISTRIBUTION_COUNT=21;
