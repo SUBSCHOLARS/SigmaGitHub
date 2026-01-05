@@ -5,6 +5,8 @@ using UnityEngine;
 public class TypewriterEffect : MonoBehaviour
 {
     [SerializeField] private float defaultSpeed = 0.05f;
+    [SerializeField] private AudioClip typingSound; // タイピング音
+    [SerializeField] private int soundFrequency = 2; // 何文字ごとに鳴らすか
     private Coroutine typingCoroutine;
     public bool IsTyping { get; private set; }
     private string currentFullText;
@@ -63,6 +65,14 @@ public class TypewriterEffect : MonoBehaviour
         for (int i = 0; i <= totalChars; i++)
         {
             targetText.maxVisibleCharacters = i;
+            // soundFrequency文字ごとに音を鳴らす
+            if (typingSound != null && i % soundFrequency == 0)
+            {
+                if (SoundManager.Instance != null)
+                {
+                    SoundManager.Instance.PlaySound(typingSound, 0.5f); // 0.5fは音量（調整可能にしても良い）
+                }
+            }
             yield return new WaitForSeconds(speed);
         }
 
