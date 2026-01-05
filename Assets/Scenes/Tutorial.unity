@@ -2977,7 +2977,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TypewriterEffect
   defaultSpeed: 0.05
   typingSound: {fileID: 8300000, guid: c1f6686bd4b23446485389c807674e18, type: 3}
-  soundFrequency: 2
+  soundFrequency: 8
 --- !u!1 &449989649
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,7 +6,7 @@ public class TypewriterEffect : MonoBehaviour
 {
     [SerializeField] private float defaultSpeed = 0.05f;
     [SerializeField] private AudioClip typingSound; // タイピング音
-    [SerializeField] private int soundFrequency = 2; // 何文字ごとに鳴らすか
+    [SerializeField] private int soundFrequency = 6; // 何文字ごとに鳴らすか
     private Coroutine typingCoroutine;
     public bool IsTyping { get; private set; }
     private string currentFullText;
@@ -70,7 +70,7 @@ public class TypewriterEffect : MonoBehaviour
             {
                 if (SoundManager.Instance != null)
                 {
-                    SoundManager.Instance.PlaySound(typingSound, 0.5f); // 0.5fは音量（調整可能にしても良い）
+                    SoundManager.Instance.PlaySound(typingSound, 0.1f); // 0.1fは音量（調整可能にしても良い）
                 }
             }
             yield return new WaitForSeconds(speed);
