@@ -20,3 +20,4 @@ MonoBehaviour:
   effect: 1
   numberValue: 10
   handValue: 10
+  flavorText: "\u5F7C\u3092\u67F1\u306B\u7E4B\u3044\u3067\u304A\u3051\u3002\u76EE\u304C\u899A\u3081\u308B\u307E\u3067\u306A\u3002"
