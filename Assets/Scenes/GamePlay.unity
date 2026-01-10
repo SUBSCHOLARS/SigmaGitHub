@@ -1417,7 +1417,7 @@ MonoBehaviour:
   currentTrendText: {fileID: 1457230953}
   yourTrendText: {fileID: 1093734478}
   sectorIcon: {fileID: 1351462549}
-  errorSprite: {fileID: 21300000, guid: c3d94967738c345a7a22c0b5b962638b, type: 3}
+  errorSprite: {fileID: -1935065415133522325, guid: 56fd93bf1c2f44f0a90989040b6b7ba0, type: 3}
   continueButton: {fileID: 1958600343}
   fieldTopStampEffect: {fileID: 608672885}
   revealAllHandsPanel: {fileID: 1204147250}
