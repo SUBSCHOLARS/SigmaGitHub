@@ -15,7 +15,7 @@ MonoBehaviour:
   cardName: Censor
   cardSprite: {fileID: 1187792249778045608, guid: 4f93d0785480c4650bc2758356cd2c94, type: 3}
   cardIcon: {fileID: -5208859477969359750, guid: f4d1b9aff1d9642e098052bdbb1bfe21, type: 3}
-  rawSectorIcon: {fileID: -1935065415133522325, guid: 56fd93bf1c2f44f0a90989040b6b7ba0, type: 3}
+  rawSectorIcon: {fileID: 21300000, guid: 56fd93bf1c2f44f0a90989040b6b7ba0, type: 3}
   sector: 4
   effect: 5
   numberValue: 0

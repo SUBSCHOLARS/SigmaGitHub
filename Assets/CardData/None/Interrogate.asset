@@ -15,7 +15,7 @@ MonoBehaviour:
   cardName: Interrogate
   cardSprite: {fileID: 7715035301452304648, guid: 48f5da631605c47faa469fdf17289a84, type: 3}
   cardIcon: {fileID: 4510279645623468925, guid: 694b8fa7a317b4dddbf7da2b3cefc0ff, type: 3}
-  rawSectorIcon: {fileID: -1935065415133522325, guid: 56fd93bf1c2f44f0a90989040b6b7ba0, type: 3}
+  rawSectorIcon: {fileID: 21300000, guid: 56fd93bf1c2f44f0a90989040b6b7ba0, type: 3}
   sector: 4
   effect: 6
   numberValue: 0
