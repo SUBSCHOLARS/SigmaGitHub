@@ -15,5 +15,6 @@ public class CardData : ScriptableObject
     public int numberValue; // 場に出た時の「トレンド」数値
     public int handValue; // 手札にある時の「合計値」
     [Header("フレーバーテキスト")]
+    [TextArea(3, 10)]
     public string flavorText;
 }
