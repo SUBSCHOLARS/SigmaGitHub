@@ -6941,6 +6941,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c38de017aa993480d991f54ac2d63ee5, type: 2}
   - {fileID: 11400000, guid: f6c965e82d6e0407cb413fb080566820, type: 2}
   - {fileID: 11400000, guid: 688c95ac5655c4721ae1878b5e85d3e1, type: 2}
+  - {fileID: 11400000, guid: 732b69585ac9b4a229380a6267948b4b, type: 2}
+  - {fileID: 11400000, guid: dd7efeb4b5ae249239735d20ce587278, type: 2}
+  - {fileID: 11400000, guid: c4b0e756a34274a1587133245bd9edb1, type: 2}
+  - {fileID: 11400000, guid: 536494d10f98a49a7b52e112b9634cbf, type: 2}
   drawSound: {fileID: 8300000, guid: c96d6c23a815e4e51bf8d1b1a722dd9c, type: 3}
   playCardSound: {fileID: 8300000, guid: 7a63a4602902a42f38ec2925153fec9e, type: 3}
   winSound: {fileID: 8300000, guid: 40b6ab62ba0b346c3aae463a5cfc7ded, type: 3}
