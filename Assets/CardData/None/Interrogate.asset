@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Interrogate
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Interrogate
-  cardSprite: {fileID: 7715035301452304648, guid: 48f5da631605c47faa469fdf17289a84, type: 3}
+  cardSprite: {fileID: -7184910616248923639, guid: b2664bfe40b8a4637b5647372885815e, type: 3}
   cardIcon: {fileID: 4510279645623468925, guid: 694b8fa7a317b4dddbf7da2b3cefc0ff, type: 3}
   rawSectorIcon: {fileID: 21300000, guid: 56fd93bf1c2f44f0a90989040b6b7ba0, type: 3}
   sector: 4
   effect: 6
-  numberValue: 0
-  handValue: 15
+  numberValue: 11
+  handValue: 11
   flavorText: "\u6B63\u76F4\u306B\u8A00\u3048\u3070\u6E1B\u5211\u3055\u308C\u308B..\u3068\u3044\u3046\u306E\u306F\u5618\u3060\u304C\u306D\u3002"

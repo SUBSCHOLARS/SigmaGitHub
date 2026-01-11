@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Censor
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Censor
-  cardSprite: {fileID: 1187792249778045608, guid: 4f93d0785480c4650bc2758356cd2c94, type: 3}
+  cardSprite: {fileID: -3223026965499251454, guid: 5c7c5415c70be4952ac7379f35774abd, type: 3}
   cardIcon: {fileID: -5208859477969359750, guid: f4d1b9aff1d9642e098052bdbb1bfe21, type: 3}
   rawSectorIcon: {fileID: 21300000, guid: 56fd93bf1c2f44f0a90989040b6b7ba0, type: 3}
   sector: 4
   effect: 5
-  numberValue: 0
-  handValue: 15
+  numberValue: 12
+  handValue: 12
   flavorText: "\u7CBE\u795E\u885B\u751F\u4E0A\u6709\u5BB3\u306A\u3082\u306E\u3092\u6240\u6301\u3057\u3066\u3044\u306A\u3044\u78BA\u8A8D\u3059\u308B\u3002"
