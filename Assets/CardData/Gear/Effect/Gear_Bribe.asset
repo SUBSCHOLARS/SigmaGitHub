@@ -19,5 +19,5 @@ MonoBehaviour:
   sector: 2
   effect: 4
   numberValue: 0
-  handValue: 15
+  handValue: 0
   flavorText: "\u6F64\u6ED1\u6CB9\u3092\u633F\u305B\u3070\u3001\u7121\u7406\u306A\u56DE\u8EE2\u3082\u53EF\u80FD\u306B\u306A\u308B\u3002"
