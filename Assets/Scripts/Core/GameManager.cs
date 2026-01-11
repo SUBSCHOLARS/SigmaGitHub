@@ -266,9 +266,14 @@ public class GameManager : MonoBehaviour
             return true;
         }
         // 1. cardToPlay.effect == CardEffect.Bribe (賄賂) なら true
-        if (cardToPlay.effect == CardEffect.Bribe ||
+        if (
             cardToPlay.effect == CardEffect.Censor ||
             cardToPlay.effect == CardEffect.Interrogate)
+        {
+            return true;
+        }
+        // 一旦ここにBribeの処理を切り分ける
+        if(cardToPlay.effect==CardEffect.Bribe && cardToPlay.sector==currentCardOnField.sector)
         {
             return true;
         }
