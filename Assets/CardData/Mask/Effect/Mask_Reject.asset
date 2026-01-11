@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Mask_Reject
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Mask_Reject
-  cardSprite: {fileID: 8127521252971018266, guid: cc6cd0ba1205d464db6f09036899a128, type: 3}
+  cardSprite: {fileID: -3662667429919439483, guid: d159f477cc75447ef86f3c02d9b8db7b, type: 3}
   cardIcon: {fileID: 21300000, guid: 315248dda4f24424c89d15e1faf90d06, type: 3}
   rawSectorIcon: {fileID: -3032423481802380067, guid: 66f988e3808dc48d7842c395e3b18a12, type: 3}
   sector: 3
   effect: 2
-  numberValue: 10
-  handValue: 10
+  numberValue: 9
+  handValue: 9
   flavorText: "\u6F14\u6280\u6307\u5C0E\u304C\u5FC5\u8981\u3060\u306A\u3002\u3084\u308A\u76F4\u3057\u3002"
