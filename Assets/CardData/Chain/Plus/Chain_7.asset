@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4225d8cb72d5c4a0bb6519732f34a999, type: 3}
+  m_Name: Chain_7
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardName: Chain_7
+  cardSprite: {fileID: -133135507253670836, guid: 7b26514f5f97041189a0e3fc47dd1cee, type: 3}
+  cardIcon: {fileID: -8521430321978907908, guid: e77ec512d0cfd42f5906b42dd8b30737, type: 3}
+  rawSectorIcon: {fileID: -8836576340095815701, guid: f4bf796c9e23a42d4b85a92b84d85a4e, type: 3}
+  sector: 1
+  effect: 0
+  numberValue: 7
+  handValue: 7
+  flavorText: 
