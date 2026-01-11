@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Gear_Suspend
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Gear_Suspend
-  cardSprite: {fileID: -2231462214677881968, guid: df782e648eb6c4004b0c9bc2200e638c, type: 3}
+  cardSprite: {fileID: 5805973209625920597, guid: 7eb8ce667967c47228f21711544a79ee, type: 3}
   cardIcon: {fileID: 21300000, guid: 53719873aa14d45b8b7853374656abf5, type: 3}
   rawSectorIcon: {fileID: 4658342076437320494, guid: a76277a260e424418ae8c982034e7f82, type: 3}
   sector: 2
   effect: 1
-  numberValue: 10
-  handValue: 10
+  numberValue: 8
+  handValue: 8
   flavorText: "\u30E1\u30F3\u30C6\u30CA\u30F3\u30B9\u4E2D\u3002\u3053\u306E\u30D1\u30FC\u30C4\u3092\u53D6\u308A\u5916\u305B\u3002"

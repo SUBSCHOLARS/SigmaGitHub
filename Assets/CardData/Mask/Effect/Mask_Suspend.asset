@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Mask_Suspend
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Mask_Suspend
-  cardSprite: {fileID: -6543088085413894792, guid: 2580d859503874b0c942c435a8ed2147, type: 3}
+  cardSprite: {fileID: -2170936997881233239, guid: 1488a7799156f4a3c82224b2c746ae38, type: 3}
   cardIcon: {fileID: 21300000, guid: 5103e6563000c4728b82f46960b79d8c, type: 3}
   rawSectorIcon: {fileID: -3032423481802380067, guid: 66f988e3808dc48d7842c395e3b18a12, type: 3}
   sector: 3
   effect: 1
-  numberValue: 10
-  handValue: 10
+  numberValue: 8
+  handValue: 8
   flavorText: "\u821E\u53F0\u8896\u306B\u4E0B\u304C\u3063\u3066\u3044\u308D\u3002\u541B\u306E\u51FA\u756A\u306F\u306A\u3044\u3002"
