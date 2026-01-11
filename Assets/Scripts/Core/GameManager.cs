@@ -169,7 +169,7 @@ public class GameManager : MonoBehaviour
                 SoundManager.Instance.PlaySound(drawSound);
             }
 
-            // (デバッグログはコンソールが荒れるので、必要な方だけ残します)
+            // (デバッグログはコンソールが荒れるので、必要な文だけ表示)
             if (hand == players[0].hand)
             {
                 Debug.Log("プレイヤーが引いたカード: " + drawnCard.cardName);
