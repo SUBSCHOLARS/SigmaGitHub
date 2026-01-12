@@ -718,11 +718,7 @@ public class UIManager : MonoBehaviour
             // ここでスタンプ判定を行う
             if(fieldTopStampEffect!=null)
             {
-                if(cardData.effect==CardEffect.Bribe)
-                {
-                    fieldTopStampEffect.ActivateStamp(sectorIcon.sprite);
-                }
-                else
+                if(!(cardData.effect==CardEffect.Bribe))
                 {
                     fieldTopStampEffect.ResetStamp();
                 }
