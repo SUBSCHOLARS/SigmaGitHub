@@ -214,11 +214,11 @@ public class TutorialGameManager : GameManager
         yield return StartCoroutine(ShowDialogue("..."));
         yield return StartCoroutine(ShowDialogue("「このゲーム」そのものについて少し話しておこうか。"));
         yield return StartCoroutine(ShowDialogue("君もこの世界の住人だ。\n管理局というものはすでにご存知だろう。"));
-        yield return StartCoroutine(ShowDialogue("ではその「管理局」が世間の流行を操作しているという噂は知っているかな？"));
+        yield return StartCoroutine(ShowDialogue("そしてその「管理局」が世間の流行を操作していることもね。"));
         yield return StartCoroutine(ShowDialogue("ファッションから料理、果ては国際間の関係、人種まで..."));
         yield return StartCoroutine(ShowDialogue("そしてそんな世間の風潮に適合している市民を奴らは「評価」しているらしい。"));
         yield return StartCoroutine(ShowDialogue("これはそんな管理局の奴らを風刺するために作られたゲームソフトなのさ。"));
-        yield return StartCoroutine(ShowDialogue("ちなみに制作者は国家転覆未遂かなんかで粛清済みらしい。"));
+        yield return StartCoroutine(ShowDialogue("ちなみに制作者は国家転覆未遂かなんかで粛清済み。"));
         yield return StartCoroutine(ShowDialogue("おっと。怖がらせちゃったかな？"));
         yield return StartCoroutine(ShowDialogue("安心しなって。\nこのゲームは一度ローカルにダウンロードすればうまい具合に存在を隠してくれる。"));
         yield return StartCoroutine(ShowDialogue("たとえあっちから支給されたコンピュータでも、ね。"));
