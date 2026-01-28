@@ -32,8 +32,11 @@ public class NewsTickerController : MonoBehaviour
 
         if (updateOnStart)
         {
-            
+            ShowRandomNews();
         }
+
+        // 定期更新のコルーチンを開始
+        StartCoroutine(NewsLoop());
     }
 
     private IEnumerator NewsLoop()
@@ -41,6 +44,7 @@ public class NewsTickerController : MonoBehaviour
         while(true)
         {
             yield return new WaitForSeconds(updateInterval);
+            ShowRandomNews();
         }
     }
 
