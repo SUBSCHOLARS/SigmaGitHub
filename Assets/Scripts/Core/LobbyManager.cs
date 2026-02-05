@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -9,6 +10,7 @@ public class LobbyManager : MonoBehaviour
     [SerializeField] private string tutorialSceneName = "Tutorial";
     [Header("ボタン")]
     [SerializeField] private Button startButton;
+    [SerializeField] private TextMeshProUGUI buttonText;
     [Header("ボタンの押下サウンド")]
     [SerializeField] private AudioClip nextButtonSound;
     void Start()
@@ -16,6 +18,7 @@ public class LobbyManager : MonoBehaviour
         if(TutorialGameManager.isTutorialFinish)
         {
             startButton.interactable=true;
+            buttonText.color=Color.white;
         }
     }
     public void OnStartGameClicked()
