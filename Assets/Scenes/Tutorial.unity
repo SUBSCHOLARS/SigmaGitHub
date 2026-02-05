@@ -2024,6 +2024,7 @@ MonoBehaviour:
   nameErrorText: {fileID: 612045640}
   typewriter: {fileID: 433041819}
   dogNotice: {fileID: 8300000, guid: e69c7a613dfd349c2aab3259182e4a7b, type: 3}
+  nextButtonSound: {fileID: 8300000, guid: 51c677061068a4a2492ad0c27a4f6015, type: 3}
   roundText: {fileID: 449989649}
   scoreBoardPanel: {fileID: 73119776}
   currentTrendText: {fileID: 1457230951}

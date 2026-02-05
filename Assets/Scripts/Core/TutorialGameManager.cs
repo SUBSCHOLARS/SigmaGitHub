@@ -32,6 +32,7 @@ public class TutorialGameManager : GameManager
     private bool isWaitingForClick = false;
     [Header("サウンド")]
     [SerializeField] private AudioClip dogNotice;
+    [SerializeField] private AudioClip nextButtonSound;
     [Header("ゲーム内UI")]
     [SerializeField] private GameObject roundText;
     [SerializeField] private GameObject scoreBoardPanel;
@@ -214,6 +215,7 @@ public class TutorialGameManager : GameManager
 
         // ロビーに戻るボタンなどを表示
         // UIManager.Instance.ShowGameEndAnimation(true, players[0]); // 仮の勝利演出
+        SoundManager.Instance.PlaySound(nextButtonSound);
         isTutorialFinish=true;
         SceneManager.LoadSceneAsync("Lobby");
     }
