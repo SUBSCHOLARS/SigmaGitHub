@@ -211,20 +211,6 @@ public class TutorialGameManager : GameManager
         yield return StartCoroutine(ShowDialogue("まあこんなところかな？\n他にもいろいろなカードがあるけど、\n取り敢えず「セルフマッチ」と「トレンドライド」だけ覚えておいてくれ。"));
         yield return StartCoroutine(ShowDialogue("あとはやっていくうちに覚えられるさ。"));
         yield return new WaitForSeconds(1.5f);
-        yield return StartCoroutine(ShowDialogue("..."));
-        yield return StartCoroutine(ShowDialogue("「このゲーム」そのものについて少し話しておこうか。"));
-        yield return StartCoroutine(ShowDialogue("君もこの世界の住人だ。\n管理局というものはすでにご存知だろう。"));
-        yield return StartCoroutine(ShowDialogue("そしてその「管理局」が世間の流行を操作していることもね。"));
-        yield return StartCoroutine(ShowDialogue("ファッションから料理、果ては国際間の関係、人種まで..."));
-        yield return StartCoroutine(ShowDialogue("そしてそんな世間の風潮に適合している市民を奴らは「評価」しているらしい。"));
-        yield return StartCoroutine(ShowDialogue("これはそんな管理局の奴らを風刺するために作られたゲームソフトなのさ。"));
-        yield return StartCoroutine(ShowDialogue("ちなみに制作者は国家転覆未遂かなんかで粛清済み。"));
-        yield return StartCoroutine(ShowDialogue("おっと。怖がらせちゃったかな？"));
-        yield return StartCoroutine(ShowDialogue("安心しなって。\nこのゲームは一度ローカルにダウンロードすればうまい具合に存在を隠してくれる。"));
-        yield return StartCoroutine(ShowDialogue("たとえあっちから支給されたコンピュータでも、ね。"));
-        yield return StartCoroutine(ShowDialogue("ま、気が済むまで遊んでみなよ。"));
-        yield return StartCoroutine(ShowDialogue("トレンドを見極め、利用し、そして最後には出し抜く。"));
-        yield return StartCoroutine(ShowDialogue("さあ、どちらでもいい。カードを出して証明してみせて。\n君がこの世界に適合できる人間であることを。"));
 
         // ロビーに戻るボタンなどを表示
         // UIManager.Instance.ShowGameEndAnimation(true, players[0]); // 仮の勝利演出
