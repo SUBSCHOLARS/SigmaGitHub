@@ -31,7 +31,7 @@ public class LobbyManager : MonoBehaviour
     public void OnTutorialClicked()
     {
         Debug.Log("Starting Tutorial...");
-         SoundManager.Instance.PlaySound(nextButtonSound);
+        SoundManager.Instance.PlaySound(nextButtonSound);
         SceneManager.LoadScene(tutorialSceneName);
     }
 
