@@ -538,7 +538,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &73119777
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2085,7 +2085,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &297428466
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3146,7 +3146,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &449989650
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7322,8 +7322,8 @@ GameObject:
   - component: {fileID: 1087106349}
   - component: {fileID: 1087106353}
   - component: {fileID: 1087106352}
-  - component: {fileID: 1087106351}
   - component: {fileID: 1087106350}
+  - component: {fileID: 1087106354}
   m_Layer: 5
   m_Name: Mask
   m_TagString: Untagged
@@ -7447,24 +7447,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &1087106351
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1087106348}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dfc87c6be68884439a78799c08a16a6c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RetroWipeEffect
-  maskImage: {fileID: 1087106352}
-  steps: 5
-  totalDuration: 1
-  useRandomJitter: 0
-  audioSource: {fileID: 1087106350}
-  loadingSound: {fileID: 8300000, guid: fa23090abf85d43aab79caa1cf8987e4, type: 3}
 --- !u!114 &1087106352
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7503,6 +7485,25 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1087106348}
   m_CullTransparentMesh: 1
+--- !u!114 &1087106354
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1087106348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b1ac8e013e274ba3b4f42093081e8dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RetroWipeEffectForTutorial
+  maskImage: {fileID: 1087106352}
+  steps: 20
+  totalDuration: 2
+  useRandomJitter: 1
+  audioSource: {fileID: 1087106350}
+  loadingSound: {fileID: 8300000, guid: 46d3360dbd7e0477aaaecc71636bbc35, type: 3}
+  tutorialGameManager: {fileID: 297428465}
 --- !u!1 &1093734476
 GameObject:
   m_ObjectHideFlags: 0
@@ -7520,7 +7521,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1093734477
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7789,7 +7790,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1109174799
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8019,7 +8020,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1121527024
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11100,7 +11101,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1457230952
 RectTransform:
   m_ObjectHideFlags: 0

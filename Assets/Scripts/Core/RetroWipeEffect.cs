@@ -34,7 +34,7 @@ public class RetroWipeEffect : MonoBehaviour
         StartCoroutine(AnimateWipe());
     }
 
-    private IEnumerator AnimateWipe()
+    public virtual IEnumerator AnimateWipe()
     {
         // 音声再生開始
         if(audioSource!=null && loadingSound!=null)
@@ -74,6 +74,10 @@ public class RetroWipeEffect : MonoBehaviour
         {
             audioSource.Stop();
         }
+        Deactivate();
+    }
+    public virtual void Deactivate()
+    {
         gameObject.SetActive(false);
     }
 }
