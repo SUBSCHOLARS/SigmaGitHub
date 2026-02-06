@@ -1318,7 +1318,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -1416,11 +1416,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RetroWipeEffect
   maskImage: {fileID: 1051257914}
-  steps: 5
+  steps: 8
   totalDuration: 1
   useRandomJitter: 0
   audioSource: {fileID: 1051257916}
-  loadingSound: {fileID: 8300000, guid: 46d3360dbd7e0477aaaecc71636bbc35, type: 3}
+  loadingSound: {fileID: 8300000, guid: fa23090abf85d43aab79caa1cf8987e4, type: 3}
 --- !u!1 &1171492284
 GameObject:
   m_ObjectHideFlags: 0

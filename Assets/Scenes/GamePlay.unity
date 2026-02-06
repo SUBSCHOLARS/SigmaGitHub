@@ -7878,7 +7878,7 @@ MonoBehaviour:
   totalDuration: 1
   useRandomJitter: 0
   audioSource: {fileID: 2048510230}
-  loadingSound: {fileID: 8300000, guid: 46d3360dbd7e0477aaaecc71636bbc35, type: 3}
+  loadingSound: {fileID: 8300000, guid: fa23090abf85d43aab79caa1cf8987e4, type: 3}
 --- !u!114 &2048510232
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -41,7 +41,6 @@ public class RetroWipeEffect : MonoBehaviour
         {
             audioSource.clip=loadingSound;
             audioSource.loop=true;
-            audioSource.Play();
         }
         float currentStep=0;
         // 1ステップあたりの減算量（例: 20分割なら1/20=0.05ずつ減らす）
@@ -62,15 +61,16 @@ public class RetroWipeEffect : MonoBehaviour
             }
             // 2. 描画更新（ガクッと減らす）
             currentStep++;
-            maskImage.fillAmount=1.0f-(currentStep*stepAmount);
-            // 指定時間待機（Updateを使わないため、ここが処理の切れ目になります）
             yield return new WaitForSeconds(waitTime);
+            // 指定時間待機（Updateを使わないため、ここが処理の切れ目になります）
+            maskImage.fillAmount=1.0f-(currentStep*stepAmount);
+            audioSource.Play();
 
             // ステップごとにピッチを少し変え、「ガガガ」感を増す
-            if(audioSource!=null)
-            {
-                audioSource.pitch=Random.Range(0.95f, 1.05f);
-            }
+            // if(audioSource!=null)
+            // {
+            //     audioSource.pitch=Random.Range(0.95f, 1.05f);
+            // }
         }
          // 3. 完了処理
         // fillAmountを完全にゼロとする
