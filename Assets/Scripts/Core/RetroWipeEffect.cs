@@ -65,12 +65,6 @@ public class RetroWipeEffect : MonoBehaviour
             // 指定時間待機（Updateを使わないため、ここが処理の切れ目になります）
             maskImage.fillAmount=1.0f-(currentStep*stepAmount);
             audioSource.Play();
-
-            // ステップごとにピッチを少し変え、「ガガガ」感を増す
-            // if(audioSource!=null)
-            // {
-            //     audioSource.pitch=Random.Range(0.95f, 1.05f);
-            // }
         }
          // 3. 完了処理
         // fillAmountを完全にゼロとする
