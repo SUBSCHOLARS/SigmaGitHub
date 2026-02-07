@@ -1,0 +1,79 @@
+using NUnit.Framework;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class InquiryManager : MonoBehaviour
+{
+    [SerializeField] private InquiryResponseDatabase db;
+    [SerializeField] private InquiryData currentData;
+
+    [Header("UI参照")]
+    [SerializeField] private TextMeshProUGUI questionTextUI;
+    [SerializeField] private Image visualEffectUI;
+    [SerializeField] private Transform buttonContainer;
+    [SerializeField] private GameObject buttonPrefab;
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        DisplayInquiry(currentData);
+    }
+
+    public void DisplayInquiry(InquiryData data)
+    {
+        if(data==null)
+        {
+            FinishInquiry();
+            return;
+        }
+        currentData=data;
+        questionTextUI.text=data.questionText;
+        if(visualEffectUI!=null) visualEffectUI.sprite=data.photo;
+
+        // 古いボタンを削除
+        foreach(Transform child in buttonContainer) Destroy(child.gameObject);
+
+        // 新しいボタンを生成
+        foreach(var choice in data.choices)
+        {
+            // プレハブ（Rootオブジェクト）を生成
+            GameObject rootObject=Instantiate(buttonPrefab, buttonContainer);
+            // 全ての子のTMPに同じテキストを流し込む（Button用とImage用）
+            TextMeshProUGUI[] texts=rootObject.GetComponentsInChildren<TextMeshProUGUI>();
+            foreach(var t in texts) t.text=choice.buttonLabel;
+
+            // 子要素からHoldButtonスクリプトを探す
+            HoldButton holdScript=rootObject.GetComponentInChildren<HoldButton>();
+
+            if(holdScript!=null)
+            {
+                bool isLocked=db.confirmedIdeology!=IdeologyType.None && choice.ideologyType!=IdeologyType.None;
+
+                if(isLocked)
+                {
+                    // ロック時はButtonコンポーネントを無効化
+                    var btn = holdScript.GetComponent<Button>();
+                    if(btn!=null) btn.interactable=false;
+                }
+                else
+                {
+                    // ホールド時間と完了時のアクションを注入
+                    // durationが0なら即時実行、あればその時間ホールドさせる
+                    float time=(choice.pressDuration >0 ) ? choice.pressDuration : 0.01f;
+                    holdScript.Initalize(time, ()=>OnChoiceSelected(choice));
+                }
+            }
+        }
+    }
+    private void OnChoiceSelected(InquiryChoice choice)
+    {
+        db.RecordResponse(currentData.questionID, choice);
+        // 次の質問へ
+        DisplayInquiry(choice.nextInquiry);
+    }
+    private void FinishInquiry()
+    {
+        Debug.Log("質問シーケンス終了。次のモードへ移行します。");
+        // ここで対戦シーンやリザルトシーンへ遷移させる。
+    }
+}

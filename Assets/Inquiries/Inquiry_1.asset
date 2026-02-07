@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a446d676519b94ffdb8d21b99f0443f3, type: 3}
+  m_Name: Inquiry_1
+  m_EditorClassIdentifier: Assembly-CSharp::Inquiries
+  questionID: 1
+  questionText: "\u672C\u88FD\u54C1\u3092\u4F7F\u7528\u3059\u308B\u3053\u3068\u306F\u521D\u3081\u3066\u3067\u3059\u304B\uFF1F"
+  photo: {fileID: 0}
+  choices:
+  - buttonLabel: "\u306F\u3044"
+    ideologyType: 0
+    pressDuration: 3
+    nextInquiry: {fileID: 0}
+  - buttonLabel: "\u3044\u3044\u3048"
+    ideologyType: 0
+    pressDuration: 3
+    nextInquiry: {fileID: 0}

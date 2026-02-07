@@ -118,4 +118,14 @@ public class HoldButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
             audioSource.Stop();
         }
     }
+    public void Initalize(float holdTime, UnityAction action)
+    {
+        this.requiredHoldTime=holdTime;
+        this.isCompleted=false;
+        this.currentProgress=0f;
+
+        // イベントのリセットと登録
+        OnComplete?.RemoveAllListeners();
+        OnComplete?.AddListener(action);
+    }
 }
