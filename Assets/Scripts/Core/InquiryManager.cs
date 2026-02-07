@@ -13,9 +13,13 @@ public class InquiryManager : MonoBehaviour
     [SerializeField] private Image visualEffectUI;
     [SerializeField] private Transform buttonContainer;
     [SerializeField] private GameObject buttonPrefab;
+    [Header("マスク用オブジェクト")]
+    [SerializeField] private GameObject maskObject;
+    private RetroWipeEffect wipeEffect;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        wipeEffect=maskObject.GetComponent<RetroWipeEffect>();
         DisplayInquiry(currentData);
     }
 
@@ -59,7 +63,7 @@ public class InquiryManager : MonoBehaviour
                 {
                     // ホールド時間と完了時のアクションを注入
                     // durationが0なら即時実行、あればその時間ホールドさせる
-                    float time=(choice.pressDuration >0 ) ? choice.pressDuration : 0.01f;
+                    float time=(choice.pressDuration>0 ) ? choice.pressDuration : 0.01f;
                     holdScript.Initalize(time, ()=>OnChoiceSelected(choice));
                 }
             }
@@ -69,6 +73,11 @@ public class InquiryManager : MonoBehaviour
     {
         db.RecordResponse(currentData.questionID, choice);
         // 次の質問へ
+        if(wipeEffect!=null)
+        {
+            maskObject.SetActive(true);
+            wipeEffect.Play();
+        }
         DisplayInquiry(choice.nextInquiry);
     }
     private void FinishInquiry()

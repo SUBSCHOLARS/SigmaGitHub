@@ -18,6 +18,8 @@ public class RetroWipeEffect : MonoBehaviour
     [Header("オーディオ設定")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip loadingSound;
+
+    private Coroutine activeCoroutine;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -78,6 +80,26 @@ public class RetroWipeEffect : MonoBehaviour
     }
     public virtual void Deactivate()
     {
+        activeCoroutine=null;
         gameObject.SetActive(false);
+    }
+
+    // 外部からこのエフェクトを呼び出すためのエントリーポイント
+    public void Play()
+    {
+        // 既に実行中なら一度止める（安全策）
+        if (activeCoroutine != null) StopCoroutine(activeCoroutine);
+        
+        // 状態のリセット
+        gameObject.SetActive(true);
+        if (maskImage != null)
+        {
+            maskImage.type = Image.Type.Filled;
+            maskImage.fillMethod = Image.FillMethod.Vertical;
+            maskImage.fillOrigin = (int)Image.OriginVertical.Top;
+            maskImage.fillAmount = 1.0f; // 塗りつぶされた状態に戻す
+        }
+
+        activeCoroutine = StartCoroutine(AnimateWipe());
     }
 }
