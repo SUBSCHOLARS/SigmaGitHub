@@ -18,21 +18,21 @@ MonoBehaviour:
   choices:
   - buttonLabel: 1
     ideologyType: 0
-    pressDuration: 3
+    pressDuration: 1.5
     nextInquiry: {fileID: 0}
   - buttonLabel: 2
     ideologyType: 0
-    pressDuration: 3
+    pressDuration: 1.5
     nextInquiry: {fileID: 0}
   - buttonLabel: 3
     ideologyType: 0
-    pressDuration: 3
+    pressDuration: 1.5
     nextInquiry: {fileID: 0}
   - buttonLabel: 4
     ideologyType: 0
-    pressDuration: 3
+    pressDuration: 1.5
     nextInquiry: {fileID: 0}
   - buttonLabel: 5
     ideologyType: 0
-    pressDuration: 3
+    pressDuration: 1.5
     nextInquiry: {fileID: 0}
