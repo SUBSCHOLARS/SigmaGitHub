@@ -16,9 +16,11 @@ public class InquiryManager : MonoBehaviour
     [Header("マスク用オブジェクト")]
     [SerializeField] private GameObject maskObject;
     private RetroWipeEffect wipeEffect;
+    private AudioSource audioSource;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        audioSource=GetComponent<AudioSource>();
         wipeEffect=maskObject.GetComponent<RetroWipeEffect>();
         DisplayInquiry(currentData);
     }
@@ -72,6 +74,7 @@ public class InquiryManager : MonoBehaviour
     private void OnChoiceSelected(InquiryChoice choice)
     {
         db.RecordResponse(currentData.questionID, choice);
+        audioSource.PlayOneShot(audioSource.clip);
         // 次の質問へ
         if(wipeEffect!=null)
         {
