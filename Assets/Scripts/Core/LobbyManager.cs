@@ -21,7 +21,7 @@ public class LobbyManager : MonoBehaviour
             fillObject.SetActive(true);
             startButton.interactable=true;
             buttonText.color=Color.white;
-            buttonText.text="ゲーム1";
+            buttonText.text="ゲーム-1";
         }
     }
     public void OnStartGameClicked()

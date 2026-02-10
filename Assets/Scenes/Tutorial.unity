@@ -7499,7 +7499,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RetroWipeEffectForTutorial
   maskImage: {fileID: 1087106352}
   steps: 8
-  totalDuration: 2
+  totalDuration: 4
   useRandomJitter: 1
   audioSource: {fileID: 1087106350}
   loadingSound: {fileID: 8300000, guid: 46d3360dbd7e0477aaaecc71636bbc35, type: 3}
