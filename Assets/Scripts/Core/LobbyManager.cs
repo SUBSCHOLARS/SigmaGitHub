@@ -19,6 +19,7 @@ public class LobbyManager : MonoBehaviour
         {
             startButton.interactable=true;
             buttonText.color=Color.white;
+            buttonText.text="ゲーム1";
         }
     }
     public void OnStartGameClicked()
