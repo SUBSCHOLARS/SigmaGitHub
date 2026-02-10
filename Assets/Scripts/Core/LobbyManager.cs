@@ -11,12 +11,14 @@ public class LobbyManager : MonoBehaviour
     [Header("ボタン")]
     [SerializeField] private Button startButton;
     [SerializeField] private TextMeshProUGUI buttonText;
+    [SerializeField] private GameObject fillObject;
     [Header("ボタンの押下サウンド")]
     [SerializeField] private AudioClip nextButtonSound;
     void Start()
     {
         if(TutorialGameManager.isTutorialFinish)
         {
+            fillObject.SetActive(true);
             startButton.interactable=true;
             buttonText.color=Color.white;
             buttonText.text="ゲーム1";
