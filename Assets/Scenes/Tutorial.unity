@@ -2745,6 +2745,7 @@ MonoBehaviour:
   revealAllHandsPanel: {fileID: 0}
   playerNameText: {fileID: 0}
   nextButtonSound: {fileID: 0}
+  gameGoalText: {fileID: 0}
 --- !u!1 &373105530
 GameObject:
   m_ObjectHideFlags: 0
@@ -7502,7 +7503,7 @@ MonoBehaviour:
   totalDuration: 4
   useRandomJitter: 1
   audioSource: {fileID: 1087106350}
-  loadingSound: {fileID: 8300000, guid: 46d3360dbd7e0477aaaecc71636bbc35, type: 3}
+  loadingSound: {fileID: 8300000, guid: fa23090abf85d43aab79caa1cf8987e4, type: 3}
   tutorialGameManager: {fileID: 297428465}
 --- !u!1 &1093734476
 GameObject:

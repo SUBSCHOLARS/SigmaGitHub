@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/Awake.unity
+    guid: f8eca84e9052c46a49124cca7a646621
+  - enabled: 1
     path: Assets/Scenes/Lobby.unity
     guid: a4fe24761a8f144c7afb57a2a5bc22c8
   - enabled: 1
@@ -14,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Tutorial.unity
     guid: 2afa01c0d45464308a28bb161aeabed7
+  - enabled: 1
+    path: Assets/Scenes/Inquiry.unity
+    guid: 957ce6966f73d42d1b8c750c413c2f6a
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

@@ -22,6 +22,10 @@ public class LobbyManager : MonoBehaviour
             startButton.interactable=true;
             buttonText.color=Color.white;
             buttonText.text="ゲーム-1";
+            if(GameManager.Instance.GetProgressFlag()==1)
+            {
+                buttonText.text="ゲーム-2";
+            }
         }
     }
     public void OnStartGameClicked()

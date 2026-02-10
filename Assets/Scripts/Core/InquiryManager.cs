@@ -1,12 +1,14 @@
 using NUnit.Framework;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class InquiryManager : MonoBehaviour
 {
     [SerializeField] private InquiryResponseDatabase db;
     [SerializeField] private InquiryData currentData;
+    [SerializeField] private InquiryData[] eachOfFirstInquiries;
 
     [Header("UI参照")]
     [SerializeField] private TextMeshProUGUI questionTextUI;
@@ -22,7 +24,18 @@ public class InquiryManager : MonoBehaviour
     {
         audioSource=GetComponent<AudioSource>();
         wipeEffect=maskObject.GetComponent<RetroWipeEffect>();
-        DisplayInquiry(currentData);
+        switch (GameManager.Instance.GetProgressFlag())
+        {
+            case 0:
+                DisplayInquiry(eachOfFirstInquiries[0]);
+                break;
+            case 1:
+                DisplayInquiry(eachOfFirstInquiries[1]);
+                break;
+            default:
+                Debug.LogError("不明なゲーム進行フラグ: " + GameManager.Instance.GetProgressFlag());
+                break;
+        }
     }
 
     public void DisplayInquiry(InquiryData data)
@@ -32,8 +45,10 @@ public class InquiryManager : MonoBehaviour
             FinishInquiry();
             return;
         }
+        
         currentData=data;
         questionTextUI.text=data.questionText;
+
         if(visualEffectUI!=null) visualEffectUI.sprite=data.photo;
 
         // 古いボタンを削除
@@ -86,6 +101,18 @@ public class InquiryManager : MonoBehaviour
     private void FinishInquiry()
     {
         Debug.Log("質問シーケンス終了。次のモードへ移行します。");
+        switch (GameManager.Instance.GetProgressFlag())
+        {
+            case 0:
+                GameManager.Instance.SetProgressFlag(1);
+                break;
+            case 1:
+                GameManager.Instance.SetProgressFlag(2);
+                break;
+            default:
+                break;
+        }
         // ここで対戦シーンやリザルトシーンへ遷移させる。
+        SceneManager.LoadSceneAsync("Lobby");
     }
 }

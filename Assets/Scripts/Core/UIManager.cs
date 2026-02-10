@@ -81,6 +81,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI playerNameText;
     [Header("オーディオ")]
     [SerializeField] private AudioClip nextButtonSound;
+    [Header("ゲームごとのゴール表示テキスト")]
+    [SerializeField] private TextMeshProUGUI gameGoalText;
     void Awake()
     {
         if (Instance == null)
@@ -1152,6 +1154,25 @@ public class UIManager : MonoBehaviour
         if (revealAllHandsPanel != null)
         {
             revealAllHandsPanel.SetActive(false);
+        }
+    }
+    public void SetGoalTextDependOnProgress()
+    {
+        if(GameManager.Instance.GetProgressFlag()==0)
+        {
+            gameGoalText.text="条件: 1回勝利する。";
+        }
+        else if(GameManager.Instance.GetProgressFlag()==1)
+        {
+            gameGoalText.text="条件: 2回勝利する。";
+        }
+        else if(GameManager.Instance.GetProgressFlag()==2)
+        {
+            gameGoalText.text="条件: 3回勝利する。";
+        }
+         else
+        {
+            gameGoalText.text="----------------";
         }
     }
 }

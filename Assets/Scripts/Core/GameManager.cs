@@ -3,6 +3,7 @@ using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using System;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -31,13 +32,15 @@ public class GameManager : MonoBehaviour
     protected int currentPlayerIndex = 0;
     private bool isTurnClockwise = true; // ターン進行方向（Reject用）
     public bool isPlayerInputLocked = false; // 操作ロック用のフラグ
+    // ゲームの進行度合いを管理する整数フラグ
+    private int gameProgressFlag = 0;
     protected bool isWaitingForWinConfirmation = false;
     private bool isNextPlayWild = false;
     private bool isWaitingForContinueClick = false;
     private Player gameMaster;
     // どの調査カードが使われたか記憶する変数
     private CardEffect pendingSurveyEffect = CardEffect.None;
-    private int winningScore = 100; // 勝利に必要なスコア
+    // private int winningScore = 100; // 勝利に必要なスコア
     public int currentRound = 1; // 現在のラウンド
     protected Sprite initialSprite;
     private const int FIRST_DECK_DISTRIBUTION_COUNT=21;
@@ -107,6 +110,8 @@ public class GameManager : MonoBehaviour
             StartCoroutine(StartRoundEndSequence(initialWinners, gameMaster, WinType.TrendRide));
             return; // リターンで最初のターンが開始するのを防ぐ
         }
+        // ゴール条件を表示
+        UIManager.Instance.SetGoalTextDependOnProgress();
         // プレイヤー（0番目）の手札をUIに反映
         UIManager.Instance.UpdateAllHandVisuals();
         UIManager.Instance.UpdateCurrentTrend(initialSprite, currentTrendValue);
@@ -489,8 +494,16 @@ public class GameManager : MonoBehaviour
             yield return StartCoroutine(WaitForContinueCLick());
             UIManager.Instance.ShowGameEndAnimation(false, null);
             Debug.Log($"最終勝者: {overallWinner.playerName}");
-            // ゲームを最初からリスタート
-            RestartGame();
+            // ゲームを最初からリスタート -> 質問シーケンスへ
+            // RestartGame();
+            if(!overallWinner.isCPU)
+            {
+                SceneManager.LoadSceneAsync("Inquiry");
+            }
+            else
+            {
+                StartNextRound();
+            }
         }
         else
         {
@@ -715,7 +728,7 @@ public class GameManager : MonoBehaviour
     {
         foreach (Player player in players)
         {
-            if (player.totalPoints >= winningScore)
+            if (GetProgressFlag()==0 && player.wins > 0)
             {
                 return player;
             }
@@ -1122,6 +1135,16 @@ public class GameManager : MonoBehaviour
             }
         }
         return null; // 見つからなかった場合
+    }
+    // 現在のゲーム進行フラグを取得するメソッド
+    public int GetProgressFlag()
+    {
+        return gameProgressFlag;
+    }
+    // ゲーム進行フラグを設定するメソッド
+    public void SetProgressFlag(int flag)
+    {
+        gameProgressFlag = flag;
     }
 }
 public enum PlayerID

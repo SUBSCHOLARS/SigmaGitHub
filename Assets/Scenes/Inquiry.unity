@@ -611,6 +611,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InquiryManager
   db: {fileID: 11400000, guid: 4e734454a21614c4ab1ebe5b922ff7a5, type: 2}
   currentData: {fileID: 11400000, guid: e49641f50abac457fa9e42bcf11e78d0, type: 2}
+  eachOfFirstInquiries:
+  - {fileID: 11400000, guid: e49641f50abac457fa9e42bcf11e78d0, type: 2}
   questionTextUI: {fileID: 1784406663}
   visualEffectUI: {fileID: 0}
   buttonContainer: {fileID: 1804981158}

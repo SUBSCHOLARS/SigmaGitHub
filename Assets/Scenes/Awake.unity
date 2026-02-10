@@ -1437,7 +1437,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1171492285
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1454,6 +1454,7 @@ MonoBehaviour:
   tutorialSceneName: Tutorial
   startButton: {fileID: 0}
   buttonText: {fileID: 0}
+  fillObject: {fileID: 0}
   nextButtonSound: {fileID: 8300000, guid: 51c677061068a4a2492ad0c27a4f6015, type: 3}
 --- !u!4 &1171492286
 Transform:
