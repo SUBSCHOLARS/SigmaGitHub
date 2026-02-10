@@ -7498,7 +7498,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RetroWipeEffectForTutorial
   maskImage: {fileID: 1087106352}
-  steps: 20
+  steps: 8
   totalDuration: 2
   useRandomJitter: 1
   audioSource: {fileID: 1087106350}
