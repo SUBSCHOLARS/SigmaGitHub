@@ -20,6 +20,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Inquiry.unity
     guid: 957ce6966f73d42d1b8c750c413c2f6a
+  - enabled: 1
+    path: Assets/Scenes/FreeGamePlay.unity
+    guid: 464e18306f3764603a15a85dc11fef4c
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

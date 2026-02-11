@@ -5,19 +5,19 @@ using UnityEngine.SceneManagement;
 
 // ホバー処理の司令塔となる。playerHandAreaにアタッチする。
 // Monobehaviourの他に、IPointerMoveHandler, IPointerExitHandler, IPointerClickHandlerを実装する。
-public class HandHoverDetector : MonoBehaviour, IPointerMoveHandler, IPointerExitHandler, IPointerClickHandler
+public class FreeHandHoverDetector : MonoBehaviour, IPointerMoveHandler, IPointerExitHandler, IPointerClickHandler
 {
-    // UIManagerが手札のリストをここに設定する
-    public List<CardController> cardsInHand = new List<CardController>();
+    // FreeUIManagerが手札のリストをここに設定する
+    public List<FreeCardController> cardsInHand = new List<FreeCardController>();
     public bool isInteractionEnabled = true; // クリック有効か
-    private CardController currentlyHoveredCard = null;
+    private FreeCardController currentlyHoveredCard = null;
     // カメラへの参照を追加
     private Camera mainCamera;
     // マウスがHandPlayArea(透明な壁)の上を移動し続けている間、常に呼ばれる。
     public void OnPointerMove(PointerEventData eventData)
     {
         // マウスに一番近いカードを探す（eventData.positionはピクセル座標）
-        CardController closestCard = FindClosestCard(eventData.position);
+        FreeCardController closestCard = FindClosestCard(eventData.position);
         if (closestCard != currentlyHoveredCard)
         {
             // 以前ホバーしていたカードがあれば、ホバーを削除
@@ -35,7 +35,7 @@ public class HandHoverDetector : MonoBehaviour, IPointerMoveHandler, IPointerExi
     }
     public void OnPointerClick(PointerEventData eventData)
     {
-        if(GameManager.Instance.isPlayerInputLocked)
+        if(FreeGameManager.Instance.isPlayerInputLocked)
         {
             return;
         }
@@ -67,11 +67,11 @@ public class HandHoverDetector : MonoBehaviour, IPointerMoveHandler, IPointerExi
         currentlyHoveredCard = null;
     }
     // マウスの座標に地番近いカードを探すロジック（座標変換のロジックも含む）
-    private CardController FindClosestCard(Vector2 mousePosition)
+    private FreeCardController FindClosestCard(Vector2 mousePosition)
     {
-        CardController closest = null;
+        FreeCardController closest = null;
         float minDistance = float.MaxValue;
-        foreach (CardController card in cardsInHand)
+        foreach (FreeCardController card in cardsInHand)
         {
             // カードのスクリーン座標とマウス座標の距離を計算
             // カードのワールド座標（transform.positionをmainCamera.WorldToScreenPointでピクセル座標に変換）

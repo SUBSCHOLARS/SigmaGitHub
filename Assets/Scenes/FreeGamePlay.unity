@@ -337,8 +337,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1928954887}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+      - m_Target: {fileID: 1928954889}
+        m_TargetAssemblyTypeName: FreeGameManager, Assembly-CSharp
         m_MethodName: PlayerSelectBribeTrend
         m_Mode: 3
         m_Arguments:
@@ -572,8 +572,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1928954887}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+      - m_Target: {fileID: 1928954889}
+        m_TargetAssemblyTypeName: FreeGameManager, Assembly-CSharp
         m_MethodName: PlayerDrawCard
         m_Mode: 1
         m_Arguments:
@@ -1205,8 +1205,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1928954887}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+      - m_Target: {fileID: 1928954889}
+        m_TargetAssemblyTypeName: FreeGameManager, Assembly-CSharp
         m_MethodName: PlayerConfirmWin
         m_Mode: 1
         m_Arguments:
@@ -1454,7 +1454,7 @@ GameObject:
   - component: {fileID: 369792891}
   - component: {fileID: 369792892}
   m_Layer: 0
-  m_Name: UIManager
+  m_Name: FreeUIManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1484,9 +1484,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 369792890}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f43f5ac34e77d4c6d984b36255977c49, type: 3}
+  m_Script: {fileID: 11500000, guid: cc1b86c80c6ed4d44bf52c1452855aac, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UIManager
+  m_EditorClassIdentifier: Assembly-CSharp::FreeUIManager
   playerHandContainer: {fileID: 1052176241}
   fieldCardTop: {fileID: 608672883}
   fieldCardMiddle: {fileID: 551003500}
@@ -1496,8 +1496,8 @@ MonoBehaviour:
   cpu2HandContainer: {fileID: 843086252}
   cpuCardSpacing: 30
   cpuArcAmount: 150
-  cpuRotationAmount: 7
-  cardPrefab: {fileID: 4087856086764915820, guid: 676823b40ee3c4f99904263a0a8d815d, type: 3}
+  cpuRotationAmount: 3
+  cardPrefab: {fileID: 659546419327998435, guid: e3d43ef3240864efca21d1256eaaf9b3, type: 3}
   cardBackPrefab: {fileID: 4586531106669417455, guid: 8bd66bf65c7df45388df0163aacf02df, type: 3}
   deckVisualContainer: {fileID: 938293776}
   playerTurnGlow: {fileID: 1667480559}
@@ -1536,9 +1536,6 @@ MonoBehaviour:
   revealAllHandsPanel: {fileID: 1204147250}
   playerNameText: {fileID: 723047548488427418, guid: f4412ac59f09b46f98bd0ac6a9b62bb0, type: 3}
   nextButtonSound: {fileID: 8300000, guid: 51c677061068a4a2492ad0c27a4f6015, type: 3}
-  gameGoalText: {fileID: 1305211527}
-  bloodObject: {fileID: 809594728}
-  blackOut: {fileID: 837479072}
 --- !u!1 &373105530
 GameObject:
   m_ObjectHideFlags: 0
@@ -2858,9 +2855,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 622864812}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 036ef2b3b74f643669e5c46fbbccd324, type: 3}
+  m_Script: {fileID: 11500000, guid: b7e94b6440a824712b711ba672070725, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HandHoverDetector
+  m_EditorClassIdentifier: Assembly-CSharp::FreeHandHoverDetector
   cardsInHand: []
   isInteractionEnabled: 1
 --- !u!1 &663512936
@@ -2999,7 +2996,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 369792892}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_TargetAssemblyTypeName: FreeUIManager, Assembly-CSharp
         m_MethodName: ToggleTerminal
         m_Mode: 1
         m_Arguments:
@@ -3744,9 +3741,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 843086251}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 036ef2b3b74f643669e5c46fbbccd324, type: 3}
+  m_Script: {fileID: 11500000, guid: b7e94b6440a824712b711ba672070725, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HandHoverDetector
+  m_EditorClassIdentifier: Assembly-CSharp::FreeHandHoverDetector
   cardsInHand: []
   isInteractionEnabled: 1
 --- !u!1 &871964209
@@ -4426,10 +4423,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1052176241}
-  - component: {fileID: 1052176243}
   - component: {fileID: 1052176242}
   - component: {fileID: 1052176245}
   - component: {fileID: 1052176244}
+  - component: {fileID: 1052176246}
   m_Layer: 5
   m_Name: Player_HandContainer
   m_TagString: Untagged
@@ -4471,20 +4468,6 @@ MonoBehaviour:
   cardSpacing: 50
   arcAmount: 200
   rotationAmount: 5
---- !u!114 &1052176243
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1052176240}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 036ef2b3b74f643669e5c46fbbccd324, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HandHoverDetector
-  cardsInHand: []
-  isInteractionEnabled: 1
 --- !u!114 &1052176244
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4523,6 +4506,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1052176240}
   m_CullTransparentMesh: 1
+--- !u!114 &1052176246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052176240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7e94b6440a824712b711ba672070725, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FreeHandHoverDetector
+  cardsInHand: []
+  isInteractionEnabled: 1
 --- !u!1 &1093734476
 GameObject:
   m_ObjectHideFlags: 0
@@ -4741,8 +4738,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1928954887}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+      - m_Target: {fileID: 1928954889}
+        m_TargetAssemblyTypeName: FreeGameManager, Assembly-CSharp
         m_MethodName: PlayerSelectBribeTrend
         m_Mode: 3
         m_Arguments:
@@ -5045,8 +5042,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1928954887}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+      - m_Target: {fileID: 1928954889}
+        m_TargetAssemblyTypeName: FreeGameManager, Assembly-CSharp
         m_MethodName: PlayerSelectBribeTrend
         m_Mode: 3
         m_Arguments:
@@ -5752,7 +5749,7 @@ RectTransform:
   m_AnchoredPosition: {x: -324, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &1305211525
+--- !u!1 &1335012999
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5760,23 +5757,23 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1305211526}
-  - component: {fileID: 1305211528}
-  - component: {fileID: 1305211527}
+  - component: {fileID: 1335013000}
+  - component: {fileID: 1335013002}
+  - component: {fileID: 1335013001}
   m_Layer: 5
-  m_Name: GoalText
+  m_Name: FreeGoalText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &1305211526
+--- !u!224 &1335013000
 RectTransform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1305211525}
+  m_GameObject: {fileID: 1335012999}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -5789,13 +5786,13 @@ RectTransform:
   m_AnchoredPosition: {x: -11, y: 177}
   m_SizeDelta: {x: 180, y: 15}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1305211527
+--- !u!114 &1335013001
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1305211525}
+  m_GameObject: {fileID: 1335012999}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
@@ -5809,7 +5806,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u6761\u4EF6: Hoge"
+  m_text: "\u6761\u4EF6: \u30AF\u30EC\u30B8\u30C3\u30C8\u3092100\u96C6\u3081\u308B\u3002"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
   m_sharedMaterial: {fileID: -1802446349418403269, guid: 5325c05b2948a43c2b88cd591d26131c, type: 2}
@@ -5880,13 +5877,13 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!222 &1305211528
+--- !u!222 &1335013002
 CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1305211525}
+  m_GameObject: {fileID: 1335012999}
   m_CullTransparentMesh: 1
 --- !u!1 &1351462547
 GameObject:
@@ -6206,8 +6203,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1928954887}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+      - m_Target: {fileID: 1928954889}
+        m_TargetAssemblyTypeName: FreeGameManager, Assembly-CSharp
         m_MethodName: PlayerSelectTarget
         m_Mode: 3
         m_Arguments:
@@ -6536,55 +6533,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1457230951}
   m_CullTransparentMesh: 1
---- !u!1 &1462059459
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1462059461}
-  - component: {fileID: 1462059460}
-  m_Layer: 0
-  m_Name: NewsTickerController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1462059460
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1462059459}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 219a965808f014b7384577dc203389d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NewsTickerController
-  csvFileName: DogSpeakData.csv
-  updateInterval: 5
-  updateOnStart: 1
-  uiText: {fileID: 563739656}
-  bubbleResizer: {fileID: 607371548}
---- !u!4 &1462059461
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1462059459}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.21736, y: -7.52203, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1551904873
 GameObject:
   m_ObjectHideFlags: 0
@@ -6884,7 +6832,7 @@ RectTransform:
   - {fileID: 1018812488}
   - {fileID: 2085800999}
   - {fileID: 449989650}
-  - {fileID: 1305211526}
+  - {fileID: 1335013000}
   - {fileID: 478130427}
   - {fileID: 259976806}
   - {fileID: 73119777}
@@ -7011,8 +6959,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1928954887}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+      - m_Target: {fileID: 1928954889}
+        m_TargetAssemblyTypeName: FreeGameManager, Assembly-CSharp
         m_MethodName: PlayerSelectBribeTrend
         m_Mode: 3
         m_Arguments:
@@ -7444,8 +7392,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1928954887}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+      - m_Target: {fileID: 1928954889}
+        m_TargetAssemblyTypeName: FreeGameManager, Assembly-CSharp
         m_MethodName: PlayerSelectBribeTrend
         m_Mode: 3
         m_Arguments:
@@ -7577,8 +7525,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1928954887}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+      - m_Target: {fileID: 1928954889}
+        m_TargetAssemblyTypeName: FreeGameManager, Assembly-CSharp
         m_MethodName: PlayerSelectTarget
         m_Mode: 3
         m_Arguments:
@@ -7636,98 +7584,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1928954888}
-  - component: {fileID: 1928954887}
+  - component: {fileID: 1928954889}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: FreeGameManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1928954887
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1928954886}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d67384fcd48340e9872a745d6ecfbca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  allCardDatabase:
-  - {fileID: 11400000, guid: 276d0b8693fbe448ba4e58937ebbdc9b, type: 2}
-  - {fileID: 11400000, guid: 276d0b8693fbe448ba4e58937ebbdc9b, type: 2}
-  - {fileID: 11400000, guid: e0f5ba54b4ba84ccda4139a79edbf919, type: 2}
-  - {fileID: 11400000, guid: e0f5ba54b4ba84ccda4139a79edbf919, type: 2}
-  - {fileID: 11400000, guid: b4c22e5414a5e4f1992ea2216b3509e9, type: 2}
-  - {fileID: 11400000, guid: 205c118227a544c619bdc355f063ee22, type: 2}
-  - {fileID: 11400000, guid: cd9bd86ee437e493994ca83ad9635547, type: 2}
-  - {fileID: 11400000, guid: 74933281050fb4d4283108d4e9db8405, type: 2}
-  - {fileID: 11400000, guid: 69aa741b2011341c39e0baf20d385422, type: 2}
-  - {fileID: 11400000, guid: 736f0a74e00634cd6b4cd2aba75ea9fc, type: 2}
-  - {fileID: 11400000, guid: 3d9a1211a5ac348db904b9cf8e31c6b3, type: 2}
-  - {fileID: 11400000, guid: ea1720dfa5dd3412f890d404086d5425, type: 2}
-  - {fileID: 11400000, guid: e5d67bc4047d24aaaac9a6d70f24eefd, type: 2}
-  - {fileID: 11400000, guid: 6f6caba91154b49fa94a72aa0ceb81f2, type: 2}
-  - {fileID: 11400000, guid: 9a551b96479014ffa84b4127dc6ce468, type: 2}
-  - {fileID: 11400000, guid: 499945c71ce8a4830bde7a9f7e7ce894, type: 2}
-  - {fileID: 11400000, guid: 4d86bc78030d3409ab784de4d2451e3f, type: 2}
-  - {fileID: 11400000, guid: b00bf9a725b4d4962893869a2aaa6f3f, type: 2}
-  - {fileID: 11400000, guid: c7c4f9fd12e9c4bbc9a34ddf61025e34, type: 2}
-  - {fileID: 11400000, guid: a1cfc35334f724fb7a56fa6a61fe4567, type: 2}
-  - {fileID: 11400000, guid: bfc88ae82c820494089c9970ddf393cd, type: 2}
-  - {fileID: 11400000, guid: f25f05a4a9fde41b9a330426225f3e85, type: 2}
-  - {fileID: 11400000, guid: 51cf0e385ca4f4e0b806ba03f494ecb9, type: 2}
-  - {fileID: 11400000, guid: f775147700d4f4b4e8d74fe5dc4c9e25, type: 2}
-  - {fileID: 11400000, guid: 710b262d9e69a49a9aa65fde38df9ea6, type: 2}
-  - {fileID: 11400000, guid: f69432d3beee0439982787bfca51410a, type: 2}
-  - {fileID: 11400000, guid: c0c2ddaae054e413a860de8bb8352c14, type: 2}
-  - {fileID: 11400000, guid: 53a042695a64f435589975f622bf0e91, type: 2}
-  - {fileID: 11400000, guid: 556106b6ae7e1419eb9abf8e792c8bec, type: 2}
-  - {fileID: 11400000, guid: 22647c17cae9945778fc4a97032a4bf5, type: 2}
-  - {fileID: 11400000, guid: b873918a233964a0e9e1d8f33e158508, type: 2}
-  - {fileID: 11400000, guid: 7f26557d6973645c5a8c96441a3d6e9c, type: 2}
-  - {fileID: 11400000, guid: a203820f272664a8c9d55e511698e877, type: 2}
-  - {fileID: 11400000, guid: 06c9f14b69a574952968f542838dbd0b, type: 2}
-  - {fileID: 11400000, guid: 71fad1a1e78c1489292278ee67347e40, type: 2}
-  - {fileID: 11400000, guid: ac8ae1350913146dcbcb15f37785f360, type: 2}
-  - {fileID: 11400000, guid: 20964a128df4a4e02a47b1eab6db000f, type: 2}
-  - {fileID: 11400000, guid: 7afca8fcbed7e44708941b6bcc989716, type: 2}
-  - {fileID: 11400000, guid: ec47f2434eb9c4a48948371d4303eea1, type: 2}
-  - {fileID: 11400000, guid: 32d9a90ebcd8d47599c0d1bb7b20002a, type: 2}
-  - {fileID: 11400000, guid: 27f269d6d79e340d5ba0ac01c41a21b2, type: 2}
-  - {fileID: 11400000, guid: 2023fd78dad7d4470afeb0ff5030147f, type: 2}
-  - {fileID: 11400000, guid: ff57017c1cef24347911c4810791f341, type: 2}
-  - {fileID: 11400000, guid: 9836f4b5b2e334bc6836e215263ed3e2, type: 2}
-  - {fileID: 11400000, guid: c6d8dfc6a115b45bfae349d1c02fb34c, type: 2}
-  - {fileID: 11400000, guid: 6292ae7848b2c46fa94fe22971bb0d2c, type: 2}
-  - {fileID: 11400000, guid: f4a46d443265541d9b8b18ca6c2142e9, type: 2}
-  - {fileID: 11400000, guid: 65f3fa4e0dedb41c687bff49e337e9e4, type: 2}
-  - {fileID: 11400000, guid: 9fa427d2afe8d4be08a4e334add67b6a, type: 2}
-  - {fileID: 11400000, guid: 7006b21f62609433e9503ea95f9a85b6, type: 2}
-  - {fileID: 11400000, guid: 7c095994629344347b8ab93b256c1578, type: 2}
-  - {fileID: 11400000, guid: 43cc16124f28348a8b8928f029cdf1bf, type: 2}
-  - {fileID: 11400000, guid: d53d2b51671104321a6c5eb572d2f0e9, type: 2}
-  - {fileID: 11400000, guid: c38de017aa993480d991f54ac2d63ee5, type: 2}
-  - {fileID: 11400000, guid: f6c965e82d6e0407cb413fb080566820, type: 2}
-  - {fileID: 11400000, guid: 688c95ac5655c4721ae1878b5e85d3e1, type: 2}
-  - {fileID: 11400000, guid: 732b69585ac9b4a229380a6267948b4b, type: 2}
-  - {fileID: 11400000, guid: dd7efeb4b5ae249239735d20ce587278, type: 2}
-  - {fileID: 11400000, guid: c4b0e756a34274a1587133245bd9edb1, type: 2}
-  - {fileID: 11400000, guid: 536494d10f98a49a7b52e112b9634cbf, type: 2}
-  drawSound: {fileID: 8300000, guid: c96d6c23a815e4e51bf8d1b1a722dd9c, type: 3}
-  playCardSound: {fileID: 8300000, guid: 7a63a4602902a42f38ec2925153fec9e, type: 3}
-  winSound: {fileID: 8300000, guid: 40b6ab62ba0b346c3aae463a5cfc7ded, type: 3}
-  trendRideSound: {fileID: 8300000, guid: 40b6ab62ba0b346c3aae463a5cfc7ded, type: 3}
-  firstSetupSound: {fileID: 8300000, guid: b9895483ac66d454fb9f8aeab1f7e403, type: 3}
-  bulletDropSound: {fileID: 8300000, guid: 8b505d8f1e2d44d5897d7fa4ab60b8c4, type: 3}
-  deck: []
-  discardPile: []
-  isPlayerInputLocked: 0
-  currentRound: 1
-  bribeSprite: {fileID: 6938428024278276195, guid: 9178a1d1738944515a67c00fc54fddbf, type: 3}
 --- !u!4 &1928954888
 Transform:
   m_ObjectHideFlags: 0
@@ -7743,6 +7607,89 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1928954889
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1928954886}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 693e586937d7d4020ab765bbcc2628a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FreeGameManager
+  allCardDatabase:
+  - {fileID: 11400000, guid: 276d0b8693fbe448ba4e58937ebbdc9b, type: 2}
+  - {fileID: 11400000, guid: 276d0b8693fbe448ba4e58937ebbdc9b, type: 2}
+  - {fileID: 11400000, guid: e0f5ba54b4ba84ccda4139a79edbf919, type: 2}
+  - {fileID: 11400000, guid: e0f5ba54b4ba84ccda4139a79edbf919, type: 2}
+  - {fileID: 11400000, guid: 7afca8fcbed7e44708941b6bcc989716, type: 2}
+  - {fileID: 11400000, guid: 688c95ac5655c4721ae1878b5e85d3e1, type: 2}
+  - {fileID: 11400000, guid: ec47f2434eb9c4a48948371d4303eea1, type: 2}
+  - {fileID: 11400000, guid: 32d9a90ebcd8d47599c0d1bb7b20002a, type: 2}
+  - {fileID: 11400000, guid: b00bf9a725b4d4962893869a2aaa6f3f, type: 2}
+  - {fileID: 11400000, guid: 7c095994629344347b8ab93b256c1578, type: 2}
+  - {fileID: 11400000, guid: 43cc16124f28348a8b8928f029cdf1bf, type: 2}
+  - {fileID: 11400000, guid: ea1720dfa5dd3412f890d404086d5425, type: 2}
+  - {fileID: 11400000, guid: e5d67bc4047d24aaaac9a6d70f24eefd, type: 2}
+  - {fileID: 11400000, guid: 6f6caba91154b49fa94a72aa0ceb81f2, type: 2}
+  - {fileID: 11400000, guid: 9a551b96479014ffa84b4127dc6ce468, type: 2}
+  - {fileID: 11400000, guid: 499945c71ce8a4830bde7a9f7e7ce894, type: 2}
+  - {fileID: 11400000, guid: 4d86bc78030d3409ab784de4d2451e3f, type: 2}
+  - {fileID: 11400000, guid: 536494d10f98a49a7b52e112b9634cbf, type: 2}
+  - {fileID: 11400000, guid: 71fad1a1e78c1489292278ee67347e40, type: 2}
+  - {fileID: 11400000, guid: f6c965e82d6e0407cb413fb080566820, type: 2}
+  - {fileID: 11400000, guid: ac8ae1350913146dcbcb15f37785f360, type: 2}
+  - {fileID: 11400000, guid: 20964a128df4a4e02a47b1eab6db000f, type: 2}
+  - {fileID: 11400000, guid: 3d9a1211a5ac348db904b9cf8e31c6b3, type: 2}
+  - {fileID: 11400000, guid: f4a46d443265541d9b8b18ca6c2142e9, type: 2}
+  - {fileID: 11400000, guid: 65f3fa4e0dedb41c687bff49e337e9e4, type: 2}
+  - {fileID: 11400000, guid: b4c22e5414a5e4f1992ea2216b3509e9, type: 2}
+  - {fileID: 11400000, guid: 205c118227a544c619bdc355f063ee22, type: 2}
+  - {fileID: 11400000, guid: cd9bd86ee437e493994ca83ad9635547, type: 2}
+  - {fileID: 11400000, guid: 74933281050fb4d4283108d4e9db8405, type: 2}
+  - {fileID: 11400000, guid: 69aa741b2011341c39e0baf20d385422, type: 2}
+  - {fileID: 11400000, guid: 736f0a74e00634cd6b4cd2aba75ea9fc, type: 2}
+  - {fileID: 11400000, guid: dd7efeb4b5ae249239735d20ce587278, type: 2}
+  - {fileID: 11400000, guid: 27f269d6d79e340d5ba0ac01c41a21b2, type: 2}
+  - {fileID: 11400000, guid: c38de017aa993480d991f54ac2d63ee5, type: 2}
+  - {fileID: 11400000, guid: 2023fd78dad7d4470afeb0ff5030147f, type: 2}
+  - {fileID: 11400000, guid: ff57017c1cef24347911c4810791f341, type: 2}
+  - {fileID: 11400000, guid: 710b262d9e69a49a9aa65fde38df9ea6, type: 2}
+  - {fileID: 11400000, guid: 9fa427d2afe8d4be08a4e334add67b6a, type: 2}
+  - {fileID: 11400000, guid: 7006b21f62609433e9503ea95f9a85b6, type: 2}
+  - {fileID: 11400000, guid: c7c4f9fd12e9c4bbc9a34ddf61025e34, type: 2}
+  - {fileID: 11400000, guid: a1cfc35334f724fb7a56fa6a61fe4567, type: 2}
+  - {fileID: 11400000, guid: bfc88ae82c820494089c9970ddf393cd, type: 2}
+  - {fileID: 11400000, guid: f25f05a4a9fde41b9a330426225f3e85, type: 2}
+  - {fileID: 11400000, guid: 51cf0e385ca4f4e0b806ba03f494ecb9, type: 2}
+  - {fileID: 11400000, guid: f775147700d4f4b4e8d74fe5dc4c9e25, type: 2}
+  - {fileID: 11400000, guid: c4b0e756a34274a1587133245bd9edb1, type: 2}
+  - {fileID: 11400000, guid: 9836f4b5b2e334bc6836e215263ed3e2, type: 2}
+  - {fileID: 11400000, guid: d53d2b51671104321a6c5eb572d2f0e9, type: 2}
+  - {fileID: 11400000, guid: c6d8dfc6a115b45bfae349d1c02fb34c, type: 2}
+  - {fileID: 11400000, guid: 6292ae7848b2c46fa94fe22971bb0d2c, type: 2}
+  - {fileID: 11400000, guid: 7f26557d6973645c5a8c96441a3d6e9c, type: 2}
+  - {fileID: 11400000, guid: a203820f272664a8c9d55e511698e877, type: 2}
+  - {fileID: 11400000, guid: 06c9f14b69a574952968f542838dbd0b, type: 2}
+  - {fileID: 11400000, guid: f69432d3beee0439982787bfca51410a, type: 2}
+  - {fileID: 11400000, guid: c0c2ddaae054e413a860de8bb8352c14, type: 2}
+  - {fileID: 11400000, guid: 53a042695a64f435589975f622bf0e91, type: 2}
+  - {fileID: 11400000, guid: 556106b6ae7e1419eb9abf8e792c8bec, type: 2}
+  - {fileID: 11400000, guid: 22647c17cae9945778fc4a97032a4bf5, type: 2}
+  - {fileID: 11400000, guid: b873918a233964a0e9e1d8f33e158508, type: 2}
+  - {fileID: 11400000, guid: 732b69585ac9b4a229380a6267948b4b, type: 2}
+  drawSound: {fileID: 8300000, guid: c96d6c23a815e4e51bf8d1b1a722dd9c, type: 3}
+  playCardSound: {fileID: 8300000, guid: 7a63a4602902a42f38ec2925153fec9e, type: 3}
+  winSound: {fileID: 8300000, guid: 40b6ab62ba0b346c3aae463a5cfc7ded, type: 3}
+  trendRideSound: {fileID: 8300000, guid: 40b6ab62ba0b346c3aae463a5cfc7ded, type: 3}
+  firstSetupSound: {fileID: 8300000, guid: b9895483ac66d454fb9f8aeab1f7e403, type: 3}
+  deck: []
+  discardPile: []
+  isPlayerInputLocked: 0
+  currentRound: 1
+  bribeSprite: {fileID: 0}
 --- !u!1 &1948061659
 GameObject:
   m_ObjectHideFlags: 0
@@ -7902,7 +7849,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 369792892}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_TargetAssemblyTypeName: FreeUIManager, Assembly-CSharp
         m_MethodName: OnContinuePromptClick
         m_Mode: 1
         m_Arguments:
@@ -8722,8 +8669,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1928954887}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+      - m_Target: {fileID: 1928954889}
+        m_TargetAssemblyTypeName: FreeGameManager, Assembly-CSharp
         m_MethodName: PlayerSelectBribeTrend
         m_Mode: 3
         m_Arguments:
@@ -9437,6 +9384,5 @@ SceneRoots:
   - {fileID: 1576623728}
   - {fileID: 1427448715}
   - {fileID: 2066310548}
-  - {fileID: 1462059461}
   - {fileID: 809594731}
   - {fileID: 1130527280}

@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Collections;
 using DG.Tweening;
 using TMPro;
-// GameManagerからの指示を受けて画面を更新する
-public class UIManager : MonoBehaviour
+// FreeGameManagerからの指示を受けて画面を更新する
+public class FreeUIManager : MonoBehaviour
 {
     // シングルトン設定
-    public static UIManager Instance { get; private set; }
+    public static FreeUIManager Instance { get; private set; }
     [Header("UI参照")]
     //public Transform playerHandArea; // プレイヤーの手札を並べる場所
     public Transform playerHandContainer;
@@ -43,7 +43,7 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI surveyTitleText; // SurveyTitleTextをアタッチ
     public Transform surveyCardDisplayArea; // SuveryCardDisplayAreaをアタッチ
     public TextMeshProUGUI surveyResultValueText; // SurveyResultValueTextをアタッチ
-    private HandHoverDetector handHoverDetector;
+    private FreeHandHoverDetector freeHandHoverDetector;
     [Header("ターミナルUI")]
     [SerializeField] private GameObject terminalWindow; // TerminalWindowパネル
     [SerializeField] private GameObject unreadBadge; // 未読バッジ
@@ -81,11 +81,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI playerNameText;
     [Header("オーディオ")]
     [SerializeField] private AudioClip nextButtonSound;
-    [Header("ゲームごとのゴール表示テキスト")]
-    [SerializeField] private TextMeshProUGUI gameGoalText;
-    [Header("処刑エンド用オブジェクト")]
-    [SerializeField] private GameObject bloodObject;
-    [SerializeField] private Image blackOut;
     void Awake()
     {
         if (Instance == null)
@@ -98,11 +93,11 @@ public class UIManager : MonoBehaviour
         }
         if (playerHandContainer != null)
         {
-            handHoverDetector = playerHandContainer.GetComponent<HandHoverDetector>();
+            freeHandHoverDetector = playerHandContainer.GetComponent<FreeHandHoverDetector>();
             playerHandRaycaster = playerHandContainer.GetComponent<Image>();
-            if (handHoverDetector == null)
+            if (freeHandHoverDetector == null)
             {
-                Debug.LogError("Player_HandContainerにHandHoverDetectorコンポーネントがアタッチされていません!");
+                Debug.LogError("Player_HandContainerにFreeHandHoverDetectorコンポーネントがアタッチされていません!");
             }
             if(playerHandRaycaster==null)
             {
@@ -207,13 +202,13 @@ public class UIManager : MonoBehaviour
                 drawButton.animator.Play("Normal");
             }
             // 手札のホバー検出もON/OFF
-            if (handHoverDetector != null)
+            if (freeHandHoverDetector != null)
             {
-                handHoverDetector.enabled = isActive;
+                freeHandHoverDetector.enabled = isActive;
                 if (!isActive)
                 {
                     // 非アクティブにする際、ホバー中だったカードを元に戻す
-                    handHoverDetector.OnPointerExit(null);
+                    freeHandHoverDetector.OnPointerExit(null);
                 }
             }
         }
@@ -276,7 +271,7 @@ public class UIManager : MonoBehaviour
             cardObj.transform.localScale = Vector3.one * 1.5f;
             cardObj.transform.localRotation = Quaternion.Euler(0, -90, 0); // 逆向きからスタート
             
-            cardObj.GetComponent<CardController>().Setup(randomCard);
+            cardObj.GetComponent<FreeCardController>().Setup(randomCard);
             if(cardObj.GetComponent<Image>() != null) cardObj.GetComponent<Image>().raycastTarget = false;
 
             // Step 3: 0度に戻す（開く）
@@ -511,9 +506,9 @@ public class UIManager : MonoBehaviour
     public void UpdateAllHandVisuals()
     {
         // 手札を破棄する前に、ホバー検出器の参照をリセット
-        if(handHoverDetector!=null)
+        if(freeHandHoverDetector!=null)
         {
-            handHoverDetector.ResetHover();
+            freeHandHoverDetector.ResetHover();
         }
         // 1. まず手札を全削除してリセット
         // イテレート中にリストを変更するとエラーになるため、
@@ -535,19 +530,19 @@ public class UIManager : MonoBehaviour
         // この時点でplayerHandArea.childCountは0になっている。
 
         // Detectorのリストもリセット
-        handHoverDetector.cardsInHand.Clear();
-        List<CardData> playerHand = GameManager.Instance.GetPlayerHand();
+        freeHandHoverDetector.cardsInHand.Clear();
+        List<CardData> playerHand = FreeGameManager.Instance.GetPlayerHand();
 
         // 2. 新しい手札を生成
         foreach (CardData cardData in playerHand)
         {
             // プレハブをplayerHandContainerの子として生成
             GameObject newCardObj = Instantiate(cardPrefab, playerHandContainer);
-            // CardControllerを取得して、カード情報を設定
-            CardController cardController = newCardObj.GetComponent<CardController>();
-            cardController.Setup(cardData);
+            // FreeCardControllerを取得して、カード情報を設定
+            FreeCardController freeCardController = newCardObj.GetComponent<FreeCardController>();
+            freeCardController.Setup(cardData);
             // Detectorのリストに新しいカードを追加
-            handHoverDetector.cardsInHand.Add(cardController);
+            freeHandHoverDetector.cardsInHand.Add(freeCardController);
         }
 
         // レイアウトの更新
@@ -557,13 +552,13 @@ public class UIManager : MonoBehaviour
         // プレイヤーの手札合計値を計算して表示
         if(yourTrendText!=null)
         {
-            // GameManagerに計算を依頼
-            int handValue = GameManager.Instance.GetHandValue(playerHand);
+            // FreeGameManagerに計算を依頼
+            int handValue = FreeGameManager.Instance.GetHandValue(playerHand);
             yourTrendText.text = $"HAND: {handValue}";
         }
 
         // 3. CPUの手札更新(裏向きで更新)
-        List<Player> players = GameManager.Instance.players;
+        List<Player> players = FreeGameManager.Instance.players;
         if (players.Count >= 3) // 3人以上いるか確認
         {
             // [1]番目がCPU1、[2]番目がCPU2だと仮定
@@ -617,9 +612,9 @@ public class UIManager : MonoBehaviour
             {
                 // 表向きで生成
                 cardObj = Instantiate(cardPrefab, container);
-                CardController cardController = cardObj.GetComponent<CardController>();
+                FreeCardController freeCardController = cardObj.GetComponent<FreeCardController>();
                 // カードデータを設定
-                cardController.Setup(currentCard);
+                freeCardController.Setup(currentCard);
                 // "EYE" アイコン的なものを追加しても良いが、一旦表向きにするだけにする
                 // Colorを変えて少し強調する
                 if(!reveal && cpu.revealedCards.Contains(currentCard))
@@ -664,19 +659,19 @@ public class UIManager : MonoBehaviour
             containerRect.sizeDelta = new Vector2(width, height);
         }
 
-        // HandHoverDetectorのリスト更新
-        HandHoverDetector detector = container.GetComponent<HandHoverDetector>();
-        if(detector != null)
+        // FreeHandHoverDetectorのリスト更新
+        FreeHandHoverDetector freeDetector = container.GetComponent<FreeHandHoverDetector>();
+        if(freeDetector != null)
         {
-            detector.cardsInHand.Clear(); // 一旦クリア
-            // コンテナ内の全てのCardControllerを探して登録
-            // (RevealedのカードのみがCardControllerを持っている前提)
+            freeDetector.cardsInHand.Clear(); // 一旦クリア
+            // コンテナ内の全てのFreeCardControllerを探して登録
+            // (RevealedのカードのみがFreeCardControllerを持っている前提)
             foreach(Transform child in container)
             {
-                CardController cc = child.GetComponent<CardController>();
-                if(cc != null)
+                FreeCardController fcc = child.GetComponent<FreeCardController>();
+                if(fcc != null)
                 {
-                    detector.cardsInHand.Add(cc);
+                    freeDetector.cardsInHand.Add(fcc);
                 }
             }
         }
@@ -710,8 +705,8 @@ public class UIManager : MonoBehaviour
     // 場のカードを更新するメソッド
     public void UpdateFieldPileUI(CardData cardData)
     {
-        // GameManagerから現在の捨て札リストを取得
-        List<CardData> pile = GameManager.Instance.discardPile;
+        // FreeGameManagerから現在の捨て札リストを取得
+        List<CardData> pile = FreeGameManager.Instance.discardPile;
         int count = pile.Count;
 
         // 1. 一番上のカード（今出たカード）
@@ -879,7 +874,7 @@ public class UIManager : MonoBehaviour
         // TODO: UpdateCPUHandVisualsを改造し、
         // vardBackPrefabではなく、cardPrefabを使い、
         // CPUの手札を全て表向きに表示する処理を実装する
-        List<Player> players = GameManager.Instance.players;
+        List<Player> players = FreeGameManager.Instance.players;
         if(players.Count>=3)
         {
             // UpdateCPUHandVisualsをreveal=trueで呼び出す
@@ -1006,7 +1001,7 @@ public class UIManager : MonoBehaviour
     // WinButtonがクリックされたときの処理
     public void OnWinButtonPress()
     {
-        GameManager.Instance.PlayerConfirmWin();
+        FreeGameManager.Instance.PlayerConfirmWin();
     }
     // トレンドライドアラートを表示するメソッド
     public void ShowTrendRideAlert(bool show, List<Player> winners, Player actionPlayer)
@@ -1039,15 +1034,15 @@ public class UIManager : MonoBehaviour
         {
             return playerHandContainer;
         }
-        // CPUの場合はGameManagerのリストのインデックスで判別
+        // CPUの場合はFreeGameManagerのリストのインデックスで判別
         // プレイヤーが0番目、CPU1が1番目、CPU2が2番目と仮定
-        if(GameManager.Instance.players.Count>2)
+        if(FreeGameManager.Instance.players.Count>2)
         {
-            if(targetPlayer==GameManager.Instance.players[1])
+            if(targetPlayer==FreeGameManager.Instance.players[1])
             {
                 return cpu1HandContainer;
             }
-            else if(targetPlayer==GameManager.Instance.players[2])
+            else if(targetPlayer==FreeGameManager.Instance.players[2])
             {
                 return cpu2HandContainer;
             }
@@ -1064,7 +1059,7 @@ public class UIManager : MonoBehaviour
     public void OnContinuePromptClick()
     {
         SoundManager.Instance.PlaySound(nextButtonSound);
-        GameManager.Instance.OnContinueClicked();
+        FreeGameManager.Instance.OnContinueClicked();
     }
     // ログのパネルの表示
     public void ShowTerminalWindow(bool show)
@@ -1138,8 +1133,8 @@ public class UIManager : MonoBehaviour
         {
             GameObject cardObj = Instantiate(cardPrefab, row.transform);
             cardObj.transform.localScale = Vector3.one * 0.8f; // 縮小表示
-            CardController cc = cardObj.GetComponent<CardController>();
-            cc.Setup(card);
+            FreeCardController fcc = cardObj.GetComponent<FreeCardController>();
+            fcc.Setup(card);
             // Raycast無効
             if (cardObj.GetComponent<Image>() != null) cardObj.GetComponent<Image>().raycastTarget = false;
             
@@ -1157,39 +1152,6 @@ public class UIManager : MonoBehaviour
         if (revealAllHandsPanel != null)
         {
             revealAllHandsPanel.SetActive(false);
-        }
-    }
-    public void SetGoalTextDependOnProgress(int remainingTurns)
-    {
-        if(GameManager.Instance.GetProgressFlag()==0)
-        {
-            gameGoalText.text=$"条件: {remainingTurns}ラウンド以内に1回勝利する。";
-        }
-        else if(GameManager.Instance.GetProgressFlag()==1)
-        {
-            gameGoalText.text="条件: 2回勝利する。";
-        }
-        else if(GameManager.Instance.GetProgressFlag()==2)
-        {
-            gameGoalText.text="条件: 3回勝利する。";
-        }
-         else
-        {
-            gameGoalText.text="----------------";
-        }
-    }
-    public void EnableExecutionObject()
-    {
-        if(bloodObject!=null)
-        {
-            bloodObject.SetActive(true);
-        }
-    }
-    public void ShowBlackOut()
-    {
-        if(blackOut!=null)
-        {
-            blackOut.gameObject.SetActive(true);
         }
     }
 }

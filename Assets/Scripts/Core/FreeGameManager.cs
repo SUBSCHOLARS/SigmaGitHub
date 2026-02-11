@@ -5,11 +5,11 @@ using UnityEngine;
 using System;
 using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviour
+public class FreeGameManager : MonoBehaviour
 {
     // シングルトンの設定
     // Instanceを通じて他のスクリプトからGameManagerの機能にアクセスできる
-    public static GameManager Instance { get; private set; }
+    public static FreeGameManager Instance { get; private set; }
     [Header("カードデータ")]
     public List<CardData> allCardDatabase;
     [Header("Audio")]
@@ -18,7 +18,6 @@ public class GameManager : MonoBehaviour
     public AudioClip winSound;
     public AudioClip trendRideSound;
     public AudioClip firstSetupSound;
-    public AudioClip bulletDropSound;
 
     [Header("ゲームの状態")]
     public List<CardData> deck = new List<CardData>();
@@ -41,7 +40,7 @@ public class GameManager : MonoBehaviour
     private Player gameMaster;
     // どの調査カードが使われたか記憶する変数
     private CardEffect pendingSurveyEffect = CardEffect.None;
-    // private int winningScore = 100; // 勝利に必要なスコア
+    private int winningScore = 100; // 勝利に必要なスコア
     public int currentRound = 1; // 現在のラウンド
     protected Sprite initialSprite;
     private const int FIRST_DECK_DISTRIBUTION_COUNT=21;
@@ -78,8 +77,8 @@ public class GameManager : MonoBehaviour
         players.Add(new Player(PlayerID.CPU, true, "CPU_2", 0));    // 2番目がCPU
         // ゲーム開始時にUIを初期化
         currentRound = 1;
-        UIManager.Instance.UpdateRoundText(currentRound);
-        UIManager.Instance.UpdateScoreboard(players); // 初期スコア(0)を表示
+        FreeUIManager.Instance.UpdateRoundText(currentRound);
+        FreeUIManager.Instance.UpdateScoreboard(players); // 初期スコア(0)を表示
         // ゲーム開始時に山札を準備
         SetUpDeck();
         // カード配布の音を鳴らす
@@ -110,11 +109,9 @@ public class GameManager : MonoBehaviour
             StartCoroutine(StartRoundEndSequence(initialWinners, gameMaster, WinType.TrendRide));
             return; // リターンで最初のターンが開始するのを防ぐ
         }
-        // ゴール条件を表示
-        UIManager.Instance.SetGoalTextDependOnProgress(3); // 最初は3ラウンド
         // プレイヤー（0番目）の手札をUIに反映
-        UIManager.Instance.UpdateAllHandVisuals();
-        UIManager.Instance.UpdateCurrentTrend(initialSprite, currentTrendValue);
+        FreeUIManager.Instance.UpdateAllHandVisuals();
+        FreeUIManager.Instance.UpdateCurrentTrend(initialSprite, currentTrendValue);
     }
     // 山札を初期化し、シャッフルするメソッド
     public virtual void SetUpDeck()
@@ -124,7 +121,7 @@ public class GameManager : MonoBehaviour
         // データベースから全てのカードを山札に追加
         deck.AddRange(allCardDatabase);
         ShuffleDeck();
-        UIManager.Instance.UpdateDeckVisual(deck.Count);
+        FreeUIManager.Instance.UpdateDeckVisual(deck.Count);
     }
     // Fisher-Yatesアルゴリズムを使い、山札をシャッフルするメソッド
     public void ShuffleDeck()
@@ -155,7 +152,7 @@ public class GameManager : MonoBehaviour
                     discardPile.Clear();
                     ShuffleDeck();
                     // 捨て札を戻す処理
-                    UIManager.Instance.UpdateDeckVisual(deck.Count);
+                    FreeUIManager.Instance.UpdateDeckVisual(deck.Count);
                 }
                 else
                 {
@@ -238,8 +235,8 @@ public class GameManager : MonoBehaviour
         // メッセージを作成
         string playerName = player.playerName;
         string message = $"{DateTime.Now} [{playerName}] played [{card.cardName}]";
-        // UIManagerにログ表示を依頼
-        UIManager.Instance.AddLogMessage(message, card);
+        // FreeUIManagerにログ表示を依頼
+        FreeUIManager.Instance.AddLogMessage(message, card);
         // TODO: Bribeの場合の数字設定の処理を追加
         if(card.effect==CardEffect.Censor||card.effect==CardEffect.Interrogate)
         {
@@ -247,7 +244,7 @@ public class GameManager : MonoBehaviour
             isNextPlayWild = true;
             Debug.Log("調査カードが出されました。次のプレイはワイルドになります。");
             // 特殊な場合の場のUI更新を行う
-            UIManager.Instance.UpdateCurrentTrendWhenSurvey();
+            FreeUIManager.Instance.UpdateCurrentTrendWhenSurvey();
             Debug.Log("場のUIを調査カード用に更新しました。");
         }
         else
@@ -256,11 +253,11 @@ public class GameManager : MonoBehaviour
             currentTrendValue = card.numberValue;
             isNextPlayWild = false;
             // 場のトレンドが更新されたのでUIに反映
-            UIManager.Instance.UpdateCurrentTrend(card.rawSectorIcon, currentTrendValue);
+            FreeUIManager.Instance.UpdateCurrentTrend(card.rawSectorIcon, currentTrendValue);
             Debug.Log("場に " + card.cardName + " が出されました。現在のトレンド: " + currentTrendValue);
         }
-        UIManager.Instance.UpdateFieldPileUI(card);
-        UIManager.Instance.UpdateAllHandVisuals(); // ここで自動的にYourTrendも更新される
+        FreeUIManager.Instance.UpdateFieldPileUI(card);
+        FreeUIManager.Instance.UpdateAllHandVisuals(); // ここで自動的にYourTrendも更新される
     }
     // カードが出せるかを判定するメソッド
     public bool CanPlayCard(CardData cardToPlay)
@@ -329,8 +326,8 @@ public class GameManager : MonoBehaviour
         DrawCards(humanPlayer.hand, 1);
 
         // 3. UIを全て更新
-        UIManager.Instance.UpdateAllHandVisuals();
-        UIManager.Instance.UpdateDeckVisual(deck.Count);
+        FreeUIManager.Instance.UpdateAllHandVisuals();
+        FreeUIManager.Instance.UpdateDeckVisual(deck.Count);
 
         // 4. マッチ判定
         // トレンドライドを先にチェック
@@ -347,7 +344,7 @@ public class GameManager : MonoBehaviour
             SetInputLock(true);
             isWaitingForWinConfirmation = true;
             // 勝利確認ボタンを表示
-            UIManager.Instance.ShowWinButton(true);
+            FreeUIManager.Instance.ShowWinButton(true);
             return; // ターン終了をせず、ボタン入力を待つ
         }
         // 勝利しなかった場合、ターンを次に回す
@@ -381,9 +378,9 @@ public class GameManager : MonoBehaviour
         Sprite stampIcon=(targetCard!=null) ? targetCard.rawSectorIcon: null;
 
         // 場のトレンドが更新されたのでUIに反映（Bribe用）
-        UIManager.Instance.UpdateCurrentTrendWhenBribe(stampSprite, stampIcon, currentTrendValue);
+        FreeUIManager.Instance.UpdateCurrentTrendWhenBribe(stampSprite, stampIcon, currentTrendValue);
 
-        UIManager.Instance.HideBribeSelectionUI();
+        FreeUIManager.Instance.HideBribeSelectionUI();
 
         // ターンを次に回す。CPUではないことが保証されているので回して良い。
         NextTurn();
@@ -439,7 +436,7 @@ public class GameManager : MonoBehaviour
             SetInputLock(true);
             isWaitingForWinConfirmation = true;
             // 勝利確認ボタンを表示
-            UIManager.Instance.ShowWinButton(true);
+            FreeUIManager.Instance.ShowWinButton(true);
             return; // ターン終了をせず、ボタン入力を待つ
         }
         // 5. マッチしなかった場合、効果処理とターン送り
@@ -455,55 +452,55 @@ public class GameManager : MonoBehaviour
     // 勝利演出　=> ポイント計算 => 次ラウンド準備の流れを管理
     private IEnumerator StartRoundEndSequence(List<Player> winners, Player actionPlayer, WinType winType)
     {
-        UIManager.Instance.ShowTerminalWindow(false);
+        FreeUIManager.Instance.ShowTerminalWindow(false);
         // 1. 勝利演出（UIに任せる）
         // 他のプレイヤーの手札も全て公開する
-        UIManager.Instance.RevealAllHands();
+        FreeUIManager.Instance.RevealAllHands();
         if (winType == WinType.TrendRide)
         {
             SoundManager.Instance.PlaySound(trendRideSound);
             // 2. トレンドライドであった場合、アラートを表示して待機
-            UIManager.Instance.ShowTrendRideAlert(true, winners, actionPlayer);
+            FreeUIManager.Instance.ShowTrendRideAlert(true, winners, actionPlayer);
             yield return StartCoroutine(WaitForContinueCLick());
-            UIManager.Instance.ShowTrendRideAlert(false, null, null);
+            FreeUIManager.Instance.ShowTrendRideAlert(false, null, null);
         }
         else
         {
              SoundManager.Instance.PlaySound(winSound);
         }
         // 3. 勝利者パネルを表示してクリックを待つ
-        UIManager.Instance.ShowWinnerAnimation(true, winners, winType, currentTrendValue);
+        FreeUIManager.Instance.ShowWinnerAnimation(true, winners, winType, currentTrendValue);
         yield return StartCoroutine(WaitForContinueCLick());
-        UIManager.Instance.ShowWinnerAnimation(false, null, WinType.SelfMatch, 0);
+        FreeUIManager.Instance.ShowWinnerAnimation(false, null, WinType.SelfMatch, 0);
 
         // 4. 各手札をここで見せる
-        UIManager.Instance.ShowRevealAllHandsPanel(players);
+        FreeUIManager.Instance.ShowRevealAllHandsPanel(players);
         yield return StartCoroutine(WaitForContinueCLick());
-        UIManager.Instance.HideRevealAllHandsPanel();
+        FreeUIManager.Instance.HideRevealAllHandsPanel();
 
         // 5. ポイント計算（actionPlayerを渡して分岐）
         CalculatePoints(winners, actionPlayer);
-        UIManager.Instance.UpdateScoreboard(players); // スコアボードUIを更新
+        FreeUIManager.Instance.UpdateScoreboard(players); // スコアボードUIを更新
 
         // 6. 最終勝利判定
         Player overallWinner = CheckForOverallWinner();
         if (overallWinner != null)
         {
             // ゲーム終了
-            UIManager.Instance.ShowGameEndAnimation(true, overallWinner);
+            FreeUIManager.Instance.ShowGameEndAnimation(true, overallWinner);
             yield return StartCoroutine(WaitForContinueCLick());
-            UIManager.Instance.ShowGameEndAnimation(false, null);
+            FreeUIManager.Instance.ShowGameEndAnimation(false, null);
             Debug.Log($"最終勝者: {overallWinner.playerName}");
-            // ゲームを最初からリスタート -> 質問シーケンスへ
-            // RestartGame();
-            if(!overallWinner.isCPU)
-            {
-                SceneManager.LoadSceneAsync("Inquiry");
-            }
-            else
-            {
-                StartNextRound();
-            }
+            // ゲームを最初からリスタート
+            RestartGame();
+            // if(!overallWinner.isCPU)
+            // {
+            //     SceneManager.LoadSceneAsync("Inquiry");
+            // }
+            // else
+            // {
+            //     StartNextRound();
+            // }
         }
         else
         {
@@ -528,13 +525,13 @@ public class GameManager : MonoBehaviour
                 Sprite stampSprite=(targetCard != null) ? targetCard.cardIcon : null;
                 Sprite stampIcon=(targetCard!=null) ? targetCard.rawSectorIcon:null;
                 // 場のトレンドが更新されたのでUIに反映
-                UIManager.Instance.UpdateCurrentTrendWhenBribe(stampSprite, stampIcon, currentTrendValue);
+                FreeUIManager.Instance.UpdateCurrentTrendWhenBribe(stampSprite, stampIcon, currentTrendValue);
                 StartCoroutine(TurnTransitionRoutine(playedCard.effect));
             }
             else
             {
                 // プレイヤーの入力待ち
-                UIManager.Instance.ShowBribeSelectionUI();
+                FreeUIManager.Instance.ShowBribeSelectionUI();
                 // PlayerSelectBribeTrendが呼ばれるまで、このコルーチンはここで「待機」
                 // (PlayerSelectBribeTrendがNextTurn()を呼ぶ)
                 yield break; // コルーチンを終了し、ボタン入力を終了し、ボタン入力を待つ
@@ -555,14 +552,14 @@ public class GameManager : MonoBehaviour
                 }
                 Player targetPlayer=possibleTargets[UnityEngine.Random.Range(0, possibleTargets.Count)];
                 Debug.Log($"[CPU] {cardPlayer.playerName}が{targetPlayer.playerName}をターゲットに選択");
-                // UIManagerのアニメーションコルーチンを呼び出して待機
+                // FreeUIManagerのアニメーションコルーチンを呼び出して待機
                 if(playedCard.effect==CardEffect.Censor)
                 {
-                    yield return StartCoroutine(UIManager.Instance.ShowCensorAnimation(targetPlayer));
+                    yield return StartCoroutine(FreeUIManager.Instance.ShowCensorAnimation(targetPlayer));
                 }
                 else // Interrogate
                 {
-                    yield return StartCoroutine(UIManager.Instance.ShowInterrogateAnimation(targetPlayer));
+                    yield return StartCoroutine(FreeUIManager.Instance.ShowInterrogateAnimation(targetPlayer));
                 }
                 // アニメーションが終わったら次のターンへ
                 StartCoroutine(TurnTransitionRoutine(playedCard.effect));
@@ -571,7 +568,7 @@ public class GameManager : MonoBehaviour
             else // プレイヤーが使った場合
             {
                 // ターゲット選択UIを表示
-                UIManager.Instance.ShowTargetSelectionUI();
+                FreeUIManager.Instance.ShowTargetSelectionUI();
                 yield break; // PlayerSelectTargetがNextTurn()を呼ぶ
             }
         }
@@ -624,7 +621,7 @@ public class GameManager : MonoBehaviour
         Debug.Log($"--- {players[currentPlayerIndex].id} のターン ---");
 
         // 3. アニメーション開始
-        yield return StartCoroutine(UIManager.Instance.ShowTurnAnimation(targetPlayer.playerName, currentPlayerIndex));
+        yield return StartCoroutine(FreeUIManager.Instance.ShowTurnAnimation(targetPlayer.playerName, currentPlayerIndex));
 
         // 4. 効果処理（ターン計算の「後」）
         if (playedEffect == CardEffect.Audit)
@@ -632,7 +629,7 @@ public class GameManager : MonoBehaviour
             // TODO: 回避（Audit返し）のロジック
             Debug.Log($"{targetPlayer.id} は2枚引く!");
             DrawCards(targetPlayer.hand, 2);
-            UIManager.Instance.UpdateAllHandVisuals();
+            FreeUIManager.Instance.UpdateAllHandVisuals();
         }
         // ターン開始
         // 次の人がCPUなら、CPUの試行ルーチンを呼ぶ
@@ -728,7 +725,7 @@ public class GameManager : MonoBehaviour
     {
         foreach (Player player in players)
         {
-            if (GetProgressFlag()==0 && player.wins > 0)
+            if (player.totalPoints >= winningScore)
             {
                 return player;
             }
@@ -738,26 +735,10 @@ public class GameManager : MonoBehaviour
     // 次のラウンドを開始する
     public void StartNextRound()
     {
-        switch (GetProgressFlag())
-        {
-            case 0:
-                if (currentRound >= 3)
-                {
-                    StartCoroutine(ExecutionEndTurnAfterDelay(3.0f));
-                }
-                else
-                {
-                    UIManager.Instance.SetGoalTextDependOnProgress(3-currentRound);
-                }
-                break;
-            default:
-                UIManager.Instance.SetGoalTextDependOnProgress(0); // ゴール表示を消す
-                break;
-        }
         Debug.Log("--- 次のラウンドを開始します ---");
         currentRound++; // ラウンド数を増やす
         // UI更新
-        UIManager.Instance.UpdateRoundText(currentRound);
+        FreeUIManager.Instance.UpdateRoundText(currentRound);
 
         // 1. 全員の手札をクリア
         foreach (Player player in players)
@@ -776,10 +757,10 @@ public class GameManager : MonoBehaviour
         }
 
         // 5. UIをリセット・更新
-        UIManager.Instance.UpdateAllHandVisuals();
-        UIManager.Instance.HideBribeSelectionUI();
-        UIManager.Instance.HideTargetSelectionUI();
-        UIManager.Instance.ResetLog();
+        FreeUIManager.Instance.UpdateAllHandVisuals();
+        FreeUIManager.Instance.HideBribeSelectionUI();
+        FreeUIManager.Instance.HideTargetSelectionUI();
+        FreeUIManager.Instance.ResetLog();
         // 最初の1枚を場に出す
         StartGame(); // 既存のロジックを再利用
 
@@ -800,7 +781,7 @@ public class GameManager : MonoBehaviour
         }
         currentRound = 0; // StartNextRoundで+1されるので0に
         // 2. UIのスコア表示をリセット
-        UIManager.Instance.UpdateScoreboard(players);
+        FreeUIManager.Instance.UpdateScoreboard(players);
         // 3. 次のラウンド（最初のラウンド）を開始
         StartNextRound();
     }
@@ -866,8 +847,8 @@ public class GameManager : MonoBehaviour
                 StartCoroutine(StartRoundEndSequence(winners, currentCPU, WinType.SelfMatch));
                 return;
             }
-            UIManager.Instance.UpdateAllHandVisuals(); // UI（CPUの手札枚数）を更新
-            UIManager.Instance.UpdateDeckVisual(deck.Count);
+            FreeUIManager.Instance.UpdateAllHandVisuals(); // UI（CPUの手札枚数）を更新
+            FreeUIManager.Instance.UpdateDeckVisual(deck.Count);
 
             NextTurn(); // 効果なしで次のターンへ
         }
@@ -1071,7 +1052,7 @@ public class GameManager : MonoBehaviour
             Debug.LogWarning("不正なターゲットです");
             return;
         }
-        UIManager.Instance.HideTargetSelectionUI();
+        FreeUIManager.Instance.HideTargetSelectionUI();
         // アニメーションとターン遷移を行うコルーチンを起動
         StartCoroutine(SurveyTargetAndEndTurn(targetPlayerIndex));
     }
@@ -1081,14 +1062,14 @@ public class GameManager : MonoBehaviour
         Player targetPlayer=players[targetPlayerIndex];
         CardEffect effect=pendingSurveyEffect;
         pendingSurveyEffect=CardEffect.None; // 記憶をリセット
-        // UIManagerのアニメーションコルーチンを呼び出して待機
+        // FreeUIManagerのアニメーションコルーチンを呼び出して待機
         if(effect==CardEffect.Censor)
         {
-            yield return StartCoroutine(UIManager.Instance.ShowCensorAnimation(targetPlayer));
+            yield return StartCoroutine(FreeUIManager.Instance.ShowCensorAnimation(targetPlayer));
         }
         else // Interrogate
         {
-            yield return StartCoroutine(UIManager.Instance.ShowInterrogateAnimation(targetPlayer));
+            yield return StartCoroutine(FreeUIManager.Instance.ShowInterrogateAnimation(targetPlayer));
         }
         // アニメーションが終わったら次のターンへ
         StartCoroutine(TurnTransitionRoutine(CardEffect.None));
@@ -1097,9 +1078,9 @@ public class GameManager : MonoBehaviour
     private void SetInputLock(bool isLocked)
     {
         isPlayerInputLocked = isLocked;
-        if (UIManager.Instance != null)
+        if (FreeUIManager.Instance != null)
         {
-            UIManager.Instance.SetPlayerControlsActive(!isLocked);
+            FreeUIManager.Instance.SetPlayerControlsActive(!isLocked);
         }
     }
     // 勝利確認ボタンによって呼ばれるメソッド
@@ -1112,14 +1093,14 @@ public class GameManager : MonoBehaviour
         }
         Player humanPlayer = players[0];
         isWaitingForWinConfirmation = false;
-        UIManager.Instance.ShowWinButton(false);
+        FreeUIManager.Instance.ShowWinButton(false);
         SetInputLock(true);
         Debug.Log($"セルフマッチ! {humanPlayer.playerName} が勝利!");
         // 勝利シーケンスを開始（引数に「行動した人」を渡す）
         List<Player> roundWinners = new List<Player> { humanPlayer };
         StartCoroutine(StartRoundEndSequence(roundWinners, humanPlayer, WinType.SelfMatch));
     }
-    // UIManagerのボタンから呼ばれるメソッド
+    // FreeUIManagerのボタンから呼ばれるメソッド
     public void OnContinueClicked()
     {
         isWaitingForContinueClick = true;
@@ -1128,7 +1109,7 @@ public class GameManager : MonoBehaviour
     public IEnumerator WaitForContinueCLick()
     {
         // 1. クリックを促すUIを表示
-        UIManager.Instance.ShowContinueButton(true);
+        FreeUIManager.Instance.ShowContinueButton(true);
         // 2. フラグをリセット
         isWaitingForContinueClick = false;
         // 3. フラグが立つまで待機
@@ -1137,7 +1118,7 @@ public class GameManager : MonoBehaviour
             yield return null; // 次のフレームまで待つ
         }
         // 4. UIを非表示
-        UIManager.Instance.ShowContinueButton(false);
+        FreeUIManager.Instance.ShowContinueButton(false);
     }
     // 絵柄と数字を指定して、データベースから該当するカードデータを探すメソッド
     public CardData GetCarddDataBySectorAndNumber(CardSector sector, int number)
@@ -1162,18 +1143,4 @@ public class GameManager : MonoBehaviour
     {
         gameProgressFlag = flag;
     }
-    public IEnumerator ExecutionEndTurnAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        UIManager.Instance.EnableExecutionObject();
-        SoundManager.Instance.PlaySound(bulletDropSound);
-        yield return new WaitForSeconds(1.5f); // 演出の長さに応じて調整
-        UIManager.Instance.ShowBlackOut();
-    }
-}
-public enum PlayerID
-{
-    Player,
-    CPU,
-    GameMaster
 }
