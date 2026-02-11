@@ -765,7 +765,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7da8665871e434c5c8e07e7113701827, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HoldButton
-  requiredHoldTime: 3
+  requiredHoldTime: 0.75
   decaySpeed: 5
   OnComplete:
     m_PersistentCalls:
@@ -1311,7 +1311,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7da8665871e434c5c8e07e7113701827, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HoldButton
-  requiredHoldTime: 3
+  requiredHoldTime: 0.75
   decaySpeed: 5
   OnComplete:
     m_PersistentCalls:
@@ -1482,7 +1482,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7da8665871e434c5c8e07e7113701827, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HoldButton
-  requiredHoldTime: 3
+  requiredHoldTime: 0.75
   decaySpeed: 5
   OnComplete:
     m_PersistentCalls:

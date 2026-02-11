@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a446d676519b94ffdb8d21b99f0443f3, type: 3}
-  m_Name: Inquiry_2
+  m_Name: Inquiry1_2
   m_EditorClassIdentifier: Assembly-CSharp::InquiryData
-  questionID: 
+  questionID: 2
   questionText: "\u4ECA\u306E\u6642\u70B9\u3067\u306E\u6E80\u8DB3\u5EA6\u3092\u6559\u3048\u3066\u304F\u3060\u3055\u3044\u3002(1~5)"
   photo: {fileID: 0}
   choices:
