@@ -789,7 +789,7 @@ public class FreeGameManager : MonoBehaviour
     protected virtual void ExecuteCPUTurn()
     {
         // CPUが考えているように見せるため、数秒後に実行する
-        Invoke("CPUTurnLogic", UnityEngine.Random.Range(2f, 4.5f));
+        Invoke("CPUTurnLogic", 0.5f);
     }
     // CPUの思考ロジック本体
     private void CPUTurnLogic()
