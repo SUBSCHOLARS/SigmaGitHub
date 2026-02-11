@@ -732,6 +732,10 @@ public class GameManager : MonoBehaviour
             {
                 return player;
             }
+            else if (GetProgressFlag()==1 && player.wins >= 3)
+            {
+                return player;
+            }
         }
         return null;
     }
@@ -750,6 +754,7 @@ public class GameManager : MonoBehaviour
                     UIManager.Instance.SetGoalTextDependOnProgress(3-currentRound);
                 }
                 break;
+            case 1:
             default:
                 UIManager.Instance.SetGoalTextDependOnProgress(0); // ゴール表示を消す
                 break;

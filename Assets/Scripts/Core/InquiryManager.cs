@@ -32,6 +32,12 @@ public class InquiryManager : MonoBehaviour
             case 1:
                 DisplayInquiry(eachOfFirstInquiries[1]);
                 break;
+            case 2:
+                DisplayInquiry(eachOfFirstInquiries[2]);
+                break;
+            case 3:
+                DisplayInquiry(eachOfFirstInquiries[3]);
+                break;
             default:
                 Debug.LogError("不明なゲーム進行フラグ: " + GameManager.Instance.GetProgressFlag());
                 break;
@@ -108,6 +114,12 @@ public class InquiryManager : MonoBehaviour
                 break;
             case 1:
                 GameManager.Instance.SetProgressFlag(2);
+                break;
+            case 2:
+                GameManager.Instance.SetProgressFlag(3);
+                break;
+            case 3:
+                GameManager.Instance.SetProgressFlag(4);
                 break;
             default:
                 break;
