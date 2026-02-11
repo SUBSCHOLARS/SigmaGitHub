@@ -13,26 +13,26 @@ MonoBehaviour:
   m_Name: Inquiry1_3
   m_EditorClassIdentifier: Assembly-CSharp::InquiryData
   questionID: 2
-  questionText: "\u4ECA\u306E\u6642\u70B9\u3067\u306E\u6E80\u8DB3\u5EA6\u3092\u6559\u3048\u3066\u304F\u3060\u3055\u3044\u3002(1~5)"
+  questionText: "\u8868\u9762\u7684\u306A\u30C7\u30B6\u30A4\u30F3\u306B\u3064\u3044\u3066\u306F\u3069\u3046\u601D\u3044\u307E\u3057\u305F\uFF1F\u3002(1~5)"
   photo: {fileID: 0}
   choices:
   - buttonLabel: 1
     ideologyType: 0
     pressDuration: 1.5
-    nextInquiry: {fileID: 0}
+    nextInquiry: {fileID: 11400000, guid: 641e0495aa9774de6ac2df9bed7458e4, type: 2}
   - buttonLabel: 2
     ideologyType: 0
     pressDuration: 1.5
-    nextInquiry: {fileID: 0}
+    nextInquiry: {fileID: 11400000, guid: 641e0495aa9774de6ac2df9bed7458e4, type: 2}
   - buttonLabel: 3
     ideologyType: 0
     pressDuration: 1.5
-    nextInquiry: {fileID: 0}
+    nextInquiry: {fileID: 11400000, guid: 641e0495aa9774de6ac2df9bed7458e4, type: 2}
   - buttonLabel: 4
     ideologyType: 0
     pressDuration: 1.5
-    nextInquiry: {fileID: 0}
+    nextInquiry: {fileID: 11400000, guid: 641e0495aa9774de6ac2df9bed7458e4, type: 2}
   - buttonLabel: 5
     ideologyType: 0
     pressDuration: 1.5
-    nextInquiry: {fileID: 0}
+    nextInquiry: {fileID: 11400000, guid: 641e0495aa9774de6ac2df9bed7458e4, type: 2}

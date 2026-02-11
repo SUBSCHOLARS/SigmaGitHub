@@ -19,20 +19,20 @@ MonoBehaviour:
   - buttonLabel: 1
     ideologyType: 0
     pressDuration: 1.5
-    nextInquiry: {fileID: 0}
+    nextInquiry: {fileID: 11400000, guid: d3923284c50af4bf7bb8d35ee198dcf7, type: 2}
   - buttonLabel: 2
     ideologyType: 0
     pressDuration: 1.5
-    nextInquiry: {fileID: 0}
+    nextInquiry: {fileID: 11400000, guid: d3923284c50af4bf7bb8d35ee198dcf7, type: 2}
   - buttonLabel: 3
     ideologyType: 0
     pressDuration: 1.5
-    nextInquiry: {fileID: 0}
+    nextInquiry: {fileID: 11400000, guid: d3923284c50af4bf7bb8d35ee198dcf7, type: 2}
   - buttonLabel: 4
     ideologyType: 0
     pressDuration: 1.5
-    nextInquiry: {fileID: 0}
+    nextInquiry: {fileID: 11400000, guid: d3923284c50af4bf7bb8d35ee198dcf7, type: 2}
   - buttonLabel: 5
     ideologyType: 0
     pressDuration: 1.5
-    nextInquiry: {fileID: 0}
+    nextInquiry: {fileID: 11400000, guid: d3923284c50af4bf7bb8d35ee198dcf7, type: 2}

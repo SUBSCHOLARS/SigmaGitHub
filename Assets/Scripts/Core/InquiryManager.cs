@@ -24,10 +24,6 @@ public class InquiryManager : MonoBehaviour
     {
         audioSource=GetComponent<AudioSource>();
         wipeEffect=maskObject.GetComponent<RetroWipeEffect>();
-        if(GameManager.Instance==null)
-        {
-            DisplayInquiry(eachOfFirstInquiries[0]);
-        }
         switch (GameManager.Instance.GetProgressFlag())
         {
             case 0:
