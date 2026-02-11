@@ -1163,7 +1163,14 @@ public class UIManager : MonoBehaviour
     {
         if(GameManager.Instance.GetProgressFlag()==0)
         {
-            gameGoalText.text=$"条件: {remainingTurns}ラウンド以内に1回勝利する。";
+            if(remainingTurns==1)
+            {
+                gameGoalText.text=$"条件: <color=red>{remainingTurns}</color>ラウンド以内に1回勝利する。";
+            }
+            else
+            {
+                gameGoalText.text=$"条件: {remainingTurns}ラウンド以内に1回勝利する。";
+            }
         }
         else if(GameManager.Instance.GetProgressFlag()==1)
         {
