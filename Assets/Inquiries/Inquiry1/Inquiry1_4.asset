@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a446d676519b94ffdb8d21b99f0443f3, type: 3}
   m_Name: Inquiry1_4
   m_EditorClassIdentifier: Assembly-CSharp::InquiryData
-  questionID: 2
+  questionID: 4
   questionText: "\u4ECA\u3001\u3042\u306A\u305F\u306F\u5BA4\u5185\u306B\u3044\u307E\u3059\u304B\uFF1F"
   photo: {fileID: 0}
   choices:
