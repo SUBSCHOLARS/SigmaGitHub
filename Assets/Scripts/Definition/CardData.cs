@@ -17,4 +17,8 @@ public class CardData : ScriptableObject
     [Header("フレーバーテキスト")]
     [TextArea(3, 10)]
     public string flavorText;
+    // CardData.csに追加するフィールド
+    [Header("イデオロギーカード情報")]
+    public bool isIdeologyCard = false;
+    public IdeologyType ideologyType = IdeologyType.None;
 }
