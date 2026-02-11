@@ -41,6 +41,12 @@ public class LobbyManager : MonoBehaviour
         SoundManager.Instance.PlaySound(nextButtonSound);
         SceneManager.LoadScene(tutorialSceneName);
     }
+    public void OnFreePlayClicked()
+    {
+        Debug.Log("Starting Free Play...");
+        SoundManager.Instance.PlaySound(nextButtonSound);
+        SceneManager.LoadScene("FreeGamePlay");
+    }
 
     public void OnQuitClicked()
     {   
