@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /Users/hatanakakouta/SigmaGitHub check-ignore Library/ Temp/ obj/)",
+      "Bash(git -C /Users/hatanakakouta/SigmaGitHub config core.autocrlf)",
+      "Bash(git -C /Users/hatanakakouta/SigmaGitHub config core.eol)",
+      "Bash(git -C /Users/hatanakakouta/SigmaGitHub fsck --no-dangling)",
+      "Bash(git -C /Users/hatanakakouta/SigmaGitHub config --local --list)",
+      "Bash(git -C /Users/hatanakakouta/SigmaGitHub diff --numstat)",
+      "Bash(git -C /Users/hatanakakouta/SigmaGitHub diff --cached --numstat)",
+      "Bash(git -C /Users/hatanakakouta/SigmaGitHub diff --cached --name-only)",
+      "Bash(git -C /Users/hatanakakouta/SigmaGitHub status --porcelain)"
+    ]
+  }
+}

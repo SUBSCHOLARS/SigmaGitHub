@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Collections;
-using NUnit.Framework;
 using UnityEngine;
 using System;
 using UnityEngine.SceneManagement;
@@ -129,7 +128,7 @@ public class GameManager : MonoBehaviour
     // Fisher-Yatesアルゴリズムを使い、山札をシャッフルするメソッド
     public void ShuffleDeck()
     {
-        Assert.IsNotNull(deck, "デッキが空なのでシャッフルできません");
+        Debug.Assert(deck != null, "デッキが空なのでシャッフルできません");
         for (int i = 0; i < deck.Count; i++)
         {
             int rand = UnityEngine.Random.Range(i, deck.Count);

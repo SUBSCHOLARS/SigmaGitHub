@@ -1,0 +1,6 @@
+﻿<linker>
+  <assembly fullname="Unity.Services.Core" preserve="all"/>
+  <assembly fullname="Unity.Services.Authentication" preserve="all"/>
+  <assembly fullname="Unity.Services.Lobby" preserve="all"/>
+  <assembly fullname="Assembly-CSharp" preserve="all"/>
+</linker>

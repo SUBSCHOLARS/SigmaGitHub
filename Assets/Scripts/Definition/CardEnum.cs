@@ -30,3 +30,12 @@ public enum CardEffect
     // パス
     Silence
 }
+public enum IdeologyType
+{
+    None,
+    DoubleThink,
+    MemoryHole,
+    SigmaSpeak,
+    BureauBrother,
+    Thoughtcrime
+}

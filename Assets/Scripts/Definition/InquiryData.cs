@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "InquiryData", menuName = "Scriptable Objects/InquiryData")]
@@ -13,8 +14,7 @@ public class InquiryData : ScriptableObject
     [Header("選択肢")]
     public List<InquiryChoice> choices; // ボタンのリスト（可変）
 }
-
-[System.Serializable]
+[Serializable]
 public struct InquiryChoice
 {
     public string buttonLabel; // ボタンに表示する文字
@@ -22,14 +22,4 @@ public struct InquiryChoice
     public float pressDuration;
     public InquiryData nextInquiry; // 次に表示する質問
 
-}
-
-public enum IdeologyType
-{
-    None,
-    DoubleThink,
-    MemoryHole,
-    SigmaSpeak,
-    BureauBrother,
-    Thoughtcrime
 }

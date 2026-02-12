@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 
@@ -89,3 +90,4 @@ public class FlavorTextImporter : EditorWindow
         Debug.Log($"完了! 更新: {successCount}件、未発見: {notFoundCount}件");
     }
 }
+# endif

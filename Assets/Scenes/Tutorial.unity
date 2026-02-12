@@ -1421,7 +1421,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 276, y: -178}
+  m_AnchoredPosition: {x: 250, y: -152}
   m_SizeDelta: {x: 297, y: 251}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &197620977
@@ -1496,7 +1496,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 276, y: -178}
+  m_AnchoredPosition: {x: 250, y: -152}
   m_SizeDelta: {x: 297, y: 251}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &205789225
@@ -2158,6 +2158,7 @@ MonoBehaviour:
   winSound: {fileID: 8300000, guid: 40b6ab62ba0b346c3aae463a5cfc7ded, type: 3}
   trendRideSound: {fileID: 8300000, guid: 40b6ab62ba0b346c3aae463a5cfc7ded, type: 3}
   firstSetupSound: {fileID: 8300000, guid: b9895483ac66d454fb9f8aeab1f7e403, type: 3}
+  bulletDropSound: {fileID: 0}
   deck: []
   discardPile: []
   isPlayerInputLocked: 0
@@ -2746,6 +2747,8 @@ MonoBehaviour:
   playerNameText: {fileID: 0}
   nextButtonSound: {fileID: 0}
   gameGoalText: {fileID: 0}
+  bloodObject: {fileID: 0}
+  blackOut: {fileID: 0}
 --- !u!1 &373105530
 GameObject:
   m_ObjectHideFlags: 0
@@ -7810,7 +7813,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 276, y: -102}
+  m_AnchoredPosition: {x: 217, y: -65}
   m_SizeDelta: {x: 100, y: 70}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1109174800
@@ -9059,7 +9062,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -345, y: 0}
+  m_AnchoredPosition: {x: -278, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1303572094
@@ -10837,7 +10840,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!82 &1427448714
 AudioSource:
   m_ObjectHideFlags: 0
