@@ -5,3 +5,6 @@
 # Rule
 破壊的な変更は避けてください。
 随時最適なルールを追加していって下さい。
+# Reference
+以下のurlはCLAUDE CODEのベストプラクティスについてまとめたドキュメントです。適宜参照してください。
+https://code.claude.com/docs/en/best-practices
