@@ -11,7 +11,7 @@ public class InquiryManager : MonoBehaviour
 
     [Header("UI参照")]
     [SerializeField] private TextMeshProUGUI questionTextUI;
-    [SerializeField] private Image visualEffectUI;
+    [SerializeField] private Transform imageContainer;
     [SerializeField] private Transform buttonContainer;
     [SerializeField] private GameObject buttonPrefab;
     [Header("マスク用オブジェクト")]
@@ -54,11 +54,17 @@ public class InquiryManager : MonoBehaviour
         currentData=data;
         questionTextUI.text=data.questionText;
 
-        if(visualEffectUI!=null) visualEffectUI.sprite=data.photo;
+        // 古いイメージを削除
+        foreach(Image child in imageContainer) Destroy(child.gameObject);
 
         // 古いボタンを削除
         foreach(Transform child in buttonContainer) Destroy(child.gameObject);
 
+        // 新しいイメージを生成
+        foreach(var sprites in data.photos)
+        {
+            
+        }
         // 新しいボタンを生成
         foreach(var choice in data.choices)
         {

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "InquiryData", menuName = "Scriptable Objects/InquiryData")]
 public class InquiryData : ScriptableObject
@@ -10,7 +11,7 @@ public class InquiryData : ScriptableObject
     [Header("質問設定")]
     [TextArea(3, 10)]
     public string questionText; // 質問文
-    public Sprite photo; //画像演出用
+    public List<Sprite> photos; //画像演出用
     [Header("選択肢")]
     public List<InquiryChoice> choices; // ボタンのリスト（可変）
 }

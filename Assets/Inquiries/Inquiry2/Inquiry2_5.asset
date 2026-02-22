@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a446d676519b94ffdb8d21b99f0443f3, type: 3}
-  m_Name: Inquiry2_1
+  m_Name: Inquiry2_5
   m_EditorClassIdentifier: Assembly-CSharp::InquiryData
-  questionID: 6
-  questionText: "\u672C\u88FD\u54C1\u306F\u5B89\u5B9A\u3057\u3066\u52D5\u4F5C\u3057\u3066\u3044\u307E\u3059\u304B?"
-  photo: {fileID: 0}
+  questionID: 10
+  questionText: "\u3053\u308C\u3089\u306E\u753B\u50CF\u306E\u4E2D\u306B\u3001\u898B\u899A\u3048\u306E\u3042\u308B\u3082\u306E\u306F\u3042\u308A\u307E\u3057\u305F\u304B?"
+  photos: []
   choices:
   - buttonLabel: "\u306F\u3044"
     ideologyType: 0
     pressDuration: 0.75
-    nextInquiry: {fileID: 11400000, guid: e5518f6cc1de73d4ca75d813871df9a3, type: 2}
+    nextInquiry: {fileID: 11400000, guid: 78cf04cd87189664a829732d75107232, type: 2}
   - buttonLabel: "\u3044\u3044\u3048"
     ideologyType: 0
     pressDuration: 0.75
-    nextInquiry: {fileID: 11400000, guid: e5518f6cc1de73d4ca75d813871df9a3, type: 2}
+    nextInquiry: {fileID: 11400000, guid: 78cf04cd87189664a829732d75107232, type: 2}
