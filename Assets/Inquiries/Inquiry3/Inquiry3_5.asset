@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InquiryData
   questionID: 16
   questionText: "\u3053\u306E\u4E2D\u306B\u3001\u3042\u306A\u305F\u306E\u77E5\u4EBA\u306F\u3044\u307E\u3059\u304B?"
-  photos: []
+  photos:
+  - {fileID: -5739982214996362157, guid: 7c30abf6ebc024845b873991e2404a75, type: 3}
   choices:
   - buttonLabel: "\u306F\u3044"
     ideologyType: 0
