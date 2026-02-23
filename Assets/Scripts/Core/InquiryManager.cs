@@ -126,6 +126,9 @@ public class InquiryManager : MonoBehaviour
             case 3:
                 GameManager.Instance.SetProgressFlag(4);
                 break;
+            case 4:
+                GameManager.Instance.SetProgressFlag(5);
+                break;
             default:
                 break;
         }
