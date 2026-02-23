@@ -15,10 +15,7 @@ MonoBehaviour:
   questionID: 15
   questionText: "\u4EE5\u4E0B\u306E\u4EBA\u7269\u306E\u5199\u771F\u3092\u78BA\u8A8D\u3057\u3066\u304F\u3060\u3055\u3044\u3002"
   photos:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: -5739982214996362157, guid: 7c30abf6ebc024845b873991e2404a75, type: 3}
   choices:
   - buttonLabel: "\u78BA\u8A8D\u3057\u305F"
     ideologyType: 0
