@@ -459,6 +459,7 @@ MonoBehaviour:
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -613,8 +614,13 @@ MonoBehaviour:
   currentData: {fileID: 11400000, guid: e49641f50abac457fa9e42bcf11e78d0, type: 2}
   eachOfFirstInquiries:
   - {fileID: 11400000, guid: e49641f50abac457fa9e42bcf11e78d0, type: 2}
+  - {fileID: 11400000, guid: 2bf3cdbd52ce143bba0266774d603c18, type: 2}
+  - {fileID: 11400000, guid: b5da848cd41a06443a95470a55b0644b, type: 2}
+  - {fileID: 11400000, guid: e7f22dc36b52bf54696f05c58d092d7c, type: 2}
+  - {fileID: 11400000, guid: d70322ef38300164dbabf407f2a4a63e, type: 2}
+  - {fileID: 11400000, guid: e9370aa62220a474881651c5d3c8bdf2, type: 2}
   questionTextUI: {fileID: 1784406663}
-  visualEffectUI: {fileID: 0}
+  imageContainer: {fileID: 0}
   buttonContainer: {fileID: 1804981158}
   buttonPrefab: {fileID: 3052164396074649235, guid: a27057868f2484b28abb88361d958b12, type: 3}
   maskObject: {fileID: 265713871}
@@ -973,6 +979,7 @@ Animator:
   m_WriteDefaultValuesOnDisable: 0
 --- !u!212 &1747883362
 SpriteRenderer:
+  serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1018,6 +1025,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_Sprite: {fileID: -2689217364395777219, guid: 8cfa0f60afa504f838bc1c442b10d7e6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -1027,7 +1035,6 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1784406661
 GameObject:
@@ -1124,6 +1131,7 @@ MonoBehaviour:
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
