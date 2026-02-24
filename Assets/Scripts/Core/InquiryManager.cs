@@ -12,6 +12,7 @@ public class InquiryManager : MonoBehaviour
     [Header("UI参照")]
     [SerializeField] private TextMeshProUGUI questionTextUI;
     [SerializeField] private Transform imageContainer;
+    [SerializeField] private GameObject imagePrefab;
     [SerializeField] private Transform buttonContainer;
     [SerializeField] private GameObject buttonPrefab;
     [Header("マスク用オブジェクト")]
@@ -37,6 +38,12 @@ public class InquiryManager : MonoBehaviour
             case 3:
                 DisplayInquiry(eachOfFirstInquiries[3]);
                 break;
+            case 4:
+                DisplayInquiry(eachOfFirstInquiries[4]);
+                break;
+            case 5:
+                DisplayInquiry(eachOfFirstInquiries[5]);
+                break;
             default:
                 Debug.LogError("不明なゲーム進行フラグ: " + GameManager.Instance.GetProgressFlag());
                 break;
@@ -61,9 +68,12 @@ public class InquiryManager : MonoBehaviour
         foreach(Transform child in buttonContainer) Destroy(child.gameObject);
 
         // 新しいイメージを生成
-        foreach(var sprites in data.photos)
+        foreach(var sprite in data.photos)
         {
-            
+            // プレハブ（Rootオブジェクト）を生成
+            GameObject imageObject=Instantiate(imagePrefab, imageContainer);
+            Image image=imageObject.GetComponent<Image>();
+            image.sprite=sprite;
         }
         // 新しいボタンを生成
         foreach(var choice in data.choices)

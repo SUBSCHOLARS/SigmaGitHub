@@ -45,7 +45,6 @@ public class GameManager : MonoBehaviour
     protected Sprite initialSprite;
     private const int FIRST_DECK_DISTRIBUTION_COUNT=21;
     private int distributionCount=0;
-    [SerializeField] private Sprite bribeSprite;
 
     void Awake()
     {
@@ -1174,6 +1173,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(1.5f); // 演出の長さに応じて調整
         UIManager.Instance.ShowBlackOut();
     }
+    // 
 }
 public enum PlayerID
 {
