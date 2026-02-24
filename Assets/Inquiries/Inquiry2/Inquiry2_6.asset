@@ -18,9 +18,9 @@ MonoBehaviour:
   choices:
   - buttonLabel: "\u306F\u3044"
     ideologyType: 0
-    pressDuration: 0
+    pressDuration: 0.75
     nextInquiry: {fileID: 0}
   - buttonLabel: "\u3044\u3044\u3048"
     ideologyType: 0
-    pressDuration: 0
+    pressDuration: 0.75
     nextInquiry: {fileID: 0}

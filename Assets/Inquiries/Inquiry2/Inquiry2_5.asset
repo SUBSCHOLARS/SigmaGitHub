@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Inquiry2_5
   m_EditorClassIdentifier: Assembly-CSharp::InquiryData
   questionID: 10
-  questionText: "\u3053\u308C\u3089\u306E\u753B\u50CF\u306E\u4E2D\u306B\u3001\u898B\u899A\u3048\u306E\u3042\u308B\u3082\u306E\u306F\u3042\u308A\u307E\u3057\u305F\u304B?"
+  questionText: "\u3053\u308C\u3089\u306E\u753B\u50CF\u306E\u4E2D\u306B\u3001<br>\u898B\u899A\u3048\u306E\u3042\u308B\u3082\u306E\u306F\u3042\u308A\u307E\u3057\u305F\u304B?"
   photos: []
   choices:
   - buttonLabel: "\u306F\u3044"

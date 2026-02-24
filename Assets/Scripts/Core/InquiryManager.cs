@@ -19,6 +19,16 @@ public class InquiryManager : MonoBehaviour
     [SerializeField] private GameObject maskObject;
     private RetroWipeEffect wipeEffect;
     private AudioSource audioSource;
+    [SerializeField] private bool isDebugMode=false; // Inspectorでオンに設定
+    [SerializeField] private int debugProgressFlag=0; // デバッグ時の任意フラグ
+    private void Awake()
+    {
+        if(isDebugMode)
+        {
+            // デバッグ時はGameManagerを初期化
+            GameManager.InitializeForDebug(debugProgressFlag);
+        }
+    }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -62,7 +72,7 @@ public class InquiryManager : MonoBehaviour
         questionTextUI.text=data.questionText;
 
         // 古いイメージを削除
-        foreach(Image child in imageContainer) Destroy(child.gameObject);
+        foreach(Transform child in imageContainer) Destroy(child.gameObject);
 
         // 古いボタンを削除
         foreach(Transform child in buttonContainer) Destroy(child.gameObject);
