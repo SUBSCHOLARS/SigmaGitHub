@@ -1173,7 +1173,17 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(1.5f); // 演出の長さに応じて調整
         UIManager.Instance.ShowBlackOut();
     }
-    // 
+    // デバッグ用初期化メソッド
+    public static void InitializeForDebug(int debugFlag)
+    {
+        if(Instance==null)
+        {
+            GameObject gameObject=new GameObject("GameManager");
+            Instance=gameObject.AddComponent<GameManager>();
+            DontDestroyOnLoad(gameObject);
+        }
+        Instance.gameProgressFlag=debugFlag;
+    }
 }
 public enum PlayerID
 {
