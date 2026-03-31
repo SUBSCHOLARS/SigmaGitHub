@@ -116,7 +116,7 @@ public class TutorialGameManager : GameManager
 
         string pName = PersistentDataManager.Instance.PlayerName;
         yield return StartCoroutine(ShowDialogue($"なるほど... {pName} だね。\n悪くない名前だ。"));
-        yield return StartCoroutine(ShowDialogue("おっと。\nそういえば。"));
+        yield return StartCoroutine(ShowDialogue("おっと。"));
         yield return StartCoroutine(ShowDialogue("もちろんこの名前は悪用なんてしないさ。\nただゲームのユーザー名にするだけだよ。"));
 
         // 5. ゲーム開始準備
@@ -207,11 +207,10 @@ public class TutorialGameManager : GameManager
          // 9. エンディング
         yield return new WaitForSeconds(2.0f); // 勝利演出の余韻
         yield return StartCoroutine(ShowDialogue("どうだったかな？。\nこれがこのゲーム...『ΣIGMA』の基本になる。"));
-        yield return StartCoroutine(ShowDialogue("そして、ラウンドに勝利すると「クレジット」が貰える。\nクレジットが100を超えたらその時点で全体の勝者になる。"));
-        yield return StartCoroutine(ShowDialogue("逆に負けるとその時の手札の合計値分\nクレジットを失うから気をつけてね。"));
+        yield return StartCoroutine(ShowDialogue("これからはレベルごとに提示されるクリアの条件を満たしていって、ゴールを目指してくれ。"));
         yield return StartCoroutine(ShowDialogue("まあこんなところかな？\n他にもいろいろなカードがあるけど、\n取り敢えず「セルフマッチ」と「トレンドライド」だけ覚えておいてくれ。"));
         yield return StartCoroutine(ShowDialogue("あとはやっていくうちに覚えられるさ。"));
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(1f);
 
         // ロビーに戻るボタンなどを表示
         // UIManager.Instance.ShowGameEndAnimation(true, players[0]); // 仮の勝利演出

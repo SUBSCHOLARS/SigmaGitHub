@@ -39,6 +39,8 @@ public class FreeCardController : MonoBehaviour
         {
             // ホバー開始
             isHovered = true;
+            // 即時完了
+            transform.DOComplete();
             initialPosition = transform.localPosition;
             siblingIndex = transform.GetSiblingIndex();
 
@@ -49,6 +51,8 @@ public class FreeCardController : MonoBehaviour
         {
             // ホバー終了
             isHovered = false;
+            // 即時中断
+            transform.DOKill();
             transform.DOLocalMoveY(initialPosition.y, 0.5f).SetEase(Ease.InOutQuad);
             transform.SetSiblingIndex(siblingIndex); // 元の重なり順に戻す
         }
