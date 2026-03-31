@@ -1,2 +1,7 @@
-# SigmaGitHub
-The Original Card Game that I came up with my firend while staying in Vietnam
+# Sigma
+2025年の夏に行ったベトナム・タイ旅行で、友人と余暇に考え付いたカードゲームをゲームにすることを試みるプロジェクトです。
+裏テーマとして、「今まで意識してこなかった設計というものを考えて作ってみよう」という思いがあり、
+Singletonパターンを土台に、純粋なC#クラスの使用によるMonobehaviourからの脱却やScriptableObjectの活用などを実践しているのですが、CyberAgentのGame Client Collegeに参加してから、効果的な設計を考えられていなかったことを痛感しました。
+そもそもGameManagerとUIManagerの行数がどちらも1000行超えている時点で相当メンテナンス性が悪い気がする!!!!
+結局は自分しか触らないプロジェクトだったから、なんとなくうまくいっている感があっただけなのかも...
+このままつきすすむしかない
