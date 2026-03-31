@@ -1174,13 +1174,32 @@ public class UIManager : MonoBehaviour
         }
         else if(GameManager.Instance.GetProgressFlag()==1)
         {
-            gameGoalText.text="条件: 2回勝利する。";
+            gameGoalText.text="条件: 3回勝利する。";
         }
         else if(GameManager.Instance.GetProgressFlag()==2)
         {
-            gameGoalText.text="条件: 3回勝利する。";
+            if(remainingTurns==1)
+            {
+                gameGoalText.text=$"条件: <color=red>{remainingTurns}</color>ラウンド以内に2回勝利する。";
+            }
+            else
+            {
+                gameGoalText.text=$"条件: {remainingTurns}ラウンド以内に2回勝利する。";
+            }
         }
-         else
+        else if(GameManager.Instance.GetProgressFlag()==3)
+        {
+            gameGoalText.text="条件: 5回勝利し、その達成時に手札3枚以下であること。";
+        }
+        else if(GameManager.Instance.GetProgressFlag()==4)
+        {
+            gameGoalText.text="条件: 5回勝利し、その達成時にEYEカードを手札に保持していること。";
+        }
+        else if(GameManager.Instance.GetProgressFlag()==5)
+        {
+            gameGoalText.text="条件: 7回勝利し、その達成時にCHAINカードを手札に保持していること。";
+        }
+        else
         {
             gameGoalText.text="----------------";
         }

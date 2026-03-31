@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -25,39 +26,30 @@ public class InquiryManager : MonoBehaviour
     {
         if(isDebugMode)
         {
-            // デバッグ時はGameManagerを初期化
-            GameManager.InitializeForDebug(debugProgressFlag);
+            if(PersistentDataManager.Instance == null)
+            {
+                GameObject pdmObject = new GameObject("PersistentDataManager");
+                pdmObject.AddComponent<PersistentDataManager>();
+            }
+            PersistentDataManager.Instance.SetGameProgressFlag(debugProgressFlag);
         }
     }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         audioSource=GetComponent<AudioSource>();
         wipeEffect=maskObject.GetComponent<RetroWipeEffect>();
-        switch (GameManager.Instance.GetProgressFlag())
-        {
-            case 0:
-                DisplayInquiry(eachOfFirstInquiries[0]);
-                break;
-            case 1:
-                DisplayInquiry(eachOfFirstInquiries[1]);
-                break;
-            case 2:
-                DisplayInquiry(eachOfFirstInquiries[2]);
-                break;
-            case 3:
-                DisplayInquiry(eachOfFirstInquiries[3]);
-                break;
-            case 4:
-                DisplayInquiry(eachOfFirstInquiries[4]);
-                break;
-            case 5:
-                DisplayInquiry(eachOfFirstInquiries[5]);
-                break;
-            default:
-                Debug.LogError("不明なゲーム進行フラグ: " + GameManager.Instance.GetProgressFlag());
-                break;
-        }
+        StartCoroutine(StartInquirySequence());
+    }
+
+    private IEnumerator StartInquirySequence()
+    {
+        // ここに後から演出コードを差し込める（現在は即時実行）
+        yield return null;
+        int flag = PersistentDataManager.Instance.GameProgressFlag;
+        if (flag >= 0 && flag < eachOfFirstInquiries.Length)
+            DisplayInquiry(eachOfFirstInquiries[flag]);
+        else
+            Debug.LogError("不明なゲーム進行フラグ: " + flag);
     }
 
     public void DisplayInquiry(InquiryData data)
@@ -67,7 +59,7 @@ public class InquiryManager : MonoBehaviour
             FinishInquiry();
             return;
         }
-        
+
         currentData=data;
         questionTextUI.text=data.questionText;
 
@@ -132,22 +124,23 @@ public class InquiryManager : MonoBehaviour
     private void FinishInquiry()
     {
         Debug.Log("質問シーケンス終了。次のモードへ移行します。");
-        switch (GameManager.Instance.GetProgressFlag())
+        int currentFlag = PersistentDataManager.Instance.GameProgressFlag;
+        switch (currentFlag)
         {
             case 0:
-                GameManager.Instance.SetProgressFlag(1);
+                PersistentDataManager.Instance.SetGameProgressFlag(1);
                 break;
             case 1:
-                GameManager.Instance.SetProgressFlag(2);
+                PersistentDataManager.Instance.SetGameProgressFlag(2);
                 break;
             case 2:
-                GameManager.Instance.SetProgressFlag(3);
+                PersistentDataManager.Instance.SetGameProgressFlag(3);
                 break;
             case 3:
-                GameManager.Instance.SetProgressFlag(4);
+                PersistentDataManager.Instance.SetGameProgressFlag(4);
                 break;
             case 4:
-                GameManager.Instance.SetProgressFlag(5);
+                PersistentDataManager.Instance.SetGameProgressFlag(5);
                 break;
             default:
                 break;

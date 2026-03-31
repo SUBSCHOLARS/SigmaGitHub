@@ -22,4 +22,11 @@ public class PersistentDataManager : MonoBehaviour
     {
         PlayerName = name;
     }
+
+    public int GameProgressFlag { get; private set; } = 0;
+
+    public void SetGameProgressFlag(int flag)
+    {
+        GameProgressFlag = flag;
+    }
 }

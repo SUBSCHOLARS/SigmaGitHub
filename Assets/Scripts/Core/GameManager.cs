@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 using System;
 using UnityEngine.SceneManagement;
@@ -69,6 +70,8 @@ public class GameManager : MonoBehaviour
     {
         // 3人対戦のセットアップ
         players.Clear();
+        if (PersistentDataManager.Instance != null)
+            gameProgressFlag = PersistentDataManager.Instance.GameProgressFlag;
         string pName = PersistentDataManager.Instance != null ? PersistentDataManager.Instance.PlayerName : "Ian";
         
         players.Add(new Player(PlayerID.Player, false, pName, 0)); // 0番目が人間
@@ -734,6 +737,22 @@ public class GameManager : MonoBehaviour
             {
                 return player;
             }
+            else if (GetProgressFlag()==2 && player.wins >= 2)
+            {
+                return player;
+            }
+            else if (GetProgressFlag()==3 && player.wins >= 5 && player.hand.Count <= 3)
+            {
+                return player;
+            }
+            else if (GetProgressFlag()==4 && player.wins >= 5 && player.hand.Any(c => c.sector == CardSector.Eye))
+            {
+                return player;
+            }
+            else if (GetProgressFlag()==5 && player.wins >= 7 && player.hand.Any(c => c.sector == CardSector.Chain))
+            {
+                return player;
+            }
         }
         return null;
     }
@@ -753,8 +772,23 @@ public class GameManager : MonoBehaviour
                 }
                 break;
             case 1:
+                UIManager.Instance.SetGoalTextDependOnProgress(0);
+                break;
+            case 2:
+                if (currentRound >= 4)
+                {
+                    StartCoroutine(ExecutionEndTurnAfterDelay(3.0f));
+                }
+                else
+                {
+                    UIManager.Instance.SetGoalTextDependOnProgress(4 - currentRound);
+                }
+                break;
+            case 3:
+            case 4:
+            case 5:
             default:
-                UIManager.Instance.SetGoalTextDependOnProgress(0); // ゴール表示を消す
+                UIManager.Instance.SetGoalTextDependOnProgress(0);
                 break;
         }
         Debug.Log("--- 次のラウンドを開始します ---");
