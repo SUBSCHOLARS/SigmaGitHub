@@ -27,8 +27,8 @@ public class HandLayoutManager : MonoBehaviour
             card.localPosition = new Vector3(xPos, yPos, 0);
 
             // 2. 角度を決める
-            float angle = -xPos / (totalWidth + 1f) * (rotationAmount * childCount);
-            card.localRotation=Quaternion.Euler(0,0,angle);
+            // float angle = -xPos / (totalWidth + 1f) * (rotationAmount * childCount);
+            // card.localRotation=Quaternion.Euler(0,0,angle);
         }
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created

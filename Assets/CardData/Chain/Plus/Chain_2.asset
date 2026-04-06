@@ -21,3 +21,6 @@ MonoBehaviour:
   numberValue: 2
   handValue: 2
   flavorText: "\u4E00\u4EBA\u304C\u8EE2\u3079\u3070\u3001\u5168\u54E1\u304C\u8EE2\u3076\u3002"
+  descriptionText: "\u9396\u306E\u30B9\u30FC\u30C8\u3001\u4FA1\u5024\u306F2"
+  isIdeologyCard: 0
+  ideologyType: 0

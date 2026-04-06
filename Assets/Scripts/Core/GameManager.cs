@@ -23,6 +23,9 @@ public class GameManager : MonoBehaviour
     [Header("ゲームの状態")]
     public List<CardData> deck = new List<CardData>();
     public List<CardData> discardPile = new List<CardData>();
+
+    [Header("データベース")]
+    [SerializeField] private InquiryResponseDatabase inquiryResponseDatabase;
     // （デバッグ用）現在の場のカード
     private CardData currentCardOnField;
     // 現在の「トレンド（場の数字）」
@@ -49,7 +52,7 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        gameMaster = new Player(PlayerID.GameMaster, false, "GameMaster", 0);
+        gameMaster = new Player(PlayerID.GameMaster, false, "GameMaster", 0, IdeologyType.None);
         // シングルトンの設定
         if (Instance == null)
         {
@@ -74,9 +77,9 @@ public class GameManager : MonoBehaviour
             gameProgressFlag = PersistentDataManager.Instance.GameProgressFlag;
         string pName = PersistentDataManager.Instance != null ? PersistentDataManager.Instance.PlayerName : "Ian";
         
-        players.Add(new Player(PlayerID.Player, false, pName, 0)); // 0番目が人間
-        players.Add(new Player(PlayerID.CPU, true, "CPU_1", 0));    // 1番目がCPU
-        players.Add(new Player(PlayerID.CPU, true, "CPU_2", 0));    // 2番目がCPU
+        players.Add(new Player(PlayerID.Player, false, pName, 0, IdeologyType.None)); // 0番目が人間
+        players.Add(new Player(PlayerID.CPU, true, "CPU_1", 0, IdeologyType.None));    // 1番目がCPU
+        players.Add(new Player(PlayerID.CPU, true, "CPU_2", 0, IdeologyType.None));    // 2番目がCPU
         // ゲーム開始時にUIを初期化
         currentRound = 1;
         UIManager.Instance.UpdateRoundText(currentRound);
@@ -96,6 +99,8 @@ public class GameManager : MonoBehaviour
                 distributionCount++;
             }
         }
+        // イデオロギーを判定して、イデオロギーカードを渡す
+
         // 最初の1枚を場に出す
         StartGame();
         // テンホウ（仮名称）ロジックを追加
@@ -194,7 +199,6 @@ public class GameManager : MonoBehaviour
     public virtual void StartGame()
     {
         // 山札から「効果なし(None)」のカードを「探す」
-
         int firstCardIndex = -1;
         for (int i = 0; i < deck.Count; i++)
         {
@@ -1217,6 +1221,34 @@ public class GameManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
         Instance.gameProgressFlag=debugFlag;
+    }
+    private void DealIdeologyCard()
+    {
+        if(inquiryResponseDatabase.confirmedIdeology != IdeologyType.None)
+        {
+            players[0].ideologyType = inquiryResponseDatabase.confirmedIdeology;
+            switch(players[0].ideologyType)
+            {
+                case IdeologyType.DoubleThink:
+                    players[0].hand.Add(allCardDatabase.First(c => c.cardName == "DoubleThink"));
+                    break;
+                case IdeologyType.MemoryHole:
+                    players[0].hand.Add(allCardDatabase.First(c => c.cardName == "MemoryHole"));
+                    break;
+                case IdeologyType.SigmaSpeak:
+                    players[0].hand.Add(allCardDatabase.First(c => c.cardName == "SigmaSpeak"));
+                    break;
+                case IdeologyType.BureauBrother:
+                    players[0].hand.Add(allCardDatabase.First(c => c.cardName == "BureauBrother"));
+                    break;
+                case IdeologyType.Thoughtcrime:
+                    players[0].hand.Add(allCardDatabase.First(c => c.cardName == "Thoughtcrime"));
+                    break;
+                default:
+                    break;
+            }
+            UIManager.Instance.UpdateAllHandVisuals();
+        }
     }
 }
 public enum PlayerID

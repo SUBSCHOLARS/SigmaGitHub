@@ -20,4 +20,7 @@ MonoBehaviour:
   effect: 0
   numberValue: 7
   handValue: 7
-  flavorText: 
+  flavorText: "\u9762\u3092\u88AB\u3063\u3066\u3044\u308C\u3070\u3044\u3044\u306E\u306F\u3001\u5E78\u904B\u3067\u3042\u308B\u3002"
+  descriptionText: "\u4EEE\u9762\u306E\u30B9\u30FC\u30C8\u3001\u4FA1\u5024\u306F7"
+  isIdeologyCard: 0
+  ideologyType: 0

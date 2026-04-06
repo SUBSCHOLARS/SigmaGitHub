@@ -42,7 +42,7 @@ public class TutorialGameManager : GameManager
     [SerializeField] private GameObject winButton;
     public static bool isTutorialFinish=false;
 
-    private Player tutorialMaster=new Player(PlayerID.GameMaster, false, "TutorialMaster", 0);
+    private Player tutorialMaster=new Player(PlayerID.GameMaster, false, "TutorialMaster", 0, IdeologyType.None);
 
     protected override void InitializeGame()
     {
@@ -225,8 +225,8 @@ public class TutorialGameManager : GameManager
         string pName = PersistentDataManager.Instance.PlayerName;
         
         // 2人対戦（プレイヤー vs CPU）
-        players.Add(new Player(PlayerID.Player, false, pName, 0));
-        players.Add(new Player(PlayerID.CPU, true, "DOG", 0));
+        players.Add(new Player(PlayerID.Player, false, pName, 0, IdeologyType.None));
+        players.Add(new Player(PlayerID.CPU, true, "DOG", 0, IdeologyType.None));
         
         currentRound = 1;
         UIManager.Instance.UpdateRoundText(currentRound);
@@ -261,8 +261,8 @@ public class TutorialGameManager : GameManager
         string pName = PersistentDataManager.Instance.PlayerName;
         
         // 2人対戦（プレイヤー vs CPU）
-        players.Add(new Player(PlayerID.Player, false, pName, 0));
-        players.Add(new Player(PlayerID.CPU, true, "DOG", 0));
+        players.Add(new Player(PlayerID.Player, false, pName, 0, IdeologyType.None));
+        players.Add(new Player(PlayerID.CPU, true, "DOG", 0, IdeologyType.None));
         
         // 状態リセット
         currentPlayerIndex = 0; // プレイヤーから開始

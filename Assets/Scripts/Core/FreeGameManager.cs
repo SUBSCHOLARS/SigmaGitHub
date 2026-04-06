@@ -48,7 +48,7 @@ public class FreeGameManager : MonoBehaviour
 
     void Awake()
     {
-        gameMaster = new Player(PlayerID.GameMaster, false, "GameMaster", 0);
+        gameMaster = new Player(PlayerID.GameMaster, false, "GameMaster", 0, IdeologyType.None);
         // シングルトンの設定
         if (Instance == null)
         {
@@ -71,9 +71,9 @@ public class FreeGameManager : MonoBehaviour
         players.Clear();
         string pName = PersistentDataManager.Instance != null ? PersistentDataManager.Instance.PlayerName : "Ian";
         
-        players.Add(new Player(PlayerID.Player, false, pName, 0)); // 0番目が人間
-        players.Add(new Player(PlayerID.CPU, true, "CPU_1", 0));    // 1番目がCPU
-        players.Add(new Player(PlayerID.CPU, true, "CPU_2", 0));    // 2番目がCPU
+        players.Add(new Player(PlayerID.Player, false, pName, 0, IdeologyType.None)); // 0番目が人間
+        players.Add(new Player(PlayerID.CPU, true, "CPU_1", 0, IdeologyType.None));    // 1番目がCPU
+        players.Add(new Player(PlayerID.CPU, true, "CPU_2", 0, IdeologyType.None));    // 2番目がCPU
         // ゲーム開始時にUIを初期化
         currentRound = 1;
         FreeUIManager.Instance.UpdateRoundText(currentRound);

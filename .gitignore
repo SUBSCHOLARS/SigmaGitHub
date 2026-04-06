@@ -79,6 +79,8 @@ crashlytics-build.properties
 SigmaWindows/
 SigmaWindows.zip
 
+WindowsBuild/
+
 CLAUDE.md
 /[Aa]ssets/Editor.log.meta
 

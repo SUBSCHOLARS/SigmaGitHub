@@ -128,7 +128,7 @@ MonoBehaviour:
   m_PrefilterSoftShadowsQualityHigh: 1
   m_PrefilterSoftShadows: 0
   m_PrefilterScreenCoord: 1
-  m_PrefilterScreenSpaceIrradiance: 0
+  m_PrefilterScreenSpaceIrradiance: 1
   m_PrefilterNativeRenderPass: 1
   m_PrefilterUseLegacyLightmaps: 0
   m_PrefilterBicubicLightmapSampling: 1

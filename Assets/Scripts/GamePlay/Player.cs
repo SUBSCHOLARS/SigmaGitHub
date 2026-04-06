@@ -9,12 +9,14 @@ public class Player
     public string playerName;
     public int totalPoints;
     public int wins;
-    public Player(PlayerID id, bool isCPU, string playerName, int totalPoints)
+    public IdeologyType ideologyType;
+    public Player(PlayerID id, bool isCPU, string playerName, int totalPoints, IdeologyType ideologyType)
     {
         this.id = id;
         this.isCPU = isCPU;
         this.playerName = playerName;
         this.totalPoints = totalPoints;
+        this.ideologyType = ideologyType;
         this.wins = 0; // 初期化
     }
 }

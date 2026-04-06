@@ -142,6 +142,9 @@ public class InquiryManager : MonoBehaviour
             case 4:
                 PersistentDataManager.Instance.SetGameProgressFlag(5);
                 break;
+            case 5:
+                PersistentDataManager.Instance.SetGameProgressFlag(6);
+                break;
             default:
                 break;
         }
