@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4225d8cb72d5c4a0bb6519732f34a999, type: 3}
-  m_Name: DoubleThink
+  m_Name: MemoryHole
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: DoubleThink
-  cardSprite: {fileID: 6619148829217866261, guid: 3cb74870237b1410fa7c1c60d7c906e9, type: 3}
+  cardName: MemoryHole
+  cardSprite: {fileID: 1352356118147873872, guid: 067aa8192c8594ce69b93abc109d7188, type: 3}
   cardIcon: {fileID: 0}
   rawSectorIcon: {fileID: 0}
   sector: 4
@@ -21,6 +21,6 @@ MonoBehaviour:
   numberValue: 0
   handValue: 0
   flavorText: 
-  descriptionText: "\u81EA\u5206\u306E\u624B\u672D\u306E\u5408\u8A08\u5024\u30921\u3060\u3051\u4E0A\u306B\u305A\u3089\u3059\u3053\u3068\u304C\u3067\u304D\u308B\u3002"
+  descriptionText: "\u5BFE\u8C61\u306E\u624B\u672D\u306E\u3046\u3061\u4E00\u3064\u3092\u7834\u68C4\u3055\u305B\u3001\u81EA\u5206\u306E\u30AB\u30FC\u30C9\u3092\u4E00\u3064\u4E0E\u3048\u308B\u3002"
   isIdeologyCard: 1
-  ideologyType: 1
+  ideologyType: 2

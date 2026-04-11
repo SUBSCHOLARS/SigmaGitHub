@@ -554,20 +554,41 @@ public class UIManager : MonoBehaviour
         // この時点でplayerHandContainer.childCountは6（新しい手札の枚数）になっている
         playerHandContainer.GetComponent<HandLayoutManager>().UpdateLayout();
 
-        // プレイヤーの手札合計値を計算して表示
+        // 3. CPUの手札更新
+        List<Player> players = GameManager.Instance.players;
+         // プレイヤーの手札合計値を計算して表示
         if(yourTrendText!=null)
         {
             // GameManagerに計算を依頼
-            int handValue = GameManager.Instance.GetHandValue(playerHand);
-            yourTrendText.text = $"HAND: {handValue}";
+            var (handValue, hasDoublethink) = GameManager.Instance.GetHandValue(players[0].hand);
+            if(!hasDoublethink)
+            {
+                yourTrendText.text = $"HAND: {handValue}";
+            }
+            else
+            {
+                yourTrendText.text = $"HAND: {handValue} or {handValue + 1}";
+            }
         }
 
-        // 3. CPUの手札更新(裏向きで更新)
-        List<Player> players = GameManager.Instance.players;
+        // Bureau Brother保持中はCPUの全手札をrevealedCardsに同期する
+        if (GameManager.Instance.PlayerHasIdeologyInHand(players[0], IdeologyType.BureauBrother))
+        {
+            for (int p = 1; p < players.Count; p++)
+            {
+                foreach (var card in players[p].hand)
+                {
+                    if (!players[p].revealedCards.Contains(card))
+                    {
+                        players[p].revealedCards.Add(card);
+                    }
+                }
+            }
+        }
+
         if (players.Count >= 3) // 3人以上いるか確認
         {
             // [1]番目がCPU1、[2]番目がCPU2だと仮定
-            // 通常の裏向き更新を呼ぶ
             UpdateCPUHandVisuals(players[1], cpu1HandContainer, false, null);
             UpdateCPUHandVisuals(players[2], cpu2HandContainer, false, null);
         }
@@ -649,10 +670,10 @@ public class UIManager : MonoBehaviour
             rect.localPosition = new Vector3(xPos, yPos, 0);
 
             // 2. 角度を決める（Y座標を基準に）
-            float angle = -xPos / (totalWidth + 1f) * (cpuRotationAmount * childCount);
+            // floatfloat angle = -xPos / (totalWidth + 1f) * (cpuRotationAmount * childCount);
 
             // 3. ベース回転（90度）と束の傾き（angle）を足す
-            rect.localRotation = Quaternion.Euler(0, 0, angle);
+            // rect.localRotation = Quaternion.Euler(0, 0, angle);
         }
 
         // CPU手札コンテナのサイズを調整（Raycast用）

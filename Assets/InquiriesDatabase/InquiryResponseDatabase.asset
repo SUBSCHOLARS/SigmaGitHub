@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: InquiryResponseDatabase
   m_EditorClassIdentifier: Assembly-CSharp::InquiryResponseDatabase
   responses: []
-  confirmedIdeology: 0
+  confirmedIdeology: 4

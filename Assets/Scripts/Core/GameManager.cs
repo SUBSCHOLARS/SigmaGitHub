@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
     [Header("カードデータ")]
     public List<CardData> allCardDatabase;
+    public List<CardData> ideologyCardDatabase;
     [Header("Audio")]
     public AudioClip drawSound;
     public AudioClip playCardSound;
@@ -100,7 +101,7 @@ public class GameManager : MonoBehaviour
             }
         }
         // イデオロギーを判定して、イデオロギーカードを渡す
-
+        DealIdeologyCard();
         // 最初の1枚を場に出す
         StartGame();
         // テンホウ（仮名称）ロジックを追加
@@ -394,14 +395,15 @@ public class GameManager : MonoBehaviour
         NextTurn();
     }
     // プレイヤーの手札の合計値を計算するメソッド
-    public int GetHandValue(List<CardData> hand)
+    public (int totalValue, bool hasDoubleThink) GetHandValue(List<CardData> hand)
     {
         int totalValue = 0;
+        bool hasDoubleThink = PlayerHasIdeologyInHand(players[0], IdeologyType.DoubleThink);
         foreach (CardData card in hand)
         {
             totalValue += card.handValue;
         }
-        return totalValue;
+        return (totalValue, hasDoubleThink);
     }
     public virtual void TryPlayCard(CardData cardToPlay)
     {
@@ -651,6 +653,11 @@ public class GameManager : MonoBehaviour
             SetInputLock(false);
         }
     }
+    // 指定したプレイヤーが特定のイデオロギーカードを手札に持っているか判定するメソッド
+    public bool PlayerHasIdeologyInHand(Player player, IdeologyType type)
+    {
+        return player.hand.Any(c => c.ideologyType == type);
+    }
     // トレンドライド判定を行うメソッド
     protected List<Player> CheckForTrendRide(Player actionPlayer)
     {
@@ -661,7 +668,9 @@ public class GameManager : MonoBehaviour
             {
                 continue; // 行動者自身を除外
             }
-            if (GetHandValue(player.hand) == currentTrendValue)
+            var (handValue, hasDoubleThink) = GetHandValue(player.hand);
+            bool isDoublethinkMatch = hasDoubleThink && currentTrendValue - handValue == 1;
+            if (handValue == currentTrendValue || isDoublethinkMatch)
             {
                 // 0-0マッチ禁止ルール
                 if (player.hand.Count > 0 || currentTrendValue != 0)
@@ -676,7 +685,9 @@ public class GameManager : MonoBehaviour
     // セルフマッチの確認を行うメソッド
     private bool CheckForSelfMatch(Player actionPlayer)
     {
-        if (GetHandValue(actionPlayer.hand) == currentTrendValue)
+        var (handValue, hasDoubleThink) = GetHandValue(actionPlayer.hand);
+        bool isDoublethinkMatch = hasDoubleThink && currentTrendValue - handValue == 1;
+        if (handValue == currentTrendValue || isDoublethinkMatch)
         {
             // 0-0マッチ禁止ルール
             if (actionPlayer.hand.Count > 0 || currentTrendValue != 0)
@@ -721,7 +732,7 @@ public class GameManager : MonoBehaviour
         {
             if(!winners.Contains(player)) // 勝者のリストに組まれていない場合
             {
-                int penalty = GetHandValue(player.hand);
+                int penalty = GetHandValue(player.hand).totalValue;
                 // マイナスカード導入後はこのロジックは要見直し
                 player.totalPoints -= Mathf.Abs(penalty); // 合計値の絶対値分を失点
                 Debug.Log($"{player.playerName} は {Mathf.Abs(penalty)} クレジット失点。");
@@ -998,7 +1009,7 @@ public class GameManager : MonoBehaviour
             score -= risk * 100f; // 自爆回避優先
             
             // 2. 攻撃評価 (自分の手札で次に勝てるか)
-            int myHandSum = GetHandValue(cpu.hand); // Bribe使用済み（この時点ではまだdiscardPileに入っていないかも？いやHandleCardEffect呼び出し前にRemove済み）
+            int myHandSum = GetHandValue(cpu.hand).totalValue; // Bribe使用済み（この時点ではまだdiscardPileに入っていないかも？いやHandleCardEffect呼び出し前にRemove済み）
                                                     // 念の為呼び出し元を確認すると、RunEffectの前にPlayCardToField等は終わっている
             
             int valDiff = myHandSum - trend;
@@ -1052,7 +1063,8 @@ public class GameManager : MonoBehaviour
             float score = 0f;
 
             // 1. 即勝利（Self Match）チェック (最優先)
-            int futureHandValue = GetHandValue(cpu.hand) - card.handValue; 
+            var (futureHandValue, hasDoublethink) = GetHandValue(cpu.hand);
+            futureHandValue -= card.handValue;
             int futureTrend = (card.effect == CardEffect.Bribe) ? 0 : card.numberValue; 
             
             // 数字出しでの勝利確定
@@ -1230,24 +1242,28 @@ public class GameManager : MonoBehaviour
             switch(players[0].ideologyType)
             {
                 case IdeologyType.DoubleThink:
-                    players[0].hand.Add(allCardDatabase.First(c => c.cardName == "DoubleThink"));
+                    players[0].hand.Add(ideologyCardDatabase.First(c => c.cardName == "DoubleThink"));
                     break;
                 case IdeologyType.MemoryHole:
-                    players[0].hand.Add(allCardDatabase.First(c => c.cardName == "MemoryHole"));
+                    players[0].hand.Add(ideologyCardDatabase.First(c => c.cardName == "MemoryHole"));
                     break;
                 case IdeologyType.SigmaSpeak:
-                    players[0].hand.Add(allCardDatabase.First(c => c.cardName == "SigmaSpeak"));
+                    players[0].hand.Add(ideologyCardDatabase.First(c => c.cardName == "SigmaSpeak"));
                     break;
                 case IdeologyType.BureauBrother:
-                    players[0].hand.Add(allCardDatabase.First(c => c.cardName == "BureauBrother"));
+                    players[0].hand.Add(ideologyCardDatabase.First(c => c.cardName == "BureauBrother"));
                     break;
                 case IdeologyType.Thoughtcrime:
-                    players[0].hand.Add(allCardDatabase.First(c => c.cardName == "Thoughtcrime"));
+                    players[0].hand.Add(ideologyCardDatabase.First(c => c.cardName == "Thoughtcrime"));
                     break;
                 default:
                     break;
             }
             UIManager.Instance.UpdateAllHandVisuals();
+        }
+        else
+        {
+            Debug.Log("イデオロギーカードは配られませんでした");
         }
     }
 }
