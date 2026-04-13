@@ -24,3 +24,4 @@ MonoBehaviour:
   descriptionText: "\u76F8\u624B\u30D7\u30EC\u30A4\u30E4\u30FC\u4E00\u4EBA\u3092\u9078\u3073\u3001\u624B\u672D\u306E\u5185\u306E\u4E00\u3064\u3092\u30E9\u30F3\u30C0\u30E0\u306B\u516C\u958B\u3059\u308B\u3002"
   isIdeologyCard: 0
   ideologyType: 0
+  sigmaSpeakSprite: {fileID: 4868002833284904147, guid: 0717185922eecc24d8a0e6a5752cc54b, type: 3}

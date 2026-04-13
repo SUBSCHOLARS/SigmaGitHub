@@ -34,7 +34,13 @@ public class CardController : MonoBehaviour
         _descriptionText.text = "説明: "+myCardData.descriptionText;
         _flavorText.text = "フレーバー: "+myCardData.flavorText;
     }
-
+    public void SetSigmaSpeakMode(bool active)
+    {
+        if(myCardData.sigmaSpeakSprite !=null)
+        {
+            cardImage.sprite = active ? myCardData.sigmaSpeakSprite : myCardData.cardSprite;
+        }
+    }
     // カードがクリックされたときに呼ばれるメソッド
     public void HandleClick()
     {

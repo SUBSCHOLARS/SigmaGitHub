@@ -23,7 +23,6 @@ public class UIManager : MonoBehaviour
     [Header("CPUの手札表示パラメータ")]
     [SerializeField] private float cpuCardSpacing = 30f;
     [SerializeField] private float cpuArcAmount = 150f;
-    [SerializeField] private float cpuRotationAmount = 3f;
     [Header("プレハブ")]
     public GameObject cardPrefab;
     public GameObject cardBackPrefab; // CardBackをアタッチ
@@ -38,6 +37,8 @@ public class UIManager : MonoBehaviour
     public GameObject bribeSelectionPanel; // BribeSelectionPanelをアタッチ
     public GameObject targetSelectionPanel; // TargetSelectionPanelをアタッチ
     public TextMeshProUGUI effectResultText; // 結果表示用テキスト
+    [Header("MemoryHole UI")]
+    [SerializeField] private GameObject memoryHolePanel;
     [Header("検閲・尋問UI")]
     public GameObject surveyPanel; // SurveyPanelをアタッチ
     public TextMeshProUGUI surveyTitleText; // SurveyTitleTextをアタッチ
@@ -188,9 +189,22 @@ public class UIManager : MonoBehaviour
     {
         targetSelectionPanel.SetActive(false);
     }
-    // プレイヤーの操作UIの有効/無効を切り替える
+
+    public void ShowMemoryHolePanel(Player target, Player human)
+    {
+        memoryHolePanel.SetActive(true);
+        memoryHolePanel.GetComponent<MemoryHolePanelController>()
+            .Initialize(target, human, cardPrefab);
+    }
+
+    public void HideMemoryHolePanel()
+    {
+        memoryHolePanel.SetActive(false);
+    }
+
     public void SetPlayerControlsActive(bool isActive)
     {
+
         // 手札の「透明な壁」の検知をON/OFF
         if (playerHandRaycaster != null)
         {
@@ -546,6 +560,10 @@ public class UIManager : MonoBehaviour
             // CardControllerを取得して、カード情報を設定
             CardController cardController = newCardObj.GetComponent<CardController>();
             cardController.Setup(cardData);
+            if(GameManager.Instance.sigmaSpeakActive && cardData.effect != CardEffect.None)
+            {
+                cardController.SetSigmaSpeakMode(true);
+            }
             // Detectorのリストに新しいカードを追加
             handHoverDetector.cardsInHand.Add(cardController);
         }
@@ -739,7 +757,7 @@ public class UIManager : MonoBehaviour
         if (count >= 1)
         {
             // リストの末尾(count-1)が最新のカード
-            fieldCardTop.sprite = pile[count - 1].cardSprite;
+            fieldCardTop.sprite = GetFieldSprite(pile[count - 1]);
             fieldCardTop.enabled = true;
             // ここでスタンプ判定を行う
             if(fieldTopStampEffect!=null)
@@ -761,7 +779,7 @@ public class UIManager : MonoBehaviour
         // 2. 1ターン前のカード
         if (count >= 2)
         {
-            fieldCardMiddle.sprite = pile[count - 2].cardSprite;
+            fieldCardMiddle.sprite = GetFieldSprite(pile[count - 2]);
             fieldCardMiddle.enabled = true;
         }
         else
@@ -771,13 +789,21 @@ public class UIManager : MonoBehaviour
         // 3. 2ターン前のカード
         if (count >= 3)
         {
-            fieldCardBottom.sprite = pile[count - 3].cardSprite;
+            fieldCardBottom.sprite = GetFieldSprite(pile[count - 3]);
             fieldCardBottom.enabled = true;
         }
         else
         {
             fieldCardBottom.enabled = false;
         }
+    }
+    private Sprite GetFieldSprite(CardData cardData)
+    {
+        if(GameManager.Instance.sigmaSpeakActive && cardData.effect != CardEffect.None && cardData.sigmaSpeakSprite != null)
+        {
+            return cardData.sigmaSpeakSprite;
+        }
+        return cardData.cardSprite;
     }
     // ターンアニメーション表示
     public IEnumerator ShowTurnAnimation(string playerName, int playerIndex)
@@ -1053,7 +1079,7 @@ public class UIManager : MonoBehaviour
         }
     }
     // ターゲットプレイヤーのHand Container Transformを取得するヘルパーメソッド
-    private Transform GetHandContainerForPlayer(Player targetPlayer)
+    public Transform GetHandContainerForPlayer(Player targetPlayer)
     {
         // プレイヤーIDで判別
         if(targetPlayer.id==PlayerID.Player)
@@ -1237,6 +1263,14 @@ public class UIManager : MonoBehaviour
         if(blackOut!=null)
         {
             blackOut.gameObject.SetActive(true);
+        }
+    }
+    // SigmaSpeakの発動によるカードの色変化、効果発動メッセージを表示するメソッド
+    public void IsShowSigmaSpeakActivationUI(bool show)
+    {
+        if(show)
+        {
+            
         }
     }
 }

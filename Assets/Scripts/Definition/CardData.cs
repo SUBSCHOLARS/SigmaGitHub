@@ -24,4 +24,6 @@ public class CardData : ScriptableObject
     [Header("イデオロギーカード情報")]
     public bool isIdeologyCard = false;
     public IdeologyType ideologyType = IdeologyType.None;
+    [Header("SigmaSpeak用")]
+    public Sprite sigmaSpeakSprite;
 }

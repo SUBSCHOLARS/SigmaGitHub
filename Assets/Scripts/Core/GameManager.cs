@@ -45,6 +45,11 @@ public class GameManager : MonoBehaviour
     private Player gameMaster;
     // どの調査カードが使われたか記憶する変数
     private CardEffect pendingSurveyEffect = CardEffect.None;
+    // Sigma Speak 用フラグ
+    public bool sigmaSpeakActive = false;
+    public bool sigmaSpeakUsedThisTurn = false;
+    // Memory Hole 用フラグ
+    private bool pendingMemoryHole = false;
     // private int winningScore = 100; // 勝利に必要なスコア
     public int currentRound = 1; // 現在のラウンド
     protected Sprite initialSprite;
@@ -271,6 +276,15 @@ public class GameManager : MonoBehaviour
     // カードが出せるかを判定するメソッド
     public bool CanPlayCard(CardData cardToPlay)
     {
+        // Thoughtcrime は絶対に場に出せない（詰み回避ルールも無効）
+        if (cardToPlay.ideologyType == IdeologyType.Thoughtcrime)
+            return false;
+
+        // アクティブ系イデオロギーカードは通常プレイ不可（クリックで効果発動）
+        if (cardToPlay.ideologyType == IdeologyType.SigmaSpeak ||
+            cardToPlay.ideologyType == IdeologyType.MemoryHole)
+            return false;
+
         // 詰み回避ルールを最優先でチェック
         if(isNextPlayWild)
         {
@@ -359,6 +373,34 @@ public class GameManager : MonoBehaviour
         // 勝利しなかった場合、ターンを次に回す
         NextTurn();
     }
+    // Sigma Speak 発動ボタンから呼ばれるメソッド
+    public void ActivateSigmaSpeak()
+    {
+        // プレイヤーのターンかつ未使用のときのみ受け付ける
+        if (isPlayerInputLocked || players[currentPlayerIndex].isCPU || sigmaSpeakUsedThisTurn)
+            return;
+
+        sigmaSpeakActive = true;
+        sigmaSpeakUsedThisTurn = true;
+        Debug.Log("[SigmaSpeak] 発動: 次の自分のターンまで全効果カードを無効化");
+
+        // ターンを消費しない。プレイヤーはこのままカードを出すかドローできる。
+        UIManager.Instance.UpdateAllHandVisuals();
+        UIManager.Instance.UpdateFieldPileUI(currentCardOnField);
+    }
+
+    // Memory Hole 効果を実行するメソッド（MemoryHolePanelControllerから呼ばれる）
+    public void ExecuteMemoryHoleEffect(Player target, CardData targetCard, CardData playerCard)
+    {
+        target.hand.Remove(targetCard);       // ターゲットが1枚失う（捨て）
+        players[0].hand.Remove(playerCard);   // 自分が1枚渡す
+        target.hand.Add(playerCard);          // ターゲットが自分のカードを受け取る
+        // targetCard は捨て牌（誰も受け取らない）
+        Debug.Log($"[MemoryHole] {target.playerName} の {targetCard.cardName} を捨て、{playerCard.cardName} を渡した");
+        UIManager.Instance.UpdateAllHandVisuals();
+        SetInputLock(false); // ターン消費なし
+    }
+
     // Bribeの5つのボタンから呼ばれるメソッド
     public void PlayerSelectBribeTrend(int trend)
     {
@@ -420,8 +462,21 @@ public class GameManager : MonoBehaviour
         }
         if (!CanPlayCard(cardToPlay))
         {
+            // アクティブ系イデオロギーカードはクリックで効果発動
+            if (cardToPlay.ideologyType == IdeologyType.SigmaSpeak)
+            {
+                ActivateSigmaSpeak(); // 内部でguardチェック済み
+                UIManager.Instance.IsShowSigmaSpeakActivationUI(true);
+                return;
+            }
+            if (cardToPlay.ideologyType == IdeologyType.MemoryHole)
+            {
+                SetInputLock(true);
+                pendingMemoryHole = true;
+                UIManager.Instance.ShowTargetSelectionUI();
+                return;
+            }
             Debug.Log("このカードは出せません: " + cardToPlay.cardName);
-            // TODO: 出せない場合のフィードバックをUIに表示
             return;
         }
         // 3. カードを出せる場合の処理を続ける
@@ -505,7 +560,17 @@ public class GameManager : MonoBehaviour
             // RestartGame();
             if(!overallWinner.isCPU)
             {
-                SceneManager.LoadSceneAsync("Inquiry");
+                // Thoughtcrime保持中の総合勝利 → 革命ルートへ分岐
+                if (PlayerHasIdeologyInHand(overallWinner, IdeologyType.Thoughtcrime))
+                {
+                    Debug.Log("革命ルート突入: Thoughtcrime保持での総合勝利");
+                    // TODO: 革命ルート用シーン名が確定したらここを更新する
+                    SceneManager.LoadSceneAsync("Revolution");
+                }
+                else
+                {
+                    SceneManager.LoadSceneAsync("Inquiry");
+                }
             }
             else
             {
@@ -519,6 +584,14 @@ public class GameManager : MonoBehaviour
     }
     private IEnumerator HandleCardEffectAndTransition(CardData playedCard)
     {
+        // Sigma Speak 有効中はカード効果をスキップして通常遷移
+        if (sigmaSpeakActive && playedCard.effect != CardEffect.None)
+        {
+            Debug.Log($"[SigmaSpeak] {playedCard.cardName} の効果を無効化");
+            StartCoroutine(TurnTransitionRoutine(CardEffect.None));
+            yield break;
+        }
+
         // 1. カードを出した本人が実行する効果処理
         Player cardPlayer = players[currentPlayerIndex];
         if (playedCard.effect == CardEffect.Bribe)
@@ -650,6 +723,14 @@ public class GameManager : MonoBehaviour
         // それ以外ならプレイヤーのターンなのでロックを解除する
         else
         {
+            // プレイヤーターン開始時に Sigma Speak を解除してビジュアルを戻す
+            if (sigmaSpeakActive)
+            {
+                sigmaSpeakActive = false;
+                sigmaSpeakUsedThisTurn = false;
+                UIManager.Instance.UpdateAllHandVisuals();
+                UIManager.Instance.UpdateFieldPileUI(currentCardOnField);
+            }
             SetInputLock(false);
         }
     }
@@ -808,6 +889,10 @@ public class GameManager : MonoBehaviour
         }
         Debug.Log("--- 次のラウンドを開始します ---");
         currentRound++; // ラウンド数を増やす
+
+        // Sigma Speak フラグをラウンド開始時にリセット
+        sigmaSpeakActive = false;
+        sigmaSpeakUsedThisTurn = false;
         // UI更新
         UIManager.Instance.UpdateRoundText(currentRound);
 
@@ -826,6 +911,7 @@ public class GameManager : MonoBehaviour
         {
             DrawCards(player.hand, 7);
         }
+        DealIdeologyCard(); // イデオロギーカードを配る
 
         // 5. UIをリセット・更新
         UIManager.Instance.UpdateAllHandVisuals();
@@ -1125,6 +1211,15 @@ public class GameManager : MonoBehaviour
             return;
         }
         UIManager.Instance.HideTargetSelectionUI();
+
+        // Memory Hole のターゲット選択
+        if (pendingMemoryHole)
+        {
+            pendingMemoryHole = false;
+            UIManager.Instance.ShowMemoryHolePanel(players[targetPlayerIndex], players[0]);
+            return;
+        }
+
         // アニメーションとターン遷移を行うコルーチンを起動
         StartCoroutine(SurveyTargetAndEndTurn(targetPlayerIndex));
     }

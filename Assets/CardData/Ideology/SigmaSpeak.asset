@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4225d8cb72d5c4a0bb6519732f34a999, type: 3}
   m_Name: SigmaSpeak
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardName: SigimaSpeak
+  cardName: SigmaSpeak
   cardSprite: {fileID: 8132312866149103764, guid: 9f3225f185d9e43c8aefe251aac76dd1, type: 3}
   cardIcon: {fileID: 0}
   rawSectorIcon: {fileID: 0}
