@@ -51,9 +51,10 @@ public class MemoryHolePanelController : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
-
+        int delta=0;
         foreach (CardData card in hand)
         {
+            Vector3 pos=new Vector3(delta, 0, 0);
             GameObject cardObj = Instantiate(cardPrefab, container);
 
             // CardController でスプライトセットアップ
@@ -80,6 +81,7 @@ public class MemoryHolePanelController : MonoBehaviour
                 selector.isFromTarget = isFromTarget;
                 selector.controller = this;
             }
+            delta += 5;
         }
     }
 
