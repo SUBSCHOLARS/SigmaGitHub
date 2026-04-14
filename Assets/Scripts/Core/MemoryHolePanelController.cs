@@ -175,27 +175,54 @@ public class MemoryHolePanelController : MonoBehaviour
     {
         confirmButton.SetActive(false);
 
-        float duration = 0.5f;
-        // ターゲットカードを画面外右へ
+        float dustDuration = 0.4f;
+
+        // 両カードを同時に塵にする
+        Sequence dustSeq = DOTween.Sequence();
+
         if (selectedTargetCardObj != null)
         {
-            RectTransform rt = selectedTargetCardObj.GetComponent<RectTransform>();
-            if (rt != null){
-            yield return rt.DOAnchorPos(rt.anchoredPosition + new Vector2(1200f, 0f), duration)
-                .SetEase(Ease.InOutQuad).WaitForCompletion();
+            RectTransform rtTarget = selectedTargetCardObj.GetComponent<RectTransform>();
+            Image imgTarget = selectedTargetCardObj.GetComponent<Image>();
+            if (rtTarget != null)
+            {
+                dustSeq.Join(rtTarget.DOScale(Vector3.zero, dustDuration).SetEase(Ease.InBack));
+                dustSeq.Join(rtTarget.DORotate(new Vector3(0f, 0f, 30f), dustDuration));
+            }
+            if (imgTarget != null)
+            {
+                dustSeq.Join(imgTarget.DOFade(0f, dustDuration * 0.75f));
             }
         }
 
-        // 自分のカードをターゲット手札エリアへ
         if (selectedPlayerCardObj != null)
         {
-            RectTransform rt = selectedPlayerCardObj.GetComponent<RectTransform>();
-            Transform destination = UIManager.Instance.GetHandContainerForPlayer(targetPlayer);
-
-            yield return rt.DOMove(destination.position, duration).SetEase(Ease.InOutQuad).WaitForCompletion();
+            RectTransform rtPlayer = selectedPlayerCardObj.GetComponent<RectTransform>();
+            Image imgPlayer = selectedPlayerCardObj.GetComponent<Image>();
+            if (rtPlayer != null)
+            {
+                dustSeq.Join(rtPlayer.DOScale(Vector3.zero, dustDuration).SetEase(Ease.InBack));
+                dustSeq.Join(rtPlayer.DORotate(new Vector3(0f, 0f, -30f), dustDuration));
+            }
+            if (imgPlayer != null)
+            {
+                dustSeq.Join(imgPlayer.DOFade(0f, dustDuration * 0.75f));
+            }
         }
 
-        // 効果実行
+        yield return dustSeq.WaitForCompletion();
+
+        // 渡すカードをパネル内のターゲット手札エリアに生成して 0→1 スケールでポップ表示
+        GameObject newCardObj = Instantiate(cardPrefab, targetHandArea);
+        CardController newCc = newCardObj.GetComponent<CardController>();
+        if (newCc != null) newCc.Setup(selectedPlayerCard);
+        RectTransform newRt = newCardObj.GetComponent<RectTransform>();
+        newRt.localScale = Vector3.zero;
+        yield return newRt.DOScale(Vector3.one, 0.35f).SetEase(Ease.OutBack).WaitForCompletion();
+
+        yield return new WaitForSeconds(0.3f);
+
+        // データ更新＋ビジュアル反映
         UIManager.Instance.HideMemoryHolePanel();
         GameManager.Instance.ExecuteMemoryHoleEffect(targetPlayer, selectedTargetCard, selectedPlayerCard);
     }

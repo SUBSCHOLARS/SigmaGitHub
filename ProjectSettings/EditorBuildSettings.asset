@@ -23,6 +23,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/FreeGamePlay.unity
     guid: 464e18306f3764603a15a85dc11fef4c
+  - enabled: 1
+    path: Assets/Scenes/Execution.unity
+    guid: 9625e0f976e3e034081aad882d9b72f9
+  - enabled: 1
+    path: Assets/Scenes/Revolution.unity
+    guid: a6161805c6c42144b9d10c8ad8d3094c
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

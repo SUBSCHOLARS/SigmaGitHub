@@ -402,7 +402,9 @@ public class GameManager : MonoBehaviour
         // ターゲット手札を震わせてフィードバックを与える
         Transform targetHandContainer = UIManager.Instance.GetHandContainerForPlayer(target);
         if (targetHandContainer != null)
+        {
             targetHandContainer.DOShakePosition(0.5f, new Vector3(10f, 10f, 0), 20);
+        }
 
         UIManager.Instance.UpdateAllHandVisuals();
         SetInputLock(false); // ターン消費なし
