@@ -466,17 +466,6 @@ public class UIManager : MonoBehaviour
         AddLogMessage("--- NEW ROUND STARTED", null);
         // 必要であれば「Round X Start」のようなログをAddLogMessageで追加
     }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
     
     void OnDestroy()
     {

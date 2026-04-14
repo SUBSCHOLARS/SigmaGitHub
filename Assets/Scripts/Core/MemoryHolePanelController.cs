@@ -23,6 +23,8 @@ public class MemoryHolePanelController : MonoBehaviour
     private GameObject selectedTargetCardObj;
     private GameObject selectedPlayerCardObj;
 
+    private Transform cachedSelectedTargetCardTransform;
+
     // ハイライト色
     private static readonly Color SelectedColor = new Color(1f, 0.9f, 0.3f); // 黄色
     private static readonly Color DisabledColor = new Color(0.4f, 0.4f, 0.4f); // グレー
@@ -95,6 +97,8 @@ public class MemoryHolePanelController : MonoBehaviour
         }
         selectedTargetCard = card;
         selectedTargetCardObj = cardObj;
+        cachedSelectedTargetCardTransform = cardObj.transform;
+        Debug.Log($"ターゲットカードの座標: {cachedSelectedTargetCardTransform.position}");
 
         Image img = cardObj.GetComponent<Image>();
         if (img != null) img.color = SelectedColor;
@@ -178,7 +182,7 @@ public class MemoryHolePanelController : MonoBehaviour
             RectTransform rt = selectedTargetCardObj.GetComponent<RectTransform>();
             if (rt != null){
             yield return rt.DOAnchorPos(rt.anchoredPosition + new Vector2(1200f, 0f), duration)
-                .SetEase(Ease.InBack).WaitForCompletion();
+                .SetEase(Ease.InOutQuad).WaitForCompletion();
             }
         }
 
@@ -186,15 +190,9 @@ public class MemoryHolePanelController : MonoBehaviour
         if (selectedPlayerCardObj != null)
         {
             RectTransform rt = selectedPlayerCardObj.GetComponent<RectTransform>();
-            Transform targetContainer = GameManager.Instance != null
-                ? UIManager.Instance.GetHandContainerForPlayer(targetPlayer)
-                : null;
-            Vector2 destination = targetContainer != null
-                ? (Vector2)targetContainer.position
-                : rt.anchoredPosition + new Vector2(0f, 400f);
+            Vector2 destination = (Vector2)cachedSelectedTargetCardTransform.position;
 
-            yield return rt.DOMove(targetContainer != null ? targetContainer.position : (Vector3)destination, duration)
-                .SetEase(Ease.InOutQuad).WaitForCompletion();
+            yield return rt.DOMove((Vector3)destination, duration).SetEase(Ease.InOutQuad).WaitForCompletion();
         }
 
         // 効果実行
