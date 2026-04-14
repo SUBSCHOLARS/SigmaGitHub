@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using System;
 using UnityEngine.SceneManagement;
+using DG.Tweening;
 
 public class GameManager : MonoBehaviour
 {
@@ -397,6 +398,12 @@ public class GameManager : MonoBehaviour
         target.hand.Add(playerCard);          // ターゲットが自分のカードを受け取る
         // targetCard は捨て牌（誰も受け取らない）
         Debug.Log($"[MemoryHole] {target.playerName} の {targetCard.cardName} を捨て、{playerCard.cardName} を渡した");
+
+        // ターゲット手札を震わせてフィードバックを与える
+        Transform targetHandContainer = UIManager.Instance.GetHandContainerForPlayer(target);
+        if (targetHandContainer != null)
+            targetHandContainer.DOShakePosition(0.5f, new Vector3(10f, 10f, 0), 20);
+
         UIManager.Instance.UpdateAllHandVisuals();
         SetInputLock(false); // ターン消費なし
     }

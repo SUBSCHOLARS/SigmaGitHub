@@ -190,13 +190,13 @@ public class MemoryHolePanelController : MonoBehaviour
         if (selectedPlayerCardObj != null)
         {
             RectTransform rt = selectedPlayerCardObj.GetComponent<RectTransform>();
-            Vector2 destination = (Vector2)cachedSelectedTargetCardTransform.position;
+            Transform destination = UIManager.Instance.GetHandContainerForPlayer(targetPlayer);
 
-            yield return rt.DOMove((Vector3)destination, duration).SetEase(Ease.InOutQuad).WaitForCompletion();
+            yield return rt.DOMove(destination.position, duration).SetEase(Ease.InOutQuad).WaitForCompletion();
         }
 
         // 効果実行
-        GameManager.Instance.ExecuteMemoryHoleEffect(targetPlayer, selectedTargetCard, selectedPlayerCard);
         UIManager.Instance.HideMemoryHolePanel();
+        GameManager.Instance.ExecuteMemoryHoleEffect(targetPlayer, selectedTargetCard, selectedPlayerCard);
     }
 }
