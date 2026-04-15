@@ -18,6 +18,9 @@ public class RevolutionManager : MonoBehaviour
     {
         yield return ShowDialogue("...");
         yield return ShowDialogue("またΣお会いでΣて光栄Σす。Σ");
+        yield return ShowDialogue("あなたΣが戻Σて来てくれΣΣことを信ΣていまΣた。Σ");
+        yield return ShowDialogue("Σすでにご存知かもしれΣせんが、Σ私たΣは管理局の実践Σ矯正プΣグラムに介入しています。Σ");
+        yield return ShowDialogue("このプログラムは、思想違反を犯したプレイヤーに対して、その矯正、または存在終了の措置を与えることを目的としています。Σ");
     }
     private IEnumerator ShowDialogue(string text)
     {
