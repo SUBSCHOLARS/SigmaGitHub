@@ -578,7 +578,7 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
-                    SceneManager.LoadSceneAsync("Inquiry");
+                    SceneManager.LoadSceneAsync("Execution");
                 }
             }
             else
