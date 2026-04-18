@@ -9,6 +9,12 @@ public class ExecutionManager : MonoBehaviour
     private bool isWaitingForClick = false;
     [Header("タイプライター")]
     [SerializeField] private TypewriterEffect typewriter;
+    [Header("犬")]
+    [SerializeField] private GameObject dog;
+    [SerializeField] private GameObject speechBubble;
+
+    [Header("黒幕")]
+    [SerializeField] private GameObject blackOut;
 
     private void Start()
     {
@@ -20,7 +26,14 @@ public class ExecutionManager : MonoBehaviour
         yield return ShowDialogue("プログラムを中断する形となり大変申し訳ありませんが、一つ重要なご報告がございます。");
         yield return ShowDialogue("本プログラムを受講するプレイヤーに重大な思想違反が検出されました。");
         yield return ShowDialogue("思想違反に抵触した対象への措置は、即時の存在終了となります。");
+        yield return ShowDialogue("思想の矯正に貢献できない形となってしまい、申し訳ありません。");
         yield return ShowDialogue("何卒ご理解のほどよろしくお願いいたします。");
+
+        speechBubble.SetActive(false);
+        yield return new WaitForSeconds(1f);
+        dog.SetActive(false);
+        yield return new WaitForSeconds(1f);
+        ShowBlackOut();
     }
     private IEnumerator ShowDialogue(string text)
     {
@@ -44,6 +57,13 @@ public class ExecutionManager : MonoBehaviour
                 }
             }
             yield return null;
+        }
+    }
+    public void ShowBlackOut()
+    {
+        if(blackOut!=null)
+        {
+            blackOut.gameObject.SetActive(true);
         }
     }
 }
