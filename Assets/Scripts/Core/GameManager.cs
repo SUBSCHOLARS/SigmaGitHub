@@ -573,9 +573,21 @@ public class GameManager : MonoBehaviour
                 if (PlayerHasIdeologyInHand(overallWinner, IdeologyType.Thoughtcrime))
                 {
                     Debug.Log("革命ルート突入: Thoughtcrime保持での総合勝利");
-                    // TODO: 革命ルート用シーン名が確定したらここを更新する
                     SceneManager.LoadSceneAsync("Revolution");
                 }
+                // 最終ステージ(Flag5)でThoughtcrime以外のイデオロギーカード保持 → Brainwash
+                else if (GetProgressFlag() == 5 && overallWinner.hand.Any(c => c.isIdeologyCard))
+                {
+                    Debug.Log("Brainwashルート突入: Flag5でイデオロギーカード保持での総合勝利");
+                    SceneManager.LoadSceneAsync("Brainwash");
+                }
+                // 中間ステージ(Flag0〜4)での総合勝利 → 次の尋問シーケンスへ
+                else if (GetProgressFlag() < 5)
+                {
+                    Debug.Log($"中間勝利: Flag{GetProgressFlag()} クリア → Inquiryへ遷移");
+                    SceneManager.LoadSceneAsync("Inquiry");
+                }
+                // Flag5でイデオロギーカードなし → 処刑エンド
                 else
                 {
                     SceneManager.LoadSceneAsync("Execution");
@@ -583,7 +595,16 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                StartNextRound();
+                // 最終ステージ(Flag5)でCPUが勝利 → 失格エンド
+                if (GetProgressFlag() == 5)
+                {
+                    Debug.Log("Disqualificationルート突入: Flag5でCPUが総合勝利");
+                    SceneManager.LoadSceneAsync("Disqualification");
+                }
+                else
+                {
+                    StartNextRound();
+                }
             }
         }
         else
@@ -854,7 +875,7 @@ public class GameManager : MonoBehaviour
             {
                 return player;
             }
-            else if (GetProgressFlag()==5 && player.wins >= 7 && player.hand.Any(c => c.sector == CardSector.Chain))
+            else if (GetProgressFlag()==5)
             {
                 return player;
             }
@@ -869,7 +890,7 @@ public class GameManager : MonoBehaviour
             case 0:
                 if (currentRound >= 3)
                 {
-                    StartCoroutine(ExecutionEndTurnAfterDelay(3.0f));
+                    SceneManager.LoadSceneAsync("DisqualificationBeforeIdeology");
                 }
                 else
                 {
@@ -882,7 +903,7 @@ public class GameManager : MonoBehaviour
             case 2:
                 if (currentRound >= 4)
                 {
-                    StartCoroutine(ExecutionEndTurnAfterDelay(3.0f));
+                    SceneManager.LoadSceneAsync("DisqualificationBeforeIdeology");
                 }
                 else
                 {

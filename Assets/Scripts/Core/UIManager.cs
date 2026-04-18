@@ -1233,7 +1233,7 @@ public class UIManager : MonoBehaviour
         }
         else if(GameManager.Instance.GetProgressFlag()==5)
         {
-            gameGoalText.text="条件: 7回勝利し、その達成時にCHAINカードを手札に保持していること。";
+            gameGoalText.text="条件: 自身のイデオロギーをもって、勝利を収めること。";
         }
         else
         {

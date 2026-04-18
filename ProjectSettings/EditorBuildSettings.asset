@@ -29,6 +29,15 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Revolution.unity
     guid: a6161805c6c42144b9d10c8ad8d3094c
+  - enabled: 1
+    path: Assets/Scenes/Disqualification.unity
+    guid: a9bebe86aa062d54e9848a300205c735
+  - enabled: 1
+    path: Assets/Scenes/Brainwash.unity
+    guid: aba6c6731dea217429fba51bb2fa6bf4
+  - enabled: 1
+    path: Assets/Scenes/DisqualificationBeforeIdeology.unity
+    guid: 1d6db4e289c71a54687f8cc1c769cdf0
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
