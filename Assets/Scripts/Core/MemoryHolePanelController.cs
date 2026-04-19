@@ -59,9 +59,10 @@ public class MemoryHolePanelController : MonoBehaviour
             Vector3 pos=new Vector3(delta, 0, 0);
             GameObject cardObj = Instantiate(cardPrefab, container);
 
-            // CardController でスプライトセットアップ
+            // CardController でスプライトセットアップ（FreeGamePlay は FreeCardController にフォールバック）
             CardController cc = cardObj.GetComponent<CardController>();
             if (cc != null) cc.Setup(card);
+            else { var fcc = cardObj.GetComponent<FreeCardController>(); if (fcc != null) fcc.Setup(card); }
 
             // raycastTarget を有効化（IPointerClickHandler のために必要）
             Image img = cardObj.GetComponent<Image>();
@@ -216,14 +217,22 @@ public class MemoryHolePanelController : MonoBehaviour
         GameObject newCardObj = Instantiate(cardPrefab, targetHandArea);
         CardController newCc = newCardObj.GetComponent<CardController>();
         if (newCc != null) newCc.Setup(selectedPlayerCard);
+        else { var fcc = newCardObj.GetComponent<FreeCardController>(); if (fcc != null) fcc.Setup(selectedPlayerCard); }
         RectTransform newRt = newCardObj.GetComponent<RectTransform>();
         newRt.localScale = Vector3.zero;
         yield return newRt.DOScale(Vector3.one, 0.35f).SetEase(Ease.OutBack).WaitForCompletion();
 
         yield return new WaitForSeconds(0.3f);
 
-        // データ更新＋ビジュアル反映
-        UIManager.Instance.HideMemoryHolePanel();
-        GameManager.Instance.ExecuteMemoryHoleEffect(targetPlayer, selectedTargetCard, selectedPlayerCard);
+        // データ更新＋ビジュアル反映（GamePlay / FreeGamePlay 共用）
+        if (UIManager.Instance != null)
+            UIManager.Instance.HideMemoryHolePanel();
+        else
+            FreeUIManager.Instance.HideMemoryHolePanel();
+
+        if (GameManager.Instance != null)
+            GameManager.Instance.ExecuteMemoryHoleEffect(GameManager.Instance.players[0], targetPlayer, selectedTargetCard, selectedPlayerCard);
+        else
+            FreeGameManager.Instance.ExecuteMemoryHoleEffect(FreeGameManager.Instance.players[0], targetPlayer, selectedTargetCard, selectedPlayerCard);
     }
 }

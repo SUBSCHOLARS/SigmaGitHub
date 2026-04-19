@@ -49,6 +49,7 @@ public class GameManager : MonoBehaviour
     // Sigma Speak 用フラグ
     public bool sigmaSpeakActive = false;
     public bool sigmaSpeakUsedThisTurn = false;
+    public int sigmaSpeakActivatorIndex = -1; // 発動者のインデックス（-1=未発動）
     // Memory Hole 用フラグ
     private bool pendingMemoryHole = false;
     // private int winningScore = 100; // 勝利に必要なスコア
@@ -375,29 +376,30 @@ public class GameManager : MonoBehaviour
         NextTurn();
     }
     // Sigma Speak 発動ボタンから呼ばれるメソッド
-    public void ActivateSigmaSpeak()
+    public void ActivateSigmaSpeak(int activatorIndex = -1)
     {
-        // プレイヤーのターンかつ未使用のときのみ受け付ける
-        if (isPlayerInputLocked || players[currentPlayerIndex].isCPU || sigmaSpeakUsedThisTurn)
+        int idx = activatorIndex < 0 ? currentPlayerIndex : activatorIndex;
+        // プレイヤー発動時のみ入力ロック・CPU判定チェックを行う
+        if (activatorIndex < 0 && (isPlayerInputLocked || players[idx].isCPU || sigmaSpeakUsedThisTurn))
             return;
 
         sigmaSpeakActive = true;
         sigmaSpeakUsedThisTurn = true;
-        Debug.Log("[SigmaSpeak] 発動: 次の自分のターンまで全効果カードを無効化");
+        sigmaSpeakActivatorIndex = idx;
+        Debug.Log($"[SigmaSpeak] {players[idx].playerName} が発動: 次の自ターンまで全効果カードを無効化");
 
-        // ターンを消費しない。プレイヤーはこのままカードを出すかドローできる。
         UIManager.Instance.UpdateAllHandVisuals();
         UIManager.Instance.UpdateFieldPileUI(currentCardOnField);
     }
 
     // Memory Hole 効果を実行するメソッド（MemoryHolePanelControllerから呼ばれる）
-    public void ExecuteMemoryHoleEffect(Player target, CardData targetCard, CardData playerCard)
+    public void ExecuteMemoryHoleEffect(Player executor, Player target, CardData targetCard, CardData executorCard)
     {
-        target.hand.Remove(targetCard);       // ターゲットが1枚失う（捨て）
-        players[0].hand.Remove(playerCard);   // 自分が1枚渡す
-        target.hand.Add(playerCard);          // ターゲットが自分のカードを受け取る
+        target.hand.Remove(targetCard);        // ターゲットが1枚失う（捨て）
+        executor.hand.Remove(executorCard);    // 発動者が1枚渡す
+        target.hand.Add(executorCard);         // ターゲットが発動者のカードを受け取る
         // targetCard は捨て牌（誰も受け取らない）
-        Debug.Log($"[MemoryHole] {target.playerName} の {targetCard.cardName} を捨て、{playerCard.cardName} を渡した");
+        Debug.Log($"[MemoryHole] {executor.playerName} が {target.playerName} の {targetCard.cardName} を捨て、{executorCard.cardName} を渡した");
 
         // ターゲット手札を震わせてフィードバックを与える
         Transform targetHandContainer = UIManager.Instance.GetHandContainerForPlayer(target);
@@ -407,7 +409,7 @@ public class GameManager : MonoBehaviour
         }
 
         UIManager.Instance.UpdateAllHandVisuals();
-        SetInputLock(false); // ターン消費なし
+        if (!executor.isCPU) SetInputLock(false); // CPU発動時はターン遷移で解除
     }
 
     // Bribeの5つのボタンから呼ばれるメソッド
@@ -745,6 +747,15 @@ public class GameManager : MonoBehaviour
             UIManager.Instance.UpdateAllHandVisuals();
         }
         // ターン開始
+        // 発動者のターン開始時に SigmaSpeak を解除（CPU/プレイヤー共通）
+        if (sigmaSpeakActive && currentPlayerIndex == sigmaSpeakActivatorIndex)
+        {
+            sigmaSpeakActive = false;
+            sigmaSpeakUsedThisTurn = false;
+            sigmaSpeakActivatorIndex = -1;
+            UIManager.Instance.UpdateAllHandVisuals();
+            UIManager.Instance.UpdateFieldPileUI(currentCardOnField);
+        }
         // 次の人がCPUなら、CPUの試行ルーチンを呼ぶ
         if (targetPlayer.isCPU)
         {
@@ -753,14 +764,6 @@ public class GameManager : MonoBehaviour
         // それ以外ならプレイヤーのターンなのでロックを解除する
         else
         {
-            // プレイヤーターン開始時に Sigma Speak を解除してビジュアルを戻す
-            if (sigmaSpeakActive)
-            {
-                sigmaSpeakActive = false;
-                sigmaSpeakUsedThisTurn = false;
-                UIManager.Instance.UpdateAllHandVisuals();
-                UIManager.Instance.UpdateFieldPileUI(currentCardOnField);
-            }
             SetInputLock(false);
         }
     }
@@ -923,6 +926,7 @@ public class GameManager : MonoBehaviour
         // Sigma Speak フラグをラウンド開始時にリセット
         sigmaSpeakActive = false;
         sigmaSpeakUsedThisTurn = false;
+        sigmaSpeakActivatorIndex = -1;
         // UI更新
         UIManager.Instance.UpdateRoundText(currentRound);
 
@@ -982,6 +986,18 @@ public class GameManager : MonoBehaviour
     private void CPUTurnLogic()
     {
         Player currentCPU = players[currentPlayerIndex];
+
+        // SigmaSpeak: 手札にあれば自動発動（フリーアクション）
+        if (!sigmaSpeakUsedThisTurn && PlayerHasIdeologyInHand(currentCPU, IdeologyType.SigmaSpeak))
+        {
+            ActivateSigmaSpeak(currentPlayerIndex);
+        }
+        // MemoryHole: 手札にあれば自動実行してターン終了
+        if (PlayerHasIdeologyInHand(currentCPU, IdeologyType.MemoryHole))
+        {
+            if (TryCPUExecuteMemoryHole(currentCPU)) return;
+        }
+
         // 1. 出すカードを決める
         CardData cardToPlay = FindBestCardForCPU(currentCPU);
 
@@ -1040,26 +1056,65 @@ public class GameManager : MonoBehaviour
             NextTurn(); // 効果なしで次のターンへ
         }
     }
+    // CPU MemoryHole AI: 最適なターゲットとカードを選んで交換を実行
+    private bool TryCPUExecuteMemoryHole(Player cpu)
+    {
+        // 渡すカード: MemoryHole以外の最も低handValueなカード
+        CardData executorCard = cpu.hand
+            .Where(c => c.ideologyType != IdeologyType.MemoryHole)
+            .OrderBy(c => c.handValue)
+            .FirstOrDefault();
+        if (executorCard == null) return false;
+
+        // ターゲット: 自分以外で手札合計が最も高いプレイヤー
+        Player target = players
+            .Where(p => p != cpu && p.id != PlayerID.GameMaster && p.hand.Count > 0)
+            .OrderByDescending(p => GetHandValue(p.hand).totalValue)
+            .FirstOrDefault();
+        if (target == null) return false;
+
+        // 奪うカード: 公開済みがあればその中の最高値、なければランダム
+        CardData targetCard = target.revealedCards.Count > 0
+            ? target.revealedCards.OrderByDescending(c => c.handValue).First()
+            : target.hand[UnityEngine.Random.Range(0, target.hand.Count)];
+
+        Debug.Log($"[CPU MemoryHole] {cpu.playerName} → {target.playerName}: {targetCard.cardName} を奪い、{executorCard.cardName} を渡す");
+        ExecuteMemoryHoleEffect(cpu, target, targetCard, executorCard);
+        // CPU発動なのでターン継続（NextTurn）
+        NextTurn();
+        return true;
+    }
+
     // AI Helper Methods
-    
+
     // 自分から見て「見えていないカード」（山札 + 他人の手札）を取得
     private List<CardData> GetUnseenCards(Player me)
     {
         // 全カードのコピーを作成
         List<CardData> unseen = new List<CardData>(allCardDatabase);
-        
+
         // 自分の手札を除く
         foreach(CardData card in me.hand)
         {
             unseen.Remove(card);
         }
-        
+
         // 捨て札（場に出たカード）を除く
         foreach(CardData card in discardPile)
         {
             unseen.Remove(card);
         }
-        
+
+        // BureauBrother 保持者はすべてのプレイヤーの手札が見える
+        if (PlayerHasIdeologyInHand(me, IdeologyType.BureauBrother))
+        {
+            foreach (Player p in players)
+            {
+                if (p == me) continue;
+                foreach (CardData card in p.hand) unseen.Remove(card);
+            }
+        }
+
         return unseen;
     }
 

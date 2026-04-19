@@ -81,6 +81,8 @@ public class FreeUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI playerNameText;
     [Header("オーディオ")]
     [SerializeField] private AudioClip nextButtonSound;
+    [Header("MemoryHole UI")]
+    [SerializeField] private GameObject memoryHolePanel;
     void Awake()
     {
         if (Instance == null)
@@ -447,17 +449,6 @@ public class FreeUIManager : MonoBehaviour
         AddLogMessage("--- NEW ROUND STARTED", null);
         // 必要であれば「Round X Start」のようなログをAddLogMessageで追加
     }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
     
     void OnDestroy()
     {
@@ -541,6 +532,12 @@ public class FreeUIManager : MonoBehaviour
             // FreeCardControllerを取得して、カード情報を設定
             FreeCardController freeCardController = newCardObj.GetComponent<FreeCardController>();
             freeCardController.Setup(cardData);
+            // SigmaSpeak 有効中はスプライトを差し替え
+            if (FreeGameManager.Instance.sigmaSpeakActive && cardData.sigmaSpeakSprite != null)
+            {
+                var img = newCardObj.GetComponent<Image>();
+                if (img != null) img.sprite = cardData.sigmaSpeakSprite;
+            }
             // Detectorのリストに新しいカードを追加
             freeHandHoverDetector.cardsInHand.Add(freeCardController);
         }
@@ -553,12 +550,22 @@ public class FreeUIManager : MonoBehaviour
         if(yourTrendText!=null)
         {
             // FreeGameManagerに計算を依頼
-            int handValue = FreeGameManager.Instance.GetHandValue(playerHand);
+            int handValue = FreeGameManager.Instance.GetHandValue(playerHand).totalValue;
             yourTrendText.text = $"HAND: {handValue}";
         }
 
         // 3. CPUの手札更新(裏向きで更新)
         List<Player> players = FreeGameManager.Instance.players;
+
+        // BureauBrother 効果：CPU 全手札を revealedCards に同期
+        if (FreeGameManager.Instance.PlayerHasIdeologyInHand(players[0], IdeologyType.BureauBrother))
+        {
+            for (int p = 1; p < players.Count; p++)
+                foreach (var card in players[p].hand)
+                    if (!players[p].revealedCards.Contains(card))
+                        players[p].revealedCards.Add(card);
+        }
+
         if (players.Count >= 3) // 3人以上いるか確認
         {
             // [1]番目がCPU1、[2]番目がCPU2だと仮定
@@ -644,10 +651,10 @@ public class FreeUIManager : MonoBehaviour
             rect.localPosition = new Vector3(xPos, yPos, 0);
 
             // 2. 角度を決める（Y座標を基準に）
-            float angle = -xPos / (totalWidth + 1f) * (cpuRotationAmount * childCount);
+            // float angle = -xPos / (totalWidth + 1f) * (cpuRotationAmount * childCount);
 
             // 3. ベース回転（90度）と束の傾き（angle）を足す
-            rect.localRotation = Quaternion.Euler(0, 0, angle);
+            // rect.localRotation = Quaternion.Euler(0, 0, angle);
         }
 
         // CPU手札コンテナのサイズを調整（Raycast用）
@@ -1027,7 +1034,7 @@ public class FreeUIManager : MonoBehaviour
         }
     }
     // ターゲットプレイヤーのHand Container Transformを取得するヘルパーメソッド
-    private Transform GetHandContainerForPlayer(Player targetPlayer)
+    public Transform GetHandContainerForPlayer(Player targetPlayer)
     {
         // プレイヤーIDで判別
         if(targetPlayer.id==PlayerID.Player)
@@ -1049,6 +1056,18 @@ public class FreeUIManager : MonoBehaviour
         }
         Debug.Log("GetHandContainerForPlayer: 該当するHand Containerが見つかりませんでした");
         return null;
+    }
+    public void ShowMemoryHolePanel(Player target, Player human)
+    {
+        if (memoryHolePanel == null) return;
+        memoryHolePanel.SetActive(true);
+        memoryHolePanel.GetComponent<MemoryHolePanelController>()
+            .Initialize(target, human, cardPrefab);
+    }
+    public void HideMemoryHolePanel()
+    {
+        if (memoryHolePanel != null)
+            memoryHolePanel.SetActive(false);
     }
     // 汎用的なクリック待ちUIの表示
     public void ShowContinueButton(bool show)
