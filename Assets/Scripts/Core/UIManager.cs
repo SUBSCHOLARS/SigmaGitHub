@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections;
 using DG.Tweening;
 using TMPro;
+using System.Linq;
 // GameManagerからの指示を受けて画面を更新する
 public class UIManager : MonoBehaviour
 {
@@ -539,7 +540,9 @@ public class UIManager : MonoBehaviour
 
         // Detectorのリストもリセット
         handHoverDetector.cardsInHand.Clear();
-        List<CardData> playerHand = GameManager.Instance.GetPlayerHand();
+        List<CardData> playerHand = GameManager.Instance.GetPlayerHand()
+                                        .OrderBy(c => c.isIdeologyCard ? 1 : 0)
+                                        .ToList();
 
         // 2. 新しい手札を生成
         foreach (CardData cardData in playerHand)

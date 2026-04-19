@@ -52,6 +52,7 @@ public class GameManager : MonoBehaviour
     public int sigmaSpeakActivatorIndex = -1; // 発動者のインデックス（-1=未発動）
     // Memory Hole 用フラグ
     private bool pendingMemoryHole = false;
+    public bool memoryHoleUsedThisTurn = false;
     // private int winningScore = 100; // 勝利に必要なスコア
     public int currentRound = 1; // 現在のラウンド
     protected Sprite initialSprite;
@@ -480,10 +481,11 @@ public class GameManager : MonoBehaviour
                 UIManager.Instance.IsShowSigmaSpeakActivationUI(true);
                 return;
             }
-            if (cardToPlay.ideologyType == IdeologyType.MemoryHole)
+            if (cardToPlay.ideologyType == IdeologyType.MemoryHole && !memoryHoleUsedThisTurn)
             {
                 SetInputLock(true);
                 pendingMemoryHole = true;
+                memoryHoleUsedThisTurn = true;
                 UIManager.Instance.ShowTargetSelectionUI();
                 return;
             }
@@ -756,6 +758,10 @@ public class GameManager : MonoBehaviour
             UIManager.Instance.UpdateAllHandVisuals();
             UIManager.Instance.UpdateFieldPileUI(currentCardOnField);
         }
+        // プレイヤーのターン開始時に MemoryHole をリセット
+        if (!targetPlayer.isCPU)
+            memoryHoleUsedThisTurn = false;
+
         // 次の人がCPUなら、CPUの試行ルーチンを呼ぶ
         if (targetPlayer.isCPU)
         {
@@ -927,6 +933,7 @@ public class GameManager : MonoBehaviour
         sigmaSpeakActive = false;
         sigmaSpeakUsedThisTurn = false;
         sigmaSpeakActivatorIndex = -1;
+        memoryHoleUsedThisTurn = false;
         // UI更新
         UIManager.Instance.UpdateRoundText(currentRound);
 

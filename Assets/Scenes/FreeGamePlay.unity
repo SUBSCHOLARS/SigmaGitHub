@@ -1501,7 +1501,6 @@ MonoBehaviour:
   cpu2HandContainer: {fileID: 843086252}
   cpuCardSpacing: 30
   cpuArcAmount: 150
-  cpuRotationAmount: 3
   cardPrefab: {fileID: 4087856086764915820, guid: d45a5fd441aed1142bf4026e57fe19ae, type: 3}
   cardBackPrefab: {fileID: 4586531106669417455, guid: 8bd66bf65c7df45388df0163aacf02df, type: 3}
   deckVisualContainer: {fileID: 938293776}
@@ -9186,6 +9185,7 @@ MonoBehaviour:
   sigmaSpeakActive: 0
   sigmaSpeakUsedThisTurn: 0
   sigmaSpeakActivatorIndex: -1
+  memoryHoleUsedThisTurn: 0
   bribeSprite: {fileID: 0}
 --- !u!1 &1948061659
 GameObject:

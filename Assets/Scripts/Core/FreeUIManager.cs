@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections;
 using DG.Tweening;
 using TMPro;
+using System.Linq;
 // FreeGameManagerからの指示を受けて画面を更新する
 public class FreeUIManager : MonoBehaviour
 {
@@ -23,7 +24,6 @@ public class FreeUIManager : MonoBehaviour
     [Header("CPUの手札表示パラメータ")]
     [SerializeField] private float cpuCardSpacing = 30f;
     [SerializeField] private float cpuArcAmount = 150f;
-    [SerializeField] private float cpuRotationAmount = 3f;
     [Header("プレハブ")]
     public GameObject cardPrefab;
     public GameObject cardBackPrefab; // CardBackをアタッチ
@@ -216,7 +216,7 @@ public class FreeUIManager : MonoBehaviour
         }
     }
     // 検閲（Censor）のアニメーションコルーチン
-    public IEnumerator ShowCensorAnimation(Player targetPlayer)
+    public IEnumerator ShowCensorAnimation(Player targetPlayer, int currentPlayerIndex)
     {
         // 1. 準備
         surveyTitleText.text = "CENSOR";
@@ -287,7 +287,7 @@ public class FreeUIManager : MonoBehaviour
             yield return new WaitForSeconds(1.5f); // 結果を見せる時間
             
             // 手札の表示を更新（ここでCPUの手札が表になる）
-            UpdateAllHandVisuals(); 
+            UpdateAllHandVisuals(currentPlayerIndex); 
         }
 
         // 6. クリーンアップ
@@ -494,7 +494,7 @@ public class FreeUIManager : MonoBehaviour
         }
     }
     // プレイヤーの手札を画面に表示するメソッド
-    public void UpdateAllHandVisuals()
+    public void UpdateAllHandVisuals(int currentPlayerIndex)
     {
         // 手札を破棄する前に、ホバー検出器の参照をリセット
         if(freeHandHoverDetector!=null)
@@ -522,7 +522,10 @@ public class FreeUIManager : MonoBehaviour
 
         // Detectorのリストもリセット
         freeHandHoverDetector.cardsInHand.Clear();
-        List<CardData> playerHand = FreeGameManager.Instance.GetPlayerHand();
+        // イデオロギーカードを右端（末尾）に表示するため、描画順だけ並び替える
+        List<CardData> playerHand = FreeGameManager.Instance.GetPlayerHand()
+            .OrderBy(c => c.isIdeologyCard ? 1 : 0)
+            .ToList();
 
         // 2. 新しい手札を生成
         foreach (CardData cardData in playerHand)
@@ -545,17 +548,23 @@ public class FreeUIManager : MonoBehaviour
         // レイアウトの更新
         // この時点でplayerHandContainer.childCountは6（新しい手札の枚数）になっている
         playerHandContainer.GetComponent<HandLayoutManager>().UpdateLayout();
-
-        // プレイヤーの手札合計値を計算して表示
-        if(yourTrendText!=null)
-        {
-            // FreeGameManagerに計算を依頼
-            int handValue = FreeGameManager.Instance.GetHandValue(playerHand).totalValue;
-            yourTrendText.text = $"HAND: {handValue}";
-        }
-
         // 3. CPUの手札更新(裏向きで更新)
         List<Player> players = FreeGameManager.Instance.players;
+
+        // プレイヤーの手札合計値を計算して表示
+        if(yourTrendText!=null && currentPlayerIndex==0)
+        {
+            // FreeGameManagerに計算を依頼
+            var (handValue, hasDoublethink) = FreeGameManager.Instance.GetHandValue(players[0].hand);
+            if(!hasDoublethink)
+            {
+                yourTrendText.text = $"HAND: {handValue}";
+            }
+            else
+            {
+                yourTrendText.text = $"HAND: {handValue} or {handValue + 1}";
+            }
+        }
 
         // BureauBrother 効果：CPU 全手札を revealedCards に同期
         if (FreeGameManager.Instance.PlayerHasIdeologyInHand(players[0], IdeologyType.BureauBrother))
@@ -962,12 +971,11 @@ public class FreeUIManager : MonoBehaviour
         }
     }
     // Censor/Interrogate用の場のトレンド更新メソッド
-    public void UpdateCurrentTrendWhenSurvey()
+    public void UpdateCurrentTrendWhenSurvey(int trendValue)
     {
         if (currentTrendText != null && sectorIcon != null)
         {
-            // トレンド値も不明にする
-            currentTrendText.text = $"TREND: ERROR";
+            currentTrendText.text = $"TREND: {trendValue}";
             // ?アイコンに変更
             sectorIcon.sprite = errorSprite;
         }
@@ -1057,6 +1065,62 @@ public class FreeUIManager : MonoBehaviour
         Debug.Log("GetHandContainerForPlayer: 該当するHand Containerが見つかりませんでした");
         return null;
     }
+    // CPU が MemoryHole を発動したときのダストアニメーション
+    public IEnumerator ShowCPUMemoryHoleAnimation(
+        Player executor, Player target, CardData executorCard, CardData targetCard)
+    {
+        float dustDuration = 0.4f;
+        Sequence dustSeq = DOTween.Sequence();
+
+        // ── executor 側（常にCPU）──
+        Transform execContainer = GetHandContainerForPlayer(executor);
+        int execIdx = executor.hand.IndexOf(executorCard);
+        if (execContainer != null && execIdx >= 0 && execIdx < execContainer.childCount)
+        {
+            Transform execChild = execContainer.GetChild(execIdx);
+            RectTransform rt = execChild.GetComponent<RectTransform>();
+            Image img        = execChild.GetComponent<Image>();
+            if (rt  != null) { dustSeq.Join(rt.DOScale(Vector3.zero, dustDuration).SetEase(Ease.InBack));
+                               dustSeq.Join(rt.DORotate(new Vector3(0f, 0f, -30f), dustDuration)); }
+            if (img != null)   dustSeq.Join(img.DOFade(0f, dustDuration * 0.75f));
+        }
+
+        // ── target 側（CPU or プレイヤー）──
+        Transform tgtContainer = GetHandContainerForPlayer(target);
+        if (tgtContainer != null)
+        {
+            GameObject tgtObj = null;
+            if (target.id == PlayerID.Player)
+            {
+                // プレイヤー手札はソート済み表示のため FreeCardController で照合
+                foreach (Transform child in tgtContainer)
+                {
+                    var fcc = child.GetComponent<FreeCardController>();
+                    if (fcc != null && fcc.MyCardData == targetCard) { tgtObj = child.gameObject; break; }
+                }
+            }
+            else
+            {
+                // CPU手札はインデックスで照合
+                int idx = target.hand.IndexOf(targetCard);
+                if (idx >= 0 && idx < tgtContainer.childCount)
+                    tgtObj = tgtContainer.GetChild(idx).gameObject;
+            }
+
+            if (tgtObj != null)
+            {
+                RectTransform rt = tgtObj.GetComponent<RectTransform>();
+                Image img        = tgtObj.GetComponent<Image>();
+                if (rt  != null) { dustSeq.Join(rt.DOScale(Vector3.zero, dustDuration).SetEase(Ease.InBack));
+                                   dustSeq.Join(rt.DORotate(new Vector3(0f, 0f, 30f), dustDuration)); }
+                if (img != null)   dustSeq.Join(img.DOFade(0f, dustDuration * 0.75f));
+            }
+        }
+
+        yield return dustSeq.WaitForCompletion();
+        yield return new WaitForSeconds(0.3f);
+    }
+
     public void ShowMemoryHolePanel(Player target, Player human)
     {
         if (memoryHolePanel == null) return;

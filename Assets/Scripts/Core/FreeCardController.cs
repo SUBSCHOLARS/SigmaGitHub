@@ -7,6 +7,7 @@ using TMPro;
 public class FreeCardController : MonoBehaviour
 {
     private CardData myCardData;
+    public CardData MyCardData => myCardData; // 外部からカードデータを参照できるようにするプロパティ
     private Image cardImage;
 
     private Vector3 initialPosition; // 元の位置を記憶

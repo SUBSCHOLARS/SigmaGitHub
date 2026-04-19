@@ -51,6 +51,7 @@ public class FreeGameManager : MonoBehaviour
     public int sigmaSpeakActivatorIndex = -1; // 発動者のインデックス（-1=未発動）
     // Memory Hole 用フラグ
     private bool pendingMemoryHole = false;
+    public bool memoryHoleUsedThisTurn = false;
     protected Sprite initialSprite;
     private const int FIRST_DECK_DISTRIBUTION_COUNT=21;
     private int distributionCount=0;
@@ -119,7 +120,7 @@ public class FreeGameManager : MonoBehaviour
             return; // リターンで最初のターンが開始するのを防ぐ
         }
         // プレイヤー（0番目）の手札をUIに反映
-        FreeUIManager.Instance.UpdateAllHandVisuals();
+        FreeUIManager.Instance.UpdateAllHandVisuals(currentPlayerIndex);
         FreeUIManager.Instance.UpdateCurrentTrend(initialSprite, currentTrendValue);
     }
     // 山札を初期化し、シャッフルするメソッド
@@ -177,6 +178,16 @@ public class FreeGameManager : MonoBehaviour
             // 山札の一番上のカードを手札に追加
             CardData drawnCard = deck[0];
             deck.RemoveAt(0);
+
+            // イデオロギーカードは同時に1枚までというルール
+            if (drawnCard.isIdeologyCard && hand.Any(c => c.isIdeologyCard))
+            {
+                discardPile.Add(drawnCard);
+                Debug.Log($"[DrawCards] {drawnCard.cardName} はイデオロギー上限のため捨て札へ。もう1枚引く");
+                i--; // このドローをやり直す
+                continue;
+            }
+
             hand.Add(drawnCard);
             if(distributionCount>FIRST_DECK_DISTRIBUTION_COUNT)
             {
@@ -206,7 +217,7 @@ public class FreeGameManager : MonoBehaviour
         int firstCardIndex = -1;
         for (int i = 0; i < deck.Count; i++)
         {
-            if (deck[i].effect == CardEffect.None)
+            if (deck[i].effect == CardEffect.None && !deck[i].isIdeologyCard)
             {
                 firstCardIndex = i;
                 break;
@@ -256,7 +267,8 @@ public class FreeGameManager : MonoBehaviour
             isNextPlayWild = true;
             Debug.Log("調査カードが出されました。次のプレイはワイルドになります。");
             // 特殊な場合の場のUI更新を行う
-            FreeUIManager.Instance.UpdateCurrentTrendWhenSurvey();
+            currentTrendValue=card.numberValue;
+            FreeUIManager.Instance.UpdateCurrentTrendWhenSurvey(currentTrendValue);
             Debug.Log("場のUIを調査カード用に更新しました。");
         }
         else
@@ -269,7 +281,7 @@ public class FreeGameManager : MonoBehaviour
             Debug.Log("場に " + card.cardName + " が出されました。現在のトレンド: " + currentTrendValue);
         }
         FreeUIManager.Instance.UpdateFieldPileUI(card);
-        FreeUIManager.Instance.UpdateAllHandVisuals(); // ここで自動的にYourTrendも更新される
+        FreeUIManager.Instance.UpdateAllHandVisuals(currentPlayerIndex); // ここで自動的にYourTrendも更新される
     }
     // カードが出せるかを判定するメソッド
     public bool CanPlayCard(CardData cardToPlay)
@@ -345,7 +357,7 @@ public class FreeGameManager : MonoBehaviour
         DrawCards(humanPlayer.hand, 1);
 
         // 3. UIを全て更新
-        FreeUIManager.Instance.UpdateAllHandVisuals();
+        FreeUIManager.Instance.UpdateAllHandVisuals(currentPlayerIndex);
         FreeUIManager.Instance.UpdateDeckVisual(deck.Count);
 
         // 4. マッチ判定
@@ -408,7 +420,8 @@ public class FreeGameManager : MonoBehaviour
     public (int totalValue, bool hasDoubleThink) GetHandValue(List<CardData> hand)
     {
         int totalValue = 0;
-        bool hasDoubleThink = PlayerHasIdeologyInHand(players[0], IdeologyType.DoubleThink);
+        // 評価対象の手札自体にDoubleThinkがあるか確認（players[0]固定は誤り）
+        bool hasDoubleThink = hand.Any(c => c.ideologyType == IdeologyType.DoubleThink);
         foreach (CardData card in hand)
         {
             totalValue += card.handValue;
@@ -437,10 +450,11 @@ public class FreeGameManager : MonoBehaviour
                 return;
             }
             // MemoryHole クリック → ターゲット選択へ
-            if (cardToPlay.ideologyType == IdeologyType.MemoryHole)
+            if (cardToPlay.ideologyType == IdeologyType.MemoryHole && !memoryHoleUsedThisTurn)
             {
                 SetInputLock(true);
                 pendingMemoryHole = true;
+                memoryHoleUsedThisTurn = true;
                 FreeUIManager.Instance.ShowTargetSelectionUI();
                 return;
             }
@@ -595,7 +609,7 @@ public class FreeGameManager : MonoBehaviour
                 // FreeUIManagerのアニメーションコルーチンを呼び出して待機
                 if(playedCard.effect==CardEffect.Censor)
                 {
-                    yield return StartCoroutine(FreeUIManager.Instance.ShowCensorAnimation(targetPlayer));
+                    yield return StartCoroutine(FreeUIManager.Instance.ShowCensorAnimation(targetPlayer, currentPlayerIndex));
                 }
                 else // Interrogate
                 {
@@ -669,7 +683,7 @@ public class FreeGameManager : MonoBehaviour
             // TODO: 回避（Audit返し）のロジック
             Debug.Log($"{targetPlayer.id} は2枚引く!");
             DrawCards(targetPlayer.hand, 2);
-            FreeUIManager.Instance.UpdateAllHandVisuals();
+            FreeUIManager.Instance.UpdateAllHandVisuals(currentPlayerIndex);
         }
         // ターン開始
         // 発動者のターン開始時に SigmaSpeak を解除（CPU/プレイヤー共通）
@@ -678,8 +692,12 @@ public class FreeGameManager : MonoBehaviour
             sigmaSpeakActive = false;
             sigmaSpeakUsedThisTurn = false;
             sigmaSpeakActivatorIndex = -1;
-            FreeUIManager.Instance.UpdateAllHandVisuals();
+            FreeUIManager.Instance.UpdateAllHandVisuals(currentPlayerIndex);
         }
+        // プレイヤーのターン開始時に MemoryHole をリセット
+        if (!targetPlayer.isCPU)
+            memoryHoleUsedThisTurn = false;
+
         // 次の人がCPUなら、CPUの試行ルーチンを呼ぶ
         if (targetPlayer.isCPU)
         {
@@ -705,8 +723,8 @@ public class FreeGameManager : MonoBehaviour
             bool isDoublethinkMatch=hasDoubleThink && currentTrendValue - handValue == 1;
             if (handValue == currentTrendValue || isDoublethinkMatch)
             {
-                // 0-0マッチ禁止ルール
-                if (player.hand.Count > 0 || currentTrendValue != 0)
+                // 0-0マッチ禁止ルール（手札価値0かつトレンド0の場合は不成立）
+                if (handValue != 0 || currentTrendValue != 0)
                 {
                     Debug.Log($"トレンドライド: {player.playerName} が勝利条件を満たしました。");
                     winners.Add(player);
@@ -722,8 +740,8 @@ public class FreeGameManager : MonoBehaviour
         bool isDoublethinkMatch=hasDoubleThink && currentTrendValue - handValue == 1;
         if (handValue == currentTrendValue || isDoublethinkMatch)
         {
-            // 0-0マッチ禁止ルール
-            if (actionPlayer.hand.Count > 0 || currentTrendValue != 0)
+            // 0-0マッチ禁止ルール（手札価値0かつトレンド0の場合は不成立）
+            if (handValue != 0 || currentTrendValue != 0)
             {
                 // Bribeでの上がり禁止チェック
                 if (currentCardOnField.effect == CardEffect.Bribe)
@@ -794,6 +812,7 @@ public class FreeGameManager : MonoBehaviour
         sigmaSpeakActive = false;
         sigmaSpeakUsedThisTurn = false;
         sigmaSpeakActivatorIndex = -1;
+        memoryHoleUsedThisTurn = false;
 
         // UI更新
         FreeUIManager.Instance.UpdateRoundText(currentRound);
@@ -815,7 +834,7 @@ public class FreeGameManager : MonoBehaviour
         }
 
         // 5. UIをリセット・更新
-        FreeUIManager.Instance.UpdateAllHandVisuals();
+        FreeUIManager.Instance.UpdateAllHandVisuals(currentPlayerIndex);
         FreeUIManager.Instance.HideBribeSelectionUI();
         FreeUIManager.Instance.HideTargetSelectionUI();
         FreeUIManager.Instance.ResetLog();
@@ -845,7 +864,7 @@ public class FreeGameManager : MonoBehaviour
         sigmaSpeakUsedThisTurn = true;
         sigmaSpeakActivatorIndex = idx;
         Debug.Log($"[SigmaSpeak] {players[idx].playerName} が発動");
-        FreeUIManager.Instance.UpdateAllHandVisuals();
+        FreeUIManager.Instance.UpdateAllHandVisuals(currentPlayerIndex);
     }
     // MemoryHole 効果実行
     public void ExecuteMemoryHoleEffect(Player executor, Player target, CardData targetCard, CardData executorCard)
@@ -857,7 +876,7 @@ public class FreeGameManager : MonoBehaviour
         Transform targetHandContainer = FreeUIManager.Instance.GetHandContainerForPlayer(target);
         if (targetHandContainer != null)
             targetHandContainer.DOShakePosition(0.5f, new Vector3(10f, 10f, 0), 20);
-        FreeUIManager.Instance.UpdateAllHandVisuals();
+        FreeUIManager.Instance.UpdateAllHandVisuals(currentPlayerIndex);
         if (!executor.isCPU) SetInputLock(false); // CPU発動時はターン遷移で解除
     }
     public void RestartGame()
@@ -948,71 +967,32 @@ public class FreeGameManager : MonoBehaviour
                 StartCoroutine(StartRoundEndSequence(winners, currentCPU, WinType.SelfMatch));
                 return;
             }
-            FreeUIManager.Instance.UpdateAllHandVisuals(); // UI（CPUの手札枚数）を更新
+            FreeUIManager.Instance.UpdateAllHandVisuals(currentPlayerIndex); // UI（CPUの手札枚数）を更新
             FreeUIManager.Instance.UpdateDeckVisual(deck.Count);
 
             NextTurn(); // 効果なしで次のターンへ
         }
     }
-    // CPU MemoryHole AI: 最適なターゲットとカードを選んで交換を実行
-    private bool TryCPUExecuteMemoryHole(Player cpu)
-    {
-        // 渡すカード: MemoryHole以外の最も低handValueなカード
-        CardData executorCard = cpu.hand
-            .Where(c => c.ideologyType != IdeologyType.MemoryHole)
-            .OrderBy(c => c.handValue)
-            .FirstOrDefault();
-        if (executorCard == null) return false;
-
-        // ターゲット: 自分以外で手札合計が最も高いプレイヤー
-        Player target = players
-            .Where(p => p != cpu && p.id != PlayerID.GameMaster && p.hand.Count > 0)
-            .OrderByDescending(p => GetHandValue(p.hand).totalValue)
-            .FirstOrDefault();
-        if (target == null) return false;
-
-        // 奪うカード: 公開済みがあればその中の最高値、なければランダム
-        CardData targetCard = target.revealedCards.Count > 0
-            ? target.revealedCards.OrderByDescending(c => c.handValue).First()
-            : target.hand[UnityEngine.Random.Range(0, target.hand.Count)];
-
-        Debug.Log($"[CPU MemoryHole] {cpu.playerName} → {target.playerName}: {targetCard.cardName} を奪い、{executorCard.cardName} を渡す");
-        ExecuteMemoryHoleEffect(cpu, target, targetCard, executorCard);
-        // CPU発動なのでターン継続
-        NextTurn();
-        return true;
-    }
-
     // AI Helper Methods
-
+    
     // 自分から見て「見えていないカード」（山札 + 他人の手札）を取得
     private List<CardData> GetUnseenCards(Player me)
     {
         // 全カードのコピーを作成
         List<CardData> unseen = new List<CardData>(allCardDatabase);
-
+        
         // 自分の手札を除く
         foreach(CardData card in me.hand)
         {
             unseen.Remove(card);
         }
-
+        
         // 捨て札（場に出たカード）を除く
         foreach(CardData card in discardPile)
         {
             unseen.Remove(card);
         }
-
-        // BureauBrother 保持者はすべてのプレイヤーの手札が見える
-        if (PlayerHasIdeologyInHand(me, IdeologyType.BureauBrother))
-        {
-            foreach (Player p in players)
-            {
-                if (p == me) continue;
-                foreach (CardData card in p.hand) unseen.Remove(card);
-            }
-        }
-
+        
         return unseen;
     }
 
@@ -1213,7 +1193,7 @@ public class FreeGameManager : MonoBehaviour
         // FreeUIManagerのアニメーションコルーチンを呼び出して待機
         if(effect==CardEffect.Censor)
         {
-            yield return StartCoroutine(FreeUIManager.Instance.ShowCensorAnimation(targetPlayer));
+            yield return StartCoroutine(FreeUIManager.Instance.ShowCensorAnimation(targetPlayer, currentPlayerIndex));
         }
         else // Interrogate
         {
@@ -1290,5 +1270,39 @@ public class FreeGameManager : MonoBehaviour
     public void SetProgressFlag(int flag)
     {
         gameProgressFlag = flag;
+    }
+     // CPU MemoryHole AI: 最適なターゲットとカードを選んで交換を実行
+    private bool TryCPUExecuteMemoryHole(Player cpu)
+    {
+        // 渡すカード: MemoryHole以外の最も低handValueなカード
+        CardData executorCard = cpu.hand
+            .Where(c => c.ideologyType != IdeologyType.MemoryHole)
+            .OrderBy(c => c.handValue)
+            .FirstOrDefault();
+        if (executorCard == null) return false;
+
+        // ターゲット: 自分以外で手札合計が最も高いプレイヤー
+        Player target = players
+            .Where(p => p != cpu && p.id != PlayerID.GameMaster && p.hand.Count > 0)
+            .OrderByDescending(p => GetHandValue(p.hand).totalValue)
+            .FirstOrDefault();
+        if (target == null) return false;
+
+        // 奪うカード: 公開済みがあればその中の最高値、なければランダム
+        CardData targetCard = target.revealedCards.Count > 0
+            ? target.revealedCards.OrderByDescending(c => c.handValue).First()
+            : target.hand[UnityEngine.Random.Range(0, target.hand.Count)];
+
+        Debug.Log($"[CPU MemoryHole] {cpu.playerName} → {target.playerName}: {targetCard.cardName} を奪い、{executorCard.cardName} を渡す");
+        StartCoroutine(CPUMemoryHoleRoutine(cpu, target, targetCard, executorCard));
+        return true;
+    }
+
+    private IEnumerator CPUMemoryHoleRoutine(Player cpu, Player target, CardData targetCard, CardData executorCard)
+    {
+        yield return StartCoroutine(
+            FreeUIManager.Instance.ShowCPUMemoryHoleAnimation(cpu, target, executorCard, targetCard));
+        ExecuteMemoryHoleEffect(cpu, target, targetCard, executorCard);
+        NextTurn();
     }
 }
