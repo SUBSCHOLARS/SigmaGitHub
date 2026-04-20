@@ -18,6 +18,8 @@ public class EDisqualificationBeforeIdeologyManager : MonoBehaviour
 
     private void Start()
     {
+        if (PersistentDataManager.Instance != null)
+            PersistentDataManager.Instance.SetEndingDisqualificationBeforeIdeology();
         StartCoroutine(DisqualificationSequence());
     }
     private IEnumerator DisqualificationSequence()

@@ -216,6 +216,8 @@ public class TutorialGameManager : GameManager
         // UIManager.Instance.ShowGameEndAnimation(true, players[0]); // 仮の勝利演出
         SoundManager.Instance.PlaySound(nextButtonSound);
         isTutorialFinish=true;
+        if (PersistentDataManager.Instance != null)
+            PersistentDataManager.Instance.SetTutorialFinished(true);
         SceneManager.LoadSceneAsync("Lobby");
     }
 

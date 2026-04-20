@@ -14,17 +14,45 @@ public class LobbyManager : MonoBehaviour
     [SerializeField] private GameObject fillObject;
     [Header("ボタンの押下サウンド")]
     [SerializeField] private AudioClip nextButtonSound;
+    [Header("エンディング到達マーク")]
+    [SerializeField] private GameObject markBrainwash;
+    [SerializeField] private GameObject markDisqualification;
+    [SerializeField] private GameObject markDisqualificationBeforeIdeology;
+    [SerializeField] private GameObject markRevolution;
+
     void Start()
     {
-        if(TutorialGameManager.isTutorialFinish)
+        // Lobby に直接 PDM なしで来た場合の保険
+        if (PersistentDataManager.Instance == null)
+        {
+            GameObject pdm = new GameObject("PersistentDataManager");
+            pdm.AddComponent<PersistentDataManager>();
+        }
+
+        // チュートリアル完了判定（保存済み or 同セッション内完了の両方を考慮）
+        bool tutorialDone = PersistentDataManager.Instance.TutorialFinished
+                         || TutorialGameManager.isTutorialFinish;
+        if (tutorialDone)
         {
             fillObject.SetActive(true);
-            startButton.interactable=true;
-            buttonText.color=Color.white;
-            int flag = PersistentDataManager.Instance != null ? PersistentDataManager.Instance.GameProgressFlag : 0;
+            startButton.interactable = true;
+            buttonText.color = Color.white;
+            int flag = PersistentDataManager.Instance.GameProgressFlag;
             buttonText.text = $"ゲーム-{flag + 1}/6";
         }
+
+        // エンディング到達マークの表示制御
+        if (markBrainwash != null)
+            markBrainwash.SetActive(PersistentDataManager.Instance.EndingBrainwash);
+        if (markDisqualification != null)
+            markDisqualification.SetActive(PersistentDataManager.Instance.EndingDisqualification);
+        if (markDisqualificationBeforeIdeology != null)
+            markDisqualificationBeforeIdeology.SetActive(
+                PersistentDataManager.Instance.EndingDisqualificationBeforeIdeology);
+        if (markRevolution != null)
+            markRevolution.SetActive(PersistentDataManager.Instance.EndingRevolution);
     }
+
     public void OnStartGameClicked()
     {
         Debug.Log("Starting Game...");
@@ -38,6 +66,7 @@ public class LobbyManager : MonoBehaviour
         SoundManager.Instance.PlaySound(nextButtonSound);
         SceneManager.LoadScene(tutorialSceneName);
     }
+
     public void OnFreePlayClicked()
     {
         Debug.Log("Starting Free Play...");
@@ -46,7 +75,7 @@ public class LobbyManager : MonoBehaviour
     }
 
     public void OnQuitClicked()
-    {   
+    {
         #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
         #else

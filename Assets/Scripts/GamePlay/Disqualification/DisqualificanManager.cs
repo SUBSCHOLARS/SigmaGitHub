@@ -18,6 +18,8 @@ public class EDisqualificationManager : MonoBehaviour
 
     private void Start()
     {
+        if (PersistentDataManager.Instance != null)
+            PersistentDataManager.Instance.SetEndingDisqualification();
         StartCoroutine(DisqualificationSequence());
     }
     private IEnumerator DisqualificationSequence()

@@ -18,6 +18,8 @@ public class BrainwashManager : MonoBehaviour
 
     private void Start()
     {
+        if (PersistentDataManager.Instance != null)
+            PersistentDataManager.Instance.SetEndingBrainwash();
         StartCoroutine(BrainwashSequence());
     }
     private IEnumerator BrainwashSequence()

@@ -16,6 +16,8 @@ public class RevolutionManager : MonoBehaviour
 
     private void Start()
     {
+        if (PersistentDataManager.Instance != null)
+            PersistentDataManager.Instance.SetEndingRevolution();
         StartCoroutine(RevolutionSequence());
     }
     private IEnumerator RevolutionSequence()
