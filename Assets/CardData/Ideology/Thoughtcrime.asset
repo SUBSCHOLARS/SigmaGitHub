@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Thoughtcrime
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardName: Thoughtcrime
-  cardSprite: {fileID: 8132312866149103764, guid: 9f3225f185d9e43c8aefe251aac76dd1, type: 3}
+  cardSprite: {fileID: -7010021787410882611, guid: c712f9fed483d4f2ea9824a04a6d148f, type: 3}
   cardIcon: {fileID: 0}
   rawSectorIcon: {fileID: 0}
   sector: 4
@@ -24,3 +24,4 @@ MonoBehaviour:
   descriptionText: "\u62B5\u6297\u306E\u610F\u601D\u3002"
   isIdeologyCard: 1
   ideologyType: 5
+  sigmaSpeakSprite: {fileID: 0}

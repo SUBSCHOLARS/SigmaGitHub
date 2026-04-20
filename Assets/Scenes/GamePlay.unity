@@ -7266,7 +7266,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!82 &1427448714
 AudioSource:
   m_ObjectHideFlags: 0
@@ -9303,6 +9303,8 @@ MonoBehaviour:
   isPlayerInputLocked: 0
   sigmaSpeakActive: 0
   sigmaSpeakUsedThisTurn: 0
+  sigmaSpeakActivatorIndex: -1
+  memoryHoleUsedThisTurn: 0
   currentRound: 1
 --- !u!4 &1928954888
 Transform:

@@ -32,6 +32,7 @@ public class InquiryManager : MonoBehaviour
                 pdmObject.AddComponent<PersistentDataManager>();
             }
             PersistentDataManager.Instance.SetGameProgressFlag(debugProgressFlag);
+            TutorialGameManager.isTutorialFinish = true; // ロビーのスタートボタンを有効化
         }
     }
     void Start()
@@ -124,29 +125,33 @@ public class InquiryManager : MonoBehaviour
     private void FinishInquiry()
     {
         Debug.Log("質問シーケンス終了。次のモードへ移行します。");
-        int currentFlag = PersistentDataManager.Instance.GameProgressFlag;
-        switch (currentFlag)
+        // デバッグモード時はフラグをインクリメントしない（設定したフラグのまま遷移する）
+        if (!isDebugMode)
         {
-            case 0:
-                PersistentDataManager.Instance.SetGameProgressFlag(1);
-                break;
-            case 1:
-                PersistentDataManager.Instance.SetGameProgressFlag(2);
-                break;
-            case 2:
-                PersistentDataManager.Instance.SetGameProgressFlag(3);
-                break;
-            case 3:
-                PersistentDataManager.Instance.SetGameProgressFlag(4);
-                break;
-            case 4:
-                PersistentDataManager.Instance.SetGameProgressFlag(5);
-                break;
-            case 5:
-                PersistentDataManager.Instance.SetGameProgressFlag(6);
-                break;
-            default:
-                break;
+            int currentFlag = PersistentDataManager.Instance.GameProgressFlag;
+            switch (currentFlag)
+            {
+                case 0:
+                    PersistentDataManager.Instance.SetGameProgressFlag(1);
+                    break;
+                case 1:
+                    PersistentDataManager.Instance.SetGameProgressFlag(2);
+                    break;
+                case 2:
+                    PersistentDataManager.Instance.SetGameProgressFlag(3);
+                    break;
+                case 3:
+                    PersistentDataManager.Instance.SetGameProgressFlag(4);
+                    break;
+                case 4:
+                    PersistentDataManager.Instance.SetGameProgressFlag(5);
+                    break;
+                case 5:
+                    PersistentDataManager.Instance.SetGameProgressFlag(6);
+                    break;
+                default:
+                    break;
+            }
         }
         // ここで対戦シーンやリザルトシーンへ遷移させる。
         SceneManager.LoadSceneAsync("Lobby");

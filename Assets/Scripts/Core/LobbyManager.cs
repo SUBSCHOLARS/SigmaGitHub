@@ -22,7 +22,7 @@ public class LobbyManager : MonoBehaviour
             startButton.interactable=true;
             buttonText.color=Color.white;
             int flag = PersistentDataManager.Instance != null ? PersistentDataManager.Instance.GameProgressFlag : 0;
-            buttonText.text = $"ゲーム-{flag + 1}";
+            buttonText.text = $"ゲーム-{flag + 1}/6";
         }
     }
     public void OnStartGameClicked()
