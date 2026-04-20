@@ -564,6 +564,18 @@ public class UIManager : MonoBehaviour
         // この時点でplayerHandContainer.childCountは6（新しい手札の枚数）になっている
         playerHandContainer.GetComponent<HandLayoutManager>().UpdateLayout();
 
+        // BureauBrotherをCPUが持っている場合、プレイヤーの手札を警告色（赤）に
+        bool cpuHasBureauBrother = GameManager.Instance.players
+            .Skip(1).Any(p => p.isCPU && GameManager.Instance.PlayerHasIdeologyInHand(p, IdeologyType.BureauBrother));
+        if (cpuHasBureauBrother)
+        {
+            foreach (Transform child in playerHandContainer)
+            {
+                Image img = child.GetComponent<Image>();
+                if (img != null) img.color = new Color(1f, 0.8f, 0.8f);
+            }
+        }
+
         // 3. CPUの手札更新
         List<Player> players = GameManager.Instance.players;
          // プレイヤーの手札合計値を計算して表示
@@ -653,11 +665,19 @@ public class UIManager : MonoBehaviour
                 cardController.Setup(currentCard);
                 // "EYE" アイコン的なものを追加しても良いが、一旦表向きにするだけにする
                 // Colorを変えて少し強調する
+                Image img = cardObj.GetComponent<Image>();
                 if(!reveal && cpu.revealedCards.Contains(currentCard))
                 {
                      // 公開されたカードは少し赤みがかった色にする（警告色）
-                     Image img = cardObj.GetComponent<Image>();
                      if(img != null) img.color = new Color(1f, 0.8f, 0.8f);
+                }
+                // SigmaSpeak 発動中かつ発動者がこのCPUなら差し替え
+                int playerIndex = GameManager.Instance.players.IndexOf(cpu);
+                if (GameManager.Instance.sigmaSpeakActive
+                    && GameManager.Instance.sigmaSpeakActivatorIndex == playerIndex
+                    && currentCard.sigmaSpeakSprite != null)
+                {
+                    if (img != null) img.sprite = currentCard.sigmaSpeakSprite;
                 }
             }
             else
@@ -1257,6 +1277,59 @@ public class UIManager : MonoBehaviour
             blackOut.gameObject.SetActive(true);
         }
     }
+    // CPU が MemoryHole を使った際の塵アニメーション
+    public IEnumerator ShowCPUMemoryHoleAnimation(
+        Player executor, Player target, CardData executorCard, CardData targetCard)
+    {
+        float dustDuration = 0.4f;
+        Sequence dustSeq = DOTween.Sequence();
+
+        // executor 側（常にCPU）— インデックスで照合
+        Transform execContainer = GetHandContainerForPlayer(executor);
+        int execIdx = executor.hand.IndexOf(executorCard);
+        if (execContainer != null && execIdx >= 0 && execIdx < execContainer.childCount)
+        {
+            RectTransform rt = execContainer.GetChild(execIdx).GetComponent<RectTransform>();
+            Image img = execContainer.GetChild(execIdx).GetComponent<Image>();
+            if (rt != null) { dustSeq.Join(rt.DOScale(Vector3.zero, dustDuration).SetEase(Ease.InBack));
+                              dustSeq.Join(rt.DORotate(new Vector3(0f, 0f, -30f), dustDuration)); }
+            if (img != null) dustSeq.Join(img.DOFade(0f, dustDuration * 0.75f));
+        }
+
+        // target 側（CPU or プレイヤー）
+        Transform tgtContainer = GetHandContainerForPlayer(target);
+        if (tgtContainer != null)
+        {
+            GameObject tgtObj = null;
+            if (target.id == PlayerID.Player)
+            {
+                // プレイヤー手札は CardController.cardData で照合（ソート済みのため）
+                foreach (Transform child in tgtContainer)
+                {
+                    var cc = child.GetComponent<CardController>();
+                    if (cc != null && cc.cardData == targetCard) { tgtObj = child.gameObject; break; }
+                }
+            }
+            else
+            {
+                int idx = target.hand.IndexOf(targetCard);
+                if (idx >= 0 && idx < tgtContainer.childCount)
+                    tgtObj = tgtContainer.GetChild(idx).gameObject;
+            }
+            if (tgtObj != null)
+            {
+                RectTransform rt = tgtObj.GetComponent<RectTransform>();
+                Image img = tgtObj.GetComponent<Image>();
+                if (rt != null) { dustSeq.Join(rt.DOScale(Vector3.zero, dustDuration).SetEase(Ease.InBack));
+                                  dustSeq.Join(rt.DORotate(new Vector3(0f, 0f, 30f), dustDuration)); }
+                if (img != null) dustSeq.Join(img.DOFade(0f, dustDuration * 0.75f));
+            }
+        }
+
+        yield return dustSeq.WaitForCompletion();
+        yield return new WaitForSeconds(0.3f);
+    }
+
     // SigmaSpeakの発動によるカードの色変化、効果発動メッセージを表示するメソッド
     public void IsShowSigmaSpeakActivationUI(bool show)
     {

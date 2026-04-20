@@ -17,6 +17,8 @@ public class CardController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _descriptionText;
     [SerializeField] private TextMeshProUGUI _flavorText;
 
+    public CardData cardData => myCardData;
+
     // このカードのデータをセットアップ（設定）するメソッド
     public void Setup(CardData data)
     {

@@ -452,7 +452,7 @@ public class GameManager : MonoBehaviour
     public (int totalValue, bool hasDoubleThink) GetHandValue(List<CardData> hand)
     {
         int totalValue = 0;
-        bool hasDoubleThink = PlayerHasIdeologyInHand(players[0], IdeologyType.DoubleThink);
+        bool hasDoubleThink = hand.Any(c => c.ideologyType == IdeologyType.DoubleThink);
         foreach (CardData card in hand)
         {
             totalValue += card.handValue;
@@ -793,7 +793,7 @@ public class GameManager : MonoBehaviour
             if (handValue == currentTrendValue || isDoublethinkMatch)
             {
                 // 0-0マッチ禁止ルール
-                if (player.hand.Count > 0 || currentTrendValue != 0)
+                if (handValue != 0 || currentTrendValue != 0)
                 {
                     Debug.Log($"トレンドライド: {player.playerName} が勝利条件を満たしました。");
                     winners.Add(player);
@@ -810,7 +810,7 @@ public class GameManager : MonoBehaviour
         if (handValue == currentTrendValue || isDoublethinkMatch)
         {
             // 0-0マッチ禁止ルール
-            if (actionPlayer.hand.Count > 0 || currentTrendValue != 0)
+            if (handValue != 0 || currentTrendValue != 0)
             {
                 // Bribeでの上がり禁止チェック
                 if (currentCardOnField.effect == CardEffect.Bribe)
@@ -1086,10 +1086,16 @@ public class GameManager : MonoBehaviour
             : target.hand[UnityEngine.Random.Range(0, target.hand.Count)];
 
         Debug.Log($"[CPU MemoryHole] {cpu.playerName} → {target.playerName}: {targetCard.cardName} を奪い、{executorCard.cardName} を渡す");
-        ExecuteMemoryHoleEffect(cpu, target, targetCard, executorCard);
-        // CPU発動なのでターン継続（NextTurn）
-        NextTurn();
+        StartCoroutine(CPUMemoryHoleRoutine(cpu, target, targetCard, executorCard));
         return true;
+    }
+
+    private IEnumerator CPUMemoryHoleRoutine(Player cpu, Player target, CardData targetCard, CardData executorCard)
+    {
+        yield return StartCoroutine(
+            UIManager.Instance.ShowCPUMemoryHoleAnimation(cpu, target, executorCard, targetCard));
+        ExecuteMemoryHoleEffect(cpu, target, targetCard, executorCard);
+        NextTurn();
     }
 
     // AI Helper Methods
@@ -1446,6 +1452,35 @@ public class GameManager : MonoBehaviour
                 default:
                     break;
             }
+
+            // Flag5 のとき、CPU にもイデオロギーカードをランダムに配布（プレイヤーと重複しない）
+            if (GetProgressFlag() >= 5)
+            {
+                List<IdeologyType> pool = new List<IdeologyType>
+                {
+                    IdeologyType.SigmaSpeak,
+                    IdeologyType.MemoryHole,
+                    IdeologyType.BureauBrother,
+                    IdeologyType.DoubleThink,
+                };
+                pool.Remove(players[0].ideologyType); // プレイヤーと重複しない
+
+                for (int i = 1; i < players.Count; i++)
+                {
+                    if (pool.Count == 0) break;
+                    int pick = UnityEngine.Random.Range(0, pool.Count);
+                    IdeologyType chosen = pool[pick];
+                    pool.RemoveAt(pick);
+
+                    CardData card = ideologyCardDatabase.FirstOrDefault(c => c.ideologyType == chosen);
+                    if (card != null)
+                    {
+                        players[i].hand.Add(card);
+                        Debug.Log($"[DealIdeologyCard] {players[i].playerName} に {card.cardName} を配布");
+                    }
+                }
+            }
+
             UIManager.Instance.UpdateAllHandVisuals();
         }
         else
