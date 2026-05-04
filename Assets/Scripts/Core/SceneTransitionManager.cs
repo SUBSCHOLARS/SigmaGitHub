@@ -8,6 +8,9 @@ public class SceneTransitionManager : MonoBehaviour
 
     private void Start()
     {
+        // Awake シーン以外では起動時リダイレクトを行わない
+        if (SceneManager.GetActiveScene().name != "Awake") return;
+
         // PDM がまだ存在しなければ生成（Awake シーンが起動シーンの場合）
         if (PersistentDataManager.Instance == null)
         {

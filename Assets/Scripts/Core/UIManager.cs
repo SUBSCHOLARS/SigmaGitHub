@@ -24,6 +24,8 @@ public class UIManager : MonoBehaviour
     [Header("CPUの手札表示パラメータ")]
     [SerializeField] private float cpuCardSpacing = 30f;
     [SerializeField] private float cpuArcAmount = 150f;
+    [SerializeField] private int maxCardsInCPUHandRow = 7;
+    [SerializeField] private float cpuCardSpacingInRow = 20f;
     [Header("プレハブ")]
     public GameObject cardPrefab;
     public GameObject cardBackPrefab; // CardBackをアタッチ
@@ -552,6 +554,7 @@ public class UIManager : MonoBehaviour
             // CardControllerを取得して、カード情報を設定
             CardController cardController = newCardObj.GetComponent<CardController>();
             cardController.Setup(cardData);
+            cardController.isPlayerOwned = true; // プレイヤーのカードとしてマーク
             if(GameManager.Instance.sigmaSpeakActive && cardData.effect != CardEffect.None)
             {
                 cardController.SetSigmaSpeakMode(true);
@@ -645,7 +648,7 @@ public class UIManager : MonoBehaviour
         }
         // 2. CPUの手札の枚数分だけ裏カードを生成
         // 手札全体の「高さ」を計算
-        float totalWidth = (childCount - 1) * cpuCardSpacing;
+        float totalWidth = (maxCardsInCPUHandRow - 1) * cpuCardSpacing;
         float startX = -totalWidth / 2f;
 
         for(int i=0; i<childCount; i++)
@@ -693,17 +696,11 @@ public class UIManager : MonoBehaviour
             rect.pivot = new Vector2(0.5f, 0.5f);
 
             // 1. 位置を決める（HandLayoutManagerのXとYを入れ替える）
-            float xPos = startX + i * cpuCardSpacing; // メインの軸（縦）
+            float xPos = startX + i%maxCardsInCPUHandRow * cpuCardSpacing; // メインの軸（縦）
             // 最終的なX座標
-            float yPos = -Mathf.Abs(xPos) / cpuArcAmount;
+            float yPos = -i/maxCardsInCPUHandRow * cpuCardSpacingInRow - Mathf.Abs(xPos) / cpuArcAmount;
 
             rect.localPosition = new Vector3(xPos, yPos, 0);
-
-            // 2. 角度を決める（Y座標を基準に）
-            // floatfloat angle = -xPos / (totalWidth + 1f) * (cpuRotationAmount * childCount);
-
-            // 3. ベース回転（90度）と束の傾き（angle）を足す
-            // rect.localRotation = Quaternion.Euler(0, 0, angle);
         }
 
         // CPU手札コンテナのサイズを調整（Raycast用）
@@ -1019,12 +1016,12 @@ public class UIManager : MonoBehaviour
         }
     }
     // Censor/Interrogate用の場のトレンド更新メソッド
-    public void UpdateCurrentTrendWhenSurvey()
+    public void UpdateCurrentTrendWhenSurvey(int trendValue)
     {
         if (currentTrendText != null && sectorIcon != null)
         {
             // トレンド値も不明にする
-            currentTrendText.text = $"TREND: ERROR";
+            currentTrendText.text = $"TREND: {trendValue}";
             // ?アイコンに変更
             sectorIcon.sprite = errorSprite;
         }

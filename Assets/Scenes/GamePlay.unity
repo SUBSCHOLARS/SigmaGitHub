@@ -1501,6 +1501,8 @@ MonoBehaviour:
   cpu2HandContainer: {fileID: 843086252}
   cpuCardSpacing: 30
   cpuArcAmount: 150
+  maxCardsInCPUHandRow: 7
+  cpuCardSpacingInRow: 20
   cardPrefab: {fileID: 4087856086764915820, guid: 676823b40ee3c4f99904263a0a8d815d, type: 3}
   cardBackPrefab: {fileID: 4586531106669417455, guid: 8bd66bf65c7df45388df0163aacf02df, type: 3}
   deckVisualContainer: {fileID: 938293776}
@@ -4953,8 +4955,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.0000076293945, y: 0}
-  m_SizeDelta: {x: 400, y: 100}
+  m_AnchoredPosition: {x: 0.0000076293945, y: -10.076}
+  m_SizeDelta: {x: 400, y: 120.153}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1052176242
 MonoBehaviour:
@@ -4970,7 +4972,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HandLayoutManager
   cardSpacing: 50
   arcAmount: 200
-  rotationAmount: 5
+  maxCardsInRow: 7
+  cardSpacingInRow: 30
 --- !u!114 &1052176243
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6991,7 +6994,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 13.33, y: -162}
+  m_AnchoredPosition: {x: 13.33, y: -129}
   m_SizeDelta: {x: 400, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1358585432

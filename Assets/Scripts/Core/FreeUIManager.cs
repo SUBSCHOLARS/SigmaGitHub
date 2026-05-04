@@ -24,6 +24,8 @@ public class FreeUIManager : MonoBehaviour
     [Header("CPUの手札表示パラメータ")]
     [SerializeField] private float cpuCardSpacing = 30f;
     [SerializeField] private float cpuArcAmount = 150f;
+    [SerializeField] private int maxCardsInCPUHandRow=7;
+    [SerializeField] private float cpuCardSpacingInRow = 20f;
     [Header("プレハブ")]
     public GameObject cardPrefab;
     public GameObject cardBackPrefab; // CardBackをアタッチ
@@ -535,6 +537,7 @@ public class FreeUIManager : MonoBehaviour
             // FreeCardControllerを取得して、カード情報を設定
             FreeCardController freeCardController = newCardObj.GetComponent<FreeCardController>();
             freeCardController.Setup(cardData);
+            freeCardController.isPlayerOwned = true; // プレイヤーのカードとしてマーク
             // SigmaSpeak 有効中はスプライトを差し替え
             if (FreeGameManager.Instance.sigmaSpeakActive && cardData.sigmaSpeakSprite != null)
             {
@@ -613,7 +616,7 @@ public class FreeUIManager : MonoBehaviour
         }
         // 2. CPUの手札の枚数分だけ裏カードを生成
         // 手札全体の「高さ」を計算
-        float totalWidth = (childCount - 1) * cpuCardSpacing;
+        float totalWidth = (maxCardsInCPUHandRow - 1) * cpuCardSpacing;
         float startX = -totalWidth / 2f;
 
         for(int i=0; i<childCount; i++)
@@ -653,9 +656,9 @@ public class FreeUIManager : MonoBehaviour
             rect.pivot = new Vector2(0.5f, 0.5f);
 
             // 1. 位置を決める（HandLayoutManagerのXとYを入れ替える）
-            float xPos = startX + i * cpuCardSpacing; // メインの軸（縦）
+            float xPos = startX + i%maxCardsInCPUHandRow * cpuCardSpacing; // メインの軸（縦）
             // 最終的なX座標
-            float yPos = -Mathf.Abs(xPos) / cpuArcAmount;
+            float yPos = -i/maxCardsInCPUHandRow * cpuCardSpacingInRow - Mathf.Abs(xPos) / cpuArcAmount;
 
             rect.localPosition = new Vector3(xPos, yPos, 0);
 

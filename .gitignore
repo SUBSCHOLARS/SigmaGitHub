@@ -80,6 +80,7 @@ SigmaWindows/
 SigmaWindows.zip
 
 WindowsBuild/
+WebBuild/
 
 CLAUDE.md
 /[Aa]ssets/Editor.log.meta

@@ -261,7 +261,8 @@ public class GameManager : MonoBehaviour
             isNextPlayWild = true;
             Debug.Log("調査カードが出されました。次のプレイはワイルドになります。");
             // 特殊な場合の場のUI更新を行う
-            UIManager.Instance.UpdateCurrentTrendWhenSurvey();
+            currentTrendValue=card.numberValue;
+            UIManager.Instance.UpdateCurrentTrendWhenSurvey(currentTrendValue);
             Debug.Log("場のUIを調査カード用に更新しました。");
         }
         else
@@ -472,6 +473,8 @@ public class GameManager : MonoBehaviour
             Debug.LogWarning("現在はCPUのターンです。プレイヤーはカードを出せません。");
             return;
         }
+        // 3. プレイヤーの手札に存在するカードのみプレイ可（CPUカードの誤クリック防止）
+        if (!players[currentPlayerIndex].hand.Contains(cardToPlay)) return;
         if (!CanPlayCard(cardToPlay))
         {
             // アクティブ系イデオロギーカードはクリックで効果発動

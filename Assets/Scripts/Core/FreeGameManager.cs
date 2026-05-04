@@ -441,6 +441,8 @@ public class FreeGameManager : MonoBehaviour
             Debug.LogWarning("現在はCPUのターンです。プレイヤーはカードを出せません。");
             return;
         }
+        // 3. プレイヤーの手札に存在するカードのみプレイ可（CPUカードの誤クリック防止）
+        if (!players[currentPlayerIndex].hand.Contains(cardToPlay)) return;
         if (!CanPlayCard(cardToPlay))
         {
             // SigmaSpeak クリック → 効果発動

@@ -13,6 +13,7 @@ public class FreeCardController : MonoBehaviour
     private Vector3 initialPosition; // 元の位置を記憶
     private int siblingIndex; // 本来の重なり順を記憶
     private bool isHovered = false; // 現在ホバー中かどうかの判定
+    public bool isPlayerOwned = false; // プレイヤー所有カードのみ true
 
     [SerializeField] private GameObject _cardTooltipPanel;
     [SerializeField] private TextMeshProUGUI _descriptionText;
@@ -39,6 +40,7 @@ public class FreeCardController : MonoBehaviour
     // カードがクリックされたときに呼ばれるメソッド
     public void HandleClick()
     {
+        if (!isPlayerOwned) return; // CPUのカードはクリック不可
         Debug.Log("クリックされたカード" + myCardData.cardName);
         // GameManagerに「このカードがプレイされようとした」と伝える
         FreeGameManager.Instance.TryPlayCard(myCardData);

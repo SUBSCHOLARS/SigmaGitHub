@@ -45,7 +45,10 @@ public class BrainwashManager : MonoBehaviour
         // クリック待ち（タイピング中はスキップ、完了後は次へ）
         while(isWaitingForClick)
         {
-            if(Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+            if((Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame) 
+                || (Touchscreen.current != null && Touchscreen.current.primaryTouch.press.wasPressedThisFrame)
+                || (Keyboard.current != null && Keyboard.current.enterKey.wasPressedThisFrame)
+                || (Keyboard.current != null && Keyboard.current.numpadEnterKey.wasPressedThisFrame))
             {
                 if(typewriter.IsTyping)
                 {
