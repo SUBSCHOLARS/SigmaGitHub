@@ -49,7 +49,7 @@ public class TutorialGameManager : GameManager
 
     private Player tutorialMaster=new Player(PlayerID.GameMaster, false, "TutorialMaster", 0, IdeologyType.None);
 
-    protected override void InitializeGame()
+    public override void InitializeGame()
     {
         // GameManagerのStart()から呼ばれるが、何もしない（手動で制御するため）
         // ベースの初期化は行わず、チュートリアルコルーチンを開始
@@ -71,7 +71,7 @@ public class TutorialGameManager : GameManager
 
         UIManager.Instance.SetPlayerControlsActive(false); // 操作ロック
 
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(2.5f);
 
         // 2. 犬が気づく
         // TODO: ここでちょっとしたアニメーションやSEを入れると良い

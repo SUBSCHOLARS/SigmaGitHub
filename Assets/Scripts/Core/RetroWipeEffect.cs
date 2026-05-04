@@ -31,9 +31,6 @@ public class RetroWipeEffect : MonoBehaviour
             maskImage.fillOrigin=(int)Image.OriginVertical.Top;
             maskImage.fillAmount=1.0f;
         }
-
-        // 処理開始
-        StartCoroutine(AnimateWipe());
     }
 
     public virtual IEnumerator AnimateWipe()

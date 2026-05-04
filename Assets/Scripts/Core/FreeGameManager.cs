@@ -120,6 +120,7 @@ public class FreeGameManager : MonoBehaviour
             return; // リターンで最初のターンが開始するのを防ぐ
         }
         // プレイヤー（0番目）の手札をUIに反映
+        SortPlayerCardDataByNumber();
         FreeUIManager.Instance.UpdateAllHandVisuals(currentPlayerIndex);
         FreeUIManager.Instance.UpdateCurrentTrend(initialSprite, currentTrendValue);
     }
@@ -281,6 +282,8 @@ public class FreeGameManager : MonoBehaviour
             Debug.Log("場に " + card.cardName + " が出されました。現在のトレンド: " + currentTrendValue);
         }
         FreeUIManager.Instance.UpdateFieldPileUI(card);
+
+        SortPlayerCardDataByNumber();
         FreeUIManager.Instance.UpdateAllHandVisuals(currentPlayerIndex); // ここで自動的にYourTrendも更新される
     }
     // カードが出せるかを判定するメソッド
@@ -357,6 +360,7 @@ public class FreeGameManager : MonoBehaviour
         DrawCards(humanPlayer.hand, 1);
 
         // 3. UIを全て更新
+        SortPlayerCardDataByNumber();
         FreeUIManager.Instance.UpdateAllHandVisuals(currentPlayerIndex);
         FreeUIManager.Instance.UpdateDeckVisual(deck.Count);
 
@@ -685,6 +689,7 @@ public class FreeGameManager : MonoBehaviour
             // TODO: 回避（Audit返し）のロジック
             Debug.Log($"{targetPlayer.id} は2枚引く!");
             DrawCards(targetPlayer.hand, 2);
+            SortPlayerCardDataByNumber();
             FreeUIManager.Instance.UpdateAllHandVisuals(currentPlayerIndex);
         }
         // ターン開始
@@ -694,6 +699,7 @@ public class FreeGameManager : MonoBehaviour
             sigmaSpeakActive = false;
             sigmaSpeakUsedThisTurn = false;
             sigmaSpeakActivatorIndex = -1;
+            SortPlayerCardDataByNumber();
             FreeUIManager.Instance.UpdateAllHandVisuals(currentPlayerIndex);
         }
         // プレイヤーのターン開始時に MemoryHole をリセット
@@ -836,6 +842,7 @@ public class FreeGameManager : MonoBehaviour
         }
 
         // 5. UIをリセット・更新
+        SortPlayerCardDataByNumber();
         FreeUIManager.Instance.UpdateAllHandVisuals(currentPlayerIndex);
         FreeUIManager.Instance.HideBribeSelectionUI();
         FreeUIManager.Instance.HideTargetSelectionUI();
@@ -866,6 +873,7 @@ public class FreeGameManager : MonoBehaviour
         sigmaSpeakUsedThisTurn = true;
         sigmaSpeakActivatorIndex = idx;
         Debug.Log($"[SigmaSpeak] {players[idx].playerName} が発動");
+        SortPlayerCardDataByNumber();
         FreeUIManager.Instance.UpdateAllHandVisuals(currentPlayerIndex);
     }
     // MemoryHole 効果実行
@@ -878,6 +886,8 @@ public class FreeGameManager : MonoBehaviour
         Transform targetHandContainer = FreeUIManager.Instance.GetHandContainerForPlayer(target);
         if (targetHandContainer != null)
             targetHandContainer.DOShakePosition(0.5f, new Vector3(10f, 10f, 0), 20);
+        
+        SortPlayerCardDataByNumber();
         FreeUIManager.Instance.UpdateAllHandVisuals(currentPlayerIndex);
         if (!executor.isCPU) SetInputLock(false); // CPU発動時はターン遷移で解除
     }
@@ -899,11 +909,12 @@ public class FreeGameManager : MonoBehaviour
     protected virtual void ExecuteCPUTurn()
     {
         // CPUが考えているように見せるため、数秒後に実行する
-        Invoke("CPUTurnLogic", 0.5f);
+        StartCoroutine(CPUTurnRoutine());
     }
     // CPUの思考ロジック本体
-    private void CPUTurnLogic()
+    private IEnumerator CPUTurnRoutine()
     {
+        yield return new WaitForSeconds(0.5f);
         Player currentCPU = players[currentPlayerIndex];
 
         // SigmaSpeak: 手札にあれば自動発動（フリーアクション）
@@ -914,7 +925,7 @@ public class FreeGameManager : MonoBehaviour
         // MemoryHole: 手札にあれば自動実行してターン終了
         if (PlayerHasIdeologyInHand(currentCPU, IdeologyType.MemoryHole))
         {
-            if (TryCPUExecuteMemoryHole(currentCPU)) return;
+            if (TryCPUExecuteMemoryHole(currentCPU)) yield break;
         }
 
         // 1. 出すカードを決める
@@ -924,7 +935,10 @@ public class FreeGameManager : MonoBehaviour
         if (cardToPlay != null)
         {
             Debug.Log($"[CPU] {currentCPU.id} が {cardToPlay.cardName} をプレイ");
+            int cardIndex = currentCPU.hand.IndexOf(cardToPlay);
             currentCPU.hand.Remove(cardToPlay);
+            FreeUIManager.Instance.UpdateAllHandVisuals(currentPlayerIndex);
+            yield return StartCoroutine(FreeUIManager.Instance.ShowCPUPlayCardAnimation(currentPlayerIndex, cardToPlay, cardIndex));
             PlayCardToField(cardToPlay, currentCPU);
 
             // 3. マッチ判定と次のターン（ロジックを分離）
@@ -933,9 +947,8 @@ public class FreeGameManager : MonoBehaviour
             {
                 SetInputLock(true);
                 Debug.Log($"[CPU] {currentCPU.playerName} が勝利しました!");
-                // TODO: 勝利演出
                 StartCoroutine(StartRoundEndSequence(trendRideWinners, currentCPU, WinType.TrendRide));
-                return; // 勝利したらターンを回さない
+                yield break; // 勝利したらターンを回さない
             }
             // CPUのセルフマッチ判定
             if(CheckForSelfMatch(currentCPU))
@@ -943,7 +956,7 @@ public class FreeGameManager : MonoBehaviour
                 SetInputLock(true);
                 List<Player> winners = new List<Player> { currentCPU };
                 StartCoroutine(StartRoundEndSequence(winners, currentCPU, WinType.SelfMatch));
-                return;
+                yield break;
             }
             // 効果処理コルーチンを呼ぶ
             StartCoroutine(HandleCardEffectAndTransition(cardToPlay));
@@ -960,15 +973,16 @@ public class FreeGameManager : MonoBehaviour
             {
                 SetInputLock(true);
                 StartCoroutine(StartRoundEndSequence(trendRideWinners, currentCPU, WinType.TrendRide));
-                return;
+                yield break;
             }
             if(CheckForSelfMatch(currentCPU))
             {
                 SetInputLock(true);
                 List<Player> winners = new List<Player> { currentCPU };
                 StartCoroutine(StartRoundEndSequence(winners, currentCPU, WinType.SelfMatch));
-                return;
+                yield break;
             }
+            SortPlayerCardDataByNumber();
             FreeUIManager.Instance.UpdateAllHandVisuals(currentPlayerIndex); // UI（CPUの手札枚数）を更新
             FreeUIManager.Instance.UpdateDeckVisual(deck.Count);
 
@@ -1306,5 +1320,13 @@ public class FreeGameManager : MonoBehaviour
             FreeUIManager.Instance.ShowCPUMemoryHoleAnimation(cpu, target, executorCard, targetCard));
         ExecuteMemoryHoleEffect(cpu, target, targetCard, executorCard);
         NextTurn();
+    }
+
+    private void SortPlayerCardDataByNumber()
+    {
+        foreach(Player player in players)
+        {
+            player.hand.Sort((c1, c2) => c2.numberValue - c1.numberValue);
+        }
     }
 }

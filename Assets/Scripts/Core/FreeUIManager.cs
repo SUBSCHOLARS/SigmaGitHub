@@ -13,11 +13,12 @@ public class FreeUIManager : MonoBehaviour
     [Header("UI参照")]
     //public Transform playerHandArea; // プレイヤーの手札を並べる場所
     public Transform playerHandContainer;
-    [Header("場のカード表示")]
+    [Header("場のカード表示&説明")]
     public Image fieldCardTop; // 場に出ているカード（一番上）
     public Image fieldCardMiddle; // 場に出ているカード（真ん中）
     public Image fieldCardBottom; // 場に出ているカード（下）
     public GameObject discardPileViewer; // 捨て札山の表示オブジェクト
+    public TextMeshProUGUI fieldCardExplanation;
     [Header("CPUの手札表示")]
     public Transform cpu1HandContainer; // CPU1_HandDisplayをアタッチ
     public Transform cpu2HandContainer; // CPU2_HandDisplayをアタッチ
@@ -734,6 +735,7 @@ public class FreeUIManager : MonoBehaviour
             // リストの末尾(count-1)が最新のカード
             fieldCardTop.sprite = pile[count - 1].cardSprite;
             fieldCardTop.enabled = true;
+            fieldCardExplanation.text = pile[count - 1].descriptionText;
             // ここでスタンプ判定を行う
             if(fieldTopStampEffect!=null)
             {
@@ -756,6 +758,7 @@ public class FreeUIManager : MonoBehaviour
         {
             fieldCardMiddle.sprite = pile[count - 2].cardSprite;
             fieldCardMiddle.enabled = true;
+            fieldCardExplanation.text = pile[count - 1].descriptionText;
         }
         else
         {
@@ -766,6 +769,7 @@ public class FreeUIManager : MonoBehaviour
         {
             fieldCardBottom.sprite = pile[count - 3].cardSprite;
             fieldCardBottom.enabled = true;
+            fieldCardExplanation.text = pile[count - 1].descriptionText;
         }
         else
         {
@@ -1208,6 +1212,8 @@ public class FreeUIManager : MonoBehaviour
             // rt.sizeDelta = new Vector2(250, 50);
             
             TextMeshProUGUI tmp = textObj.GetComponent<TextMeshProUGUI>();
+            tmp.rectTransform.anchorMin = Vector2.zero;
+            tmp.rectTransform.anchorMax = Vector2.one;
             tmp.text = p.playerName;
             tmp.alignment = TextAlignmentOptions.Right;
             tmp.textWrappingMode = TextWrappingModes.NoWrap;
@@ -1239,5 +1245,49 @@ public class FreeUIManager : MonoBehaviour
         {
             revealAllHandsPanel.SetActive(false);
         }
+    }
+
+    // CPUが出したカードを手札位置からフィールドへ飛ばすアニメーション
+    public IEnumerator ShowCPUPlayCardAnimation(int cpuPlayerIndex, CardData card, int cardIndexInHand)
+    {
+        Transform container = cpuPlayerIndex == 1 ? cpu1HandContainer : cpu2HandContainer;
+        if (container == null || container.childCount <= cardIndexInHand) yield break;
+
+        RectTransform sourceRT = container.GetChild(cardIndexInHand).GetComponent<RectTransform>();
+        if (sourceRT == null) yield break;
+
+        Vector3 startWorldPos = sourceRT.position;
+        Vector3 endWorldPos = fieldCardTop.transform.position;
+
+        Canvas rootCanvas = GetComponentInParent<Canvas>();
+        if (rootCanvas == null) yield break;
+
+        GameObject tempCard = Instantiate(cardPrefab, rootCanvas.transform);
+
+        // ソースカードの anchor/pivot/サイズ/回転を引き継いで位置ずれを防ぐ
+        RectTransform tempRT = tempCard.GetComponent<RectTransform>();
+        if (tempRT != null)
+        {
+            tempRT.anchorMin = new Vector2(0.5f, 0.5f);
+            tempRT.anchorMax = new Vector2(0.5f, 0.5f);
+            tempRT.pivot = new Vector2(0.5f, 0.5f);
+            tempRT.sizeDelta = sourceRT.sizeDelta;
+        }
+        tempCard.transform.rotation = sourceRT.rotation;
+        tempCard.transform.position = startWorldPos;
+        tempCard.transform.SetAsLastSibling();
+
+        FreeCardController cc = tempCard.GetComponent<FreeCardController>();
+        if (cc != null) cc.Setup(card);
+
+        Image img = tempCard.GetComponent<Image>();
+        if (img != null) img.raycastTarget = false;
+
+        yield return tempCard.transform
+            .DOMove(endWorldPos, 0.5f)
+            .SetEase(Ease.OutCubic)
+            .WaitForCompletion();
+
+        Destroy(tempCard);
     }
 }

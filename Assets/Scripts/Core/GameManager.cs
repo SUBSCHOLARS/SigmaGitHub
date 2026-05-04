@@ -78,12 +78,13 @@ public class GameManager : MonoBehaviour
         InitializeGame();
     }
 
-    protected virtual void InitializeGame()
+    public virtual void InitializeGame()
     {
         // 3人対戦のセットアップ
         players.Clear();
         if (PersistentDataManager.Instance != null)
             gameProgressFlag = PersistentDataManager.Instance.GameProgressFlag;
+        UIManager.Instance.SetFirstShownGoalText();
         string pName = PersistentDataManager.Instance != null ? PersistentDataManager.Instance.PlayerName : "Ian";
         
         players.Add(new Player(PlayerID.Player, false, pName, 0, IdeologyType.None)); // 0番目が人間
@@ -128,6 +129,7 @@ public class GameManager : MonoBehaviour
         // ゴール条件を表示
         UIManager.Instance.SetGoalTextDependOnProgress(3); // 最初は3ラウンド
         // プレイヤー（0番目）の手札をUIに反映
+        SortPlayerCardDataByNumber();
         UIManager.Instance.UpdateAllHandVisuals();
         UIManager.Instance.UpdateCurrentTrend(initialSprite, currentTrendValue);
     }
@@ -257,7 +259,7 @@ public class GameManager : MonoBehaviour
         // TODO: Bribeの場合の数字設定の処理を追加
         if(card.effect==CardEffect.Censor||card.effect==CardEffect.Interrogate)
         {
-            // 次のプレイがワイルドになる
+           // 次のプレイがワイルドになる
             isNextPlayWild = true;
             Debug.Log("調査カードが出されました。次のプレイはワイルドになります。");
             // 特殊な場合の場のUI更新を行う
@@ -275,6 +277,7 @@ public class GameManager : MonoBehaviour
             Debug.Log("場に " + card.cardName + " が出されました。現在のトレンド: " + currentTrendValue);
         }
         UIManager.Instance.UpdateFieldPileUI(card);
+        SortPlayerCardDataByNumber();
         UIManager.Instance.UpdateAllHandVisuals(); // ここで自動的にYourTrendも更新される
     }
     // カードが出せるかを判定するメソッド
@@ -353,6 +356,7 @@ public class GameManager : MonoBehaviour
         DrawCards(humanPlayer.hand, 1);
 
         // 3. UIを全て更新
+        SortPlayerCardDataByNumber();
         UIManager.Instance.UpdateAllHandVisuals();
         UIManager.Instance.UpdateDeckVisual(deck.Count);
 
@@ -390,6 +394,7 @@ public class GameManager : MonoBehaviour
         sigmaSpeakActivatorIndex = idx;
         Debug.Log($"[SigmaSpeak] {players[idx].playerName} が発動: 次の自ターンまで全効果カードを無効化");
 
+        SortPlayerCardDataByNumber();
         UIManager.Instance.UpdateAllHandVisuals();
         UIManager.Instance.UpdateFieldPileUI(currentCardOnField);
     }
@@ -410,6 +415,7 @@ public class GameManager : MonoBehaviour
             targetHandContainer.DOShakePosition(0.5f, new Vector3(10f, 10f, 0), 20);
         }
 
+        SortPlayerCardDataByNumber();
         UIManager.Instance.UpdateAllHandVisuals();
         if (!executor.isCPU) SetInputLock(false); // CPU発動時はターン遷移で解除
     }
@@ -435,7 +441,7 @@ public class GameManager : MonoBehaviour
         CardSector bribeSector=currentCardOnField.sector;
         Debug.Log($"Bribe: {bribeSector} の数字 {currentTrendValue} を設定しました。");
         // その絵柄かつ指定した数字のカードデータを検索して取得
-        CardData targetCard=GetCarddDataBySectorAndNumber(bribeSector, currentTrendValue);
+        CardData targetCard=GetCardDataBySectorAndNumber(bribeSector, currentTrendValue);
 
         // 画像が見つかればそれをUIに渡す（見つからなければnull）
         Sprite stampSprite=(targetCard != null) ? targetCard.cardIcon: null;
@@ -641,7 +647,7 @@ public class GameManager : MonoBehaviour
                 Debug.Log($"[AI Bribe] {cardPlayer.playerName} selected Trend {currentTrendValue}");
                 // CPUの場合も同様に画像を取得して反映
                 CardSector bribeSector=playedCard.sector;
-                CardData targetCard=GetCarddDataBySectorAndNumber(bribeSector, currentTrendValue);
+                CardData targetCard=GetCardDataBySectorAndNumber(bribeSector, currentTrendValue);
                 Sprite stampSprite=(targetCard != null) ? targetCard.cardIcon : null;
                 Sprite stampIcon=(targetCard!=null) ? targetCard.rawSectorIcon:null;
                 // 場のトレンドが更新されたのでUIに反映
@@ -749,6 +755,7 @@ public class GameManager : MonoBehaviour
             // TODO: 回避（Audit返し）のロジック
             Debug.Log($"{targetPlayer.id} は2枚引く!");
             DrawCards(targetPlayer.hand, 2);
+            SortPlayerCardDataByNumber();
             UIManager.Instance.UpdateAllHandVisuals();
         }
         // ターン開始
@@ -758,6 +765,8 @@ public class GameManager : MonoBehaviour
             sigmaSpeakActive = false;
             sigmaSpeakUsedThisTurn = false;
             sigmaSpeakActivatorIndex = -1;
+
+            SortPlayerCardDataByNumber();
             UIManager.Instance.UpdateAllHandVisuals();
             UIManager.Instance.UpdateFieldPileUI(currentCardOnField);
         }
@@ -958,6 +967,7 @@ public class GameManager : MonoBehaviour
         DealIdeologyCard(); // イデオロギーカードを配る
 
         // 5. UIをリセット・更新
+        SortPlayerCardDataByNumber();
         UIManager.Instance.UpdateAllHandVisuals();
         UIManager.Instance.HideBribeSelectionUI();
         UIManager.Instance.HideTargetSelectionUI();
@@ -990,11 +1000,12 @@ public class GameManager : MonoBehaviour
     protected virtual void ExecuteCPUTurn()
     {
         // CPUが考えているように見せるため、数秒後に実行する
-        Invoke("CPUTurnLogic", 0.5f);
+        StartCoroutine(CPUTurnRoutine());
     }
     // CPUの思考ロジック本体
-    private void CPUTurnLogic()
+    private IEnumerator CPUTurnRoutine()
     {
+        yield return new WaitForSeconds(0.5f);
         Player currentCPU = players[currentPlayerIndex];
 
         // SigmaSpeak: 手札にあれば自動発動（フリーアクション）
@@ -1005,7 +1016,7 @@ public class GameManager : MonoBehaviour
         // MemoryHole: 手札にあれば自動実行してターン終了
         if (PlayerHasIdeologyInHand(currentCPU, IdeologyType.MemoryHole))
         {
-            if (TryCPUExecuteMemoryHole(currentCPU)) return;
+            if (TryCPUExecuteMemoryHole(currentCPU)) yield break;
         }
 
         // 1. 出すカードを決める
@@ -1015,7 +1026,11 @@ public class GameManager : MonoBehaviour
         if (cardToPlay != null)
         {
             Debug.Log($"[CPU] {currentCPU.id} が {cardToPlay.cardName} をプレイ");
+            int cardIndex = currentCPU.hand.IndexOf(cardToPlay);
+            Debug.Log(cardIndex);
             currentCPU.hand.Remove(cardToPlay);
+            UIManager.Instance.UpdateAllHandVisuals(); // UI（CPUの手札枚数）を更新
+            yield return StartCoroutine(UIManager.Instance.ShowCPUPlayCardAnimation(currentPlayerIndex, cardToPlay, cardIndex));
             PlayCardToField(cardToPlay, currentCPU);
 
             // 3. マッチ判定と次のターン（ロジックを分離）
@@ -1024,9 +1039,8 @@ public class GameManager : MonoBehaviour
             {
                 SetInputLock(true);
                 Debug.Log($"[CPU] {currentCPU.playerName} が勝利しました!");
-                // TODO: 勝利演出
                 StartCoroutine(StartRoundEndSequence(trendRideWinners, currentCPU, WinType.TrendRide));
-                return; // 勝利したらターンを回さない
+                yield break; // 勝利したらターンを回さない
             }
             // CPUのセルフマッチ判定
             if(CheckForSelfMatch(currentCPU))
@@ -1034,7 +1048,7 @@ public class GameManager : MonoBehaviour
                 SetInputLock(true);
                 List<Player> winners = new List<Player> { currentCPU };
                 StartCoroutine(StartRoundEndSequence(winners, currentCPU, WinType.SelfMatch));
-                return;
+                yield break;
             }
             // 効果処理コルーチンを呼ぶ
             StartCoroutine(HandleCardEffectAndTransition(cardToPlay));
@@ -1051,15 +1065,16 @@ public class GameManager : MonoBehaviour
             {
                 SetInputLock(true);
                 StartCoroutine(StartRoundEndSequence(trendRideWinners, currentCPU, WinType.TrendRide));
-                return;
+                yield break;
             }
             if(CheckForSelfMatch(currentCPU))
             {
                 SetInputLock(true);
                 List<Player> winners = new List<Player> { currentCPU };
                 StartCoroutine(StartRoundEndSequence(winners, currentCPU, WinType.SelfMatch));
-                return;
+                yield break;
             }
+            SortPlayerCardDataByNumber();
             UIManager.Instance.UpdateAllHandVisuals(); // UI（CPUの手札枚数）を更新
             UIManager.Instance.UpdateDeckVisual(deck.Count);
 
@@ -1389,7 +1404,7 @@ public class GameManager : MonoBehaviour
         UIManager.Instance.ShowContinueButton(false);
     }
     // 絵柄と数字を指定して、データベースから該当するカードデータを探すメソッド
-    public CardData GetCarddDataBySectorAndNumber(CardSector sector, int number)
+    public CardData GetCardDataBySectorAndNumber(CardSector sector, int number)
     {
         foreach(CardData data in allCardDatabase)
         {
@@ -1484,11 +1499,19 @@ public class GameManager : MonoBehaviour
                 }
             }
 
+            SortPlayerCardDataByNumber();
             UIManager.Instance.UpdateAllHandVisuals();
         }
         else
         {
             Debug.Log("イデオロギーカードは配られませんでした");
+        }
+    }
+    private void SortPlayerCardDataByNumber()
+    {
+        foreach(Player player in players)
+        {
+            player.hand.Sort((c1, c2) => c2.numberValue - c1.numberValue);
         }
     }
 }

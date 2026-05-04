@@ -13,11 +13,12 @@ public class UIManager : MonoBehaviour
     [Header("UI参照")]
     //public Transform playerHandArea; // プレイヤーの手札を並べる場所
     public Transform playerHandContainer;
-    [Header("場のカード表示")]
+    [Header("場のカード表示&説明")]
     public Image fieldCardTop; // 場に出ているカード（一番上）
     public Image fieldCardMiddle; // 場に出ているカード（真ん中）
     public Image fieldCardBottom; // 場に出ているカード（下）
     public GameObject discardPileViewer; // 捨て札山の表示オブジェクト
+    public TextMeshProUGUI fieldCardExplanation;
     [Header("CPUの手札表示")]
     public Transform cpu1HandContainer; // CPU1_HandDisplayをアタッチ
     public Transform cpu2HandContainer; // CPU2_HandDisplayをアタッチ
@@ -90,6 +91,13 @@ public class UIManager : MonoBehaviour
     [Header("処刑エンド用オブジェクト")]
     [SerializeField] private GameObject bloodObject;
     [SerializeField] private Image blackOut;
+    [Header("目標テキスト")]
+    [SerializeField] private TextMeshProUGUI goatText;
+    [Header("GamePlayシーンにあるマスクオブジェクトのRetroWipeEffect")]
+    [SerializeField] private RetroWipeEffect retroWipeEffect;
+    [Header("目標確認ボタン")]
+    [SerializeField] private GameObject goalConfirmButton;
+
     void Awake()
     {
         if (Instance == null)
@@ -160,9 +168,9 @@ public class UIManager : MonoBehaviour
             unreadBadge.SetActive(false);
         }
         if(revealAllHandsPanel!=null)
-            {
+        {
                 revealAllHandsPanel.SetActive(false);
-            }
+        }
         terminalLogText.text=""; // ログを空にする
         // 勝利確認ボタンの初期設定
         // CanvasGroupを取得
@@ -175,6 +183,29 @@ public class UIManager : MonoBehaviour
         AddLogMessage("--- SYSTEM BOOT SEQQUENCE INITIATED ---", null);
         AddLogMessage("--- WELCOME TO SIGMA TERMINAL ---", null);
     }
+    }
+    public void SetFirstShownGoalText()
+    {
+        goatText.gameObject.SetActive(true);
+        goalConfirmButton.SetActive(true);
+        goatText.text = GameManager.Instance.GetProgressFlag() switch
+        {
+            0 => "条件: 3ラウンド以内に1回勝利する。",
+            1 => "条件: 3回勝利する。",
+            2 => "条件: 5ラウンド以内に2回勝利する。",
+            3 => "条件: 5回勝利し、その達成時の手札枚数を3枚以下とする。",
+            4 => "条件: 5回勝利し、その達成時に目のスートのカードを保持する。",
+            5 => "条件: 自身のイデオロギーをもって、ゲームに勝利する。",
+
+            _ => "ΣΣΣ"
+        };
+    }
+    public void ActivateRetroWipe()
+    {
+        goatText.gameObject.SetActive(false);
+        goalConfirmButton.SetActive(false);
+
+        StartCoroutine(retroWipeEffect.AnimateWipe());
     }
     public void ShowBribeSelectionUI()
     {
@@ -559,6 +590,7 @@ public class UIManager : MonoBehaviour
             {
                 cardController.SetSigmaSpeakMode(true);
             }
+            
             // Detectorのリストに新しいカードを追加
             handHoverDetector.cardsInHand.Add(cardController);
         }
@@ -768,6 +800,7 @@ public class UIManager : MonoBehaviour
             // リストの末尾(count-1)が最新のカード
             fieldCardTop.sprite = GetFieldSprite(pile[count - 1]);
             fieldCardTop.enabled = true;
+            fieldCardExplanation.text=pile[count-1].descriptionText;
             // ここでスタンプ判定を行う
             if(fieldTopStampEffect!=null)
             {
@@ -790,6 +823,7 @@ public class UIManager : MonoBehaviour
         {
             fieldCardMiddle.sprite = GetFieldSprite(pile[count - 2]);
             fieldCardMiddle.enabled = true;
+            fieldCardExplanation.text=pile[count-1].descriptionText;
         }
         else
         {
@@ -800,6 +834,7 @@ public class UIManager : MonoBehaviour
         {
             fieldCardBottom.sprite = GetFieldSprite(pile[count - 3]);
             fieldCardBottom.enabled = true;
+            fieldCardExplanation.text=pile[count-1].descriptionText;
         }
         else
         {
@@ -1183,6 +1218,8 @@ public class UIManager : MonoBehaviour
             // rt.sizeDelta = new Vector2(250, 50);
             
             TextMeshProUGUI tmp = textObj.GetComponent<TextMeshProUGUI>();
+            tmp.rectTransform.anchorMin = Vector2.zero;
+            tmp.rectTransform.anchorMax = Vector2.one;
             tmp.text = p.playerName;
             tmp.alignment = TextAlignmentOptions.Right;
             tmp.textWrappingMode = TextWrappingModes.NoWrap;
@@ -1245,11 +1282,11 @@ public class UIManager : MonoBehaviour
         }
         else if(GameManager.Instance.GetProgressFlag()==3)
         {
-            gameGoalText.text="条件: 5回勝利し、その達成時に手札3枚以下であること。";
+            gameGoalText.text="条件: 5回勝利し、達成時の手札を3枚以下とする。";
         }
         else if(GameManager.Instance.GetProgressFlag()==4)
         {
-            gameGoalText.text="条件: 5回勝利し、その達成時にEYEカードを手札に保持していること。";
+            gameGoalText.text="条件: 5回勝利し、達成時に目のスートのカードを手札に保持する。";
         }
         else if(GameManager.Instance.GetProgressFlag()==5)
         {
@@ -1332,7 +1369,51 @@ public class UIManager : MonoBehaviour
     {
         if(show)
         {
-            
+
         }
+    }
+
+    // CPUが出したカードを手札位置からフィールドへ飛ばすアニメーション
+    public IEnumerator ShowCPUPlayCardAnimation(int cpuPlayerIndex, CardData card, int cardIndexInHand)
+    {
+        Transform container = cpuPlayerIndex == 1 ? cpu1HandContainer : cpu2HandContainer;
+        if (container == null || container.childCount <= cardIndexInHand) yield break;
+
+        RectTransform sourceRT = container.GetChild(cardIndexInHand).GetComponent<RectTransform>();
+        if (sourceRT == null) yield break;
+
+        Vector3 startWorldPos = sourceRT.position;
+        Vector3 endWorldPos = fieldCardTop.transform.position;
+
+        Canvas rootCanvas = GetComponentInParent<Canvas>();
+        if (rootCanvas == null) yield break;
+
+        GameObject tempCard = Instantiate(cardPrefab, rootCanvas.transform);
+
+        // ソースカードの anchor/pivot/サイズ/回転を引き継いで位置ずれを防ぐ
+        RectTransform tempRT = tempCard.GetComponent<RectTransform>();
+        if (tempRT != null)
+        {
+            tempRT.anchorMin = new Vector2(0.5f, 0.5f);
+            tempRT.anchorMax = new Vector2(0.5f, 0.5f);
+            tempRT.pivot = new Vector2(0.5f, 0.5f);
+            tempRT.sizeDelta = sourceRT.sizeDelta;
+        }
+        tempCard.transform.rotation = sourceRT.rotation;
+        tempCard.transform.position = startWorldPos;
+        tempCard.transform.SetAsLastSibling();
+
+        CardController cc = tempCard.GetComponent<CardController>();
+        if (cc != null) cc.Setup(card);
+
+        Image img = tempCard.GetComponent<Image>();
+        if (img != null) img.raycastTarget = false;
+
+        yield return tempCard.transform
+            .DOMove(endWorldPos, 0.5f)
+            .SetEase(Ease.OutCubic)
+            .WaitForCompletion();
+
+        Destroy(tempCard);
     }
 }
