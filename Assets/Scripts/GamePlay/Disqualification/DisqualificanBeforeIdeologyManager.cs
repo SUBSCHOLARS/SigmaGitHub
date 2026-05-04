@@ -24,10 +24,11 @@ public class EDisqualificationBeforeIdeologyManager : MonoBehaviour
     }
     private IEnumerator DisqualificationSequence()
     {
+        yield return new WaitForSeconds(1f);
         yield return ShowDialogue("この度は管理局の実践的矯正プログラムにご参加いただき、誠にありがとうございます。");
         yield return ShowDialogue("先ほどのゲームの終了をもって、このプログラムは終了となります。");
-        yield return ShowDialogue("残念ながら、あなたは思想違反を克服する以前のゲームに敗北してしまいました。");
-        yield return ShowDialogue("これはあなたが管理局に対して将来的に貢献することが極めて難しいことを意味しています。");
+        yield return ShowDialogue("残念ながら、あなたは思想違反を克服する以前の段階において、ゲームに敗北してしまいました。");
+        yield return ShowDialogue("これはあなたが管理局に対し、将来的に貢献することが極めて難しいことを意味しています。");
         yield return ShowDialogue("すなわち、あなたの存在はこれをもって終了となります。");
         yield return ShowDialogue("何卒ご理解のほどよろしくお願いいたします。");
 

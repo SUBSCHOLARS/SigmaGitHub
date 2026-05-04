@@ -122,8 +122,6 @@ public class TutorialGameManager : GameManager
 
         // 5. ゲーム開始準備
         // ロードマップに従い、世界観（皮肉）と「ダウンロード」設定を反映
-        yield return StartCoroutine(ShowDialogue("丁度いいタイミングだったな。\n数日前から、管理局のファイアウォールがダウンしていただろう?"));
-        yield return StartCoroutine(ShowDialogue("もう復旧したようだが、君を含め何人かがこのゲームをダウンロードしたようだね。"));
         yield return StartCoroutine(ShowDialogue("...\n早速ゲームを始めようじゃないか。"));
 
         roundText.SetActive(true);
@@ -144,7 +142,7 @@ public class TutorialGameManager : GameManager
         // 6. ドローの練習 (Turn 1)
         // 状態: P1手札[Eye_2] (Sum 2), Field[Mask_6] (Trend 6) -> 不一致
         yield return StartCoroutine(ShowDialogue("...今の君の価値は「2」。トレンドは「6」。\n全く一致していない。これではダメだね。"));
-        yield return StartCoroutine(ShowDialogue("手札の中に、場のトレンドと同じ絵柄か数字を持つカードもない。\nこういう時は「ドロー」するしかない。"));
+        yield return StartCoroutine(ShowDialogue("手札の中に、場のトレンドと同じ数字か、同じ絵柄を持つカードもない。\nこういう時は「ドロー」するしかない。"));
         yield return StartCoroutine(ShowDialogue("右の山札からカードを引くんだ。\n...ただし、引いたらそのターンは何もできずに終わる。"));
 
         isPlayerInputLocked = false; // ロック解除
@@ -170,8 +168,9 @@ public class TutorialGameManager : GameManager
         isPlayerInputLocked = true;
         yield return StartCoroutine(ShowDialogue("私が「Mask_2」を出したことで、トレンドは「2」に変わった。"));
         yield return StartCoroutine(ShowDialogue("では君の手札をよく見てくれ。「2」と「2」...合計「4」だ。"));
-        yield return StartCoroutine(ShowDialogue("ここで例えば「Eye_2」を出せばどうなる？\nトレンドは「2」になる。君の手元に残る「Gear_2」の価値も「2」。"));
+        yield return StartCoroutine(ShowDialogue("ここで例えば「Eye_2」を出せばどうなる?\nトレンドは「2」になる。君の手元に残る「Gear_2」の価値も「2」。"));
         yield return StartCoroutine(ShowDialogue("自分が出したカードによる新しいトレンドと、残った手札の合計値が一致する。\nこれを 「セルフマッチ」 と呼ぶ。"));
+        yield return StartCoroutine(ShowDialogue("セルフマッチをするなら、手札の合計値を偶数にしておくといいだろうね。"));
         yield return StartCoroutine(ShowDialogue("これこそがこのゲームのゴール。\nさあ、カードを出してマッチしてみせろ。"));
 
         tutorialStep = 3; // 勝利プレイ待ち
