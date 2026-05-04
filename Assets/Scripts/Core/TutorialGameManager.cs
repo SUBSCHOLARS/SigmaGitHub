@@ -40,6 +40,10 @@ public class TutorialGameManager : GameManager
     [SerializeField] private GameObject yourTrendText;
     [SerializeField] private GameObject statusPanel;
     [SerializeField] private GameObject winButton;
+    [SerializeField] private GameObject cardExplanation;
+    [SerializeField] private GameObject fieldPileVisual;
+    [SerializeField] private GameObject deckVisualContainer;
+    [SerializeField] private GameObject playerHandArea;
     public static bool isTutorialFinish=false;
     private InputActionProperty pressAction;
 
@@ -124,17 +128,13 @@ public class TutorialGameManager : GameManager
         // ロードマップに従い、世界観（皮肉）と「ダウンロード」設定を反映
         yield return StartCoroutine(ShowDialogue("...\n早速ゲームを始めようじゃないか。"));
 
-        roundText.SetActive(true);
-        scoreBoardPanel.SetActive(true);
-        currentTrendText.SetActive(true);
-        yourTrendText.SetActive(true);
-        statusPanel.SetActive(true);
+        IsGameUIShown(true);
         
         // ここで実際のゲーム初期化処理（2人対戦）
         SetupTutorialGame();
 
         yield return StartCoroutine(ShowDialogue("画面下にあるのが君の「社会的価値」...手札となる。\n中央にある数字が、「トレンド」だ。"));
-        yield return StartCoroutine(ShowDialogue("トランプみたいに絵柄が4つあってそれぞれ\n「Eye」,「Mask」,「Chain」,「Gear」\nになっている。"));
+        yield return StartCoroutine(ShowDialogue("トランプみたいにスートが4つあってそれぞれ\n「目」,「仮面」,「鎖」,「歯車」\nになっている。"));
         yield return StartCoroutine(ShowDialogue("本当は7枚ずつ、3人でやるんだけど、\nあくまでお試しだから簡単にやるよ。"));
         yield return StartCoroutine(ShowDialogue("このゲームのルールは単純さ。"));
         yield return StartCoroutine(ShowDialogue("「トレンドに迎合すること」。それだけだよ。"));
@@ -142,8 +142,8 @@ public class TutorialGameManager : GameManager
         // 6. ドローの練習 (Turn 1)
         // 状態: P1手札[Eye_2] (Sum 2), Field[Mask_6] (Trend 6) -> 不一致
         yield return StartCoroutine(ShowDialogue("...今の君の価値は「2」。トレンドは「6」。\n全く一致していない。これではダメだね。"));
-        yield return StartCoroutine(ShowDialogue("手札の中に、場のトレンドと同じ数字か、同じ絵柄を持つカードもない。\nこういう時は「ドロー」するしかない。"));
-        yield return StartCoroutine(ShowDialogue("右の山札からカードを引くんだ。\n...ただし、引いたらそのターンは何もできずに終わる。"));
+        yield return StartCoroutine(ShowDialogue("手札の中に、場のトレンドと同じ数字か、同じスートを持つカードもない。\nこういう時は「ドロー」するしかない。"));
+        yield return StartCoroutine(ShowDialogue("左上の山札からカードを引くんだ。\n...ただし、引いたらそのターンは何もできずに終わる。"));
 
         isPlayerInputLocked = false; // ロック解除
         UIManager.Instance.SetPlayerControlsActive(true);
@@ -206,8 +206,20 @@ public class TutorialGameManager : GameManager
 
          // 9. エンディング
         yield return new WaitForSeconds(2.0f); // 勝利演出の余韻
-        yield return StartCoroutine(ShowDialogue("どうだったかな？。\nこれがこのゲーム...『ΣIGMA』の基本になる。"));
+        yield return StartCoroutine(ShowDialogue("どうだったかな？。\nこれがこのゲーム...「ΣIGMA」の基本になる。"));
         yield return StartCoroutine(ShowDialogue("これからはレベルごとに提示されるクリアの条件を満たしていって、ゴールを目指してくれ。"));
+
+        IsGameUIShown(false);
+        fieldPileVisual.SetActive(false);
+        deckVisualContainer.SetActive(false);
+        playerHandArea.SetActive(false);
+        SoundManager.Instance.PlaySound(nextButtonSound);
+        cardExplanation.SetActive(true);
+
+        yield return StartCoroutine(ShowDialogue("カードは全部で48枚で7種類ある。"));
+
+        cardExplanation.SetActive(false);
+        
         yield return StartCoroutine(ShowDialogue("まあこんなところかな？\n他にもいろいろなカードがあるけど、\n取り敢えず「セルフマッチ」と「トレンドライド」だけ覚えておいてくれ。"));
         yield return StartCoroutine(ShowDialogue("あとはやっていくうちに覚えられるさ。"));
         yield return new WaitForSeconds(1f);
@@ -219,6 +231,14 @@ public class TutorialGameManager : GameManager
         if (PersistentDataManager.Instance != null)
             PersistentDataManager.Instance.SetTutorialFinished(true);
         SceneManager.LoadSceneAsync("Lobby");
+    }
+    private void IsGameUIShown(bool shown)
+    {
+        roundText.SetActive(shown);
+        scoreBoardPanel.SetActive(shown);
+        currentTrendText.SetActive(shown);
+        yourTrendText.SetActive(shown);
+        statusPanel.SetActive(shown);
     }
 
     private void SetupTutorialGame()
@@ -332,10 +352,6 @@ public class TutorialGameManager : GameManager
        
        deck = riggedDeck;
        UIManager.Instance.UpdateDeckVisual(deck.Count);
-    //    CardData firstCard = deck[0];
-    //    initialSprite= firstCard.rawSectorIcon;
-    //    deck.RemoveAt(0);
-    //    PlayCardToField(firstCard, tutorialMaster);
     }
 
     // デッキから特定のカードを検索して取得するヘルパー

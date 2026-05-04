@@ -12,6 +12,9 @@ public class LobbyManager : MonoBehaviour
     [SerializeField] private Button startButton;
     [SerializeField] private TextMeshProUGUI buttonText;
     [SerializeField] private GameObject fillObject;
+    [SerializeField] private Button freePlayButton;
+    [SerializeField] private TextMeshProUGUI freePlayButtonText;
+    [SerializeField] private GameObject freePlayFillObject;
     [Header("ボタンの押下サウンド")]
     [SerializeField] private AudioClip nextButtonSound;
     [Header("エンディング到達マーク")]
@@ -39,6 +42,10 @@ public class LobbyManager : MonoBehaviour
             buttonText.color = Color.white;
             int flag = PersistentDataManager.Instance.GameProgressFlag;
             buttonText.text = $"ゲーム-{flag + 1}/6";
+
+            freePlayFillObject.SetActive(true);
+            freePlayButton.interactable = true;
+            freePlayButtonText.color = Color.white;
         }
 
         // エンディング到達マークの表示制御
