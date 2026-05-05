@@ -22,6 +22,14 @@ public class FreeUIManager : MonoBehaviour
     [Header("CPUの手札表示")]
     public Transform cpu1HandContainer; // CPU1_HandDisplayをアタッチ
     public Transform cpu2HandContainer; // CPU2_HandDisplayをアタッチ
+    [Header("CPU表情")]
+    [SerializeField] private Image cpu1FaceImage;
+    [SerializeField] private Image cpu2FaceImage;
+    [SerializeField] private Sprite faceNormal;
+    [SerializeField] private Sprite faceAdvantage;
+    [SerializeField] private Sprite faceDisadvantage;
+    [SerializeField] private Sprite faceTrendrideWin;
+    [SerializeField] private Sprite faceTrendrideLose;
     [Header("CPUの手札表示パラメータ")]
     [SerializeField] private float cpuCardSpacing = 30f;
     [SerializeField] private float cpuArcAmount = 150f;
@@ -86,6 +94,11 @@ public class FreeUIManager : MonoBehaviour
     [SerializeField] private AudioClip nextButtonSound;
     [Header("MemoryHole UI")]
     [SerializeField] private GameObject memoryHolePanel;
+    [Header("最初の目標を見せるUI")]
+    [SerializeField] private TextMeshProUGUI goalText;
+    [SerializeField] private GameObject goalConfirmButton;
+    [Header("FreeGamePLay内のRetroWipeEffect")]
+    [SerializeField] private RetroWipeEffect retroWipeEffect;
     void Awake()
     {
         if (Instance == null)
@@ -156,9 +169,9 @@ public class FreeUIManager : MonoBehaviour
             unreadBadge.SetActive(false);
         }
         if(revealAllHandsPanel!=null)
-            {
-                revealAllHandsPanel.SetActive(false);
-            }
+        {
+            revealAllHandsPanel.SetActive(false);
+        }
         terminalLogText.text=""; // ログを空にする
         // 勝利確認ボタンの初期設定
         // CanvasGroupを取得
@@ -171,6 +184,18 @@ public class FreeUIManager : MonoBehaviour
         AddLogMessage("--- SYSTEM BOOT SEQQUENCE INITIATED ---", null);
         AddLogMessage("--- WELCOME TO SIGMA TERMINAL ---", null);
     }
+    }
+    public void SetGoalTextAndButtonTrue()
+    {
+        goalText.gameObject.SetActive(true);
+        goalConfirmButton.SetActive(true);
+    }
+    public void ActivateRetroWipe()
+    {
+        goalText.gameObject.SetActive(false);
+        goalConfirmButton.SetActive(false);
+
+        StartCoroutine(retroWipeEffect.AnimateWipe());
     }
     public void ShowBribeSelectionUI()
     {
@@ -1255,6 +1280,7 @@ public class FreeUIManager : MonoBehaviour
 
         RectTransform sourceRT = container.GetChild(cardIndexInHand).GetComponent<RectTransform>();
         if (sourceRT == null) yield break;
+        sourceRT.gameObject.SetActive(false);
 
         Vector3 startWorldPos = sourceRT.position;
         Vector3 endWorldPos = fieldCardTop.transform.position;
@@ -1289,5 +1315,46 @@ public class FreeUIManager : MonoBehaviour
             .WaitForCompletion();
 
         Destroy(tempCard);
+    }
+    // CPU の表情スプライトを切り替える
+    public void UpdateCPUFace(int cpuPlayerIndex, CPUFaceState state)
+    {
+        Image target = cpuPlayerIndex == 1 ? cpu1FaceImage : cpu2FaceImage;
+        if (target == null) return;
+        target.sprite = state switch
+        {
+            CPUFaceState.Advantage     => faceAdvantage,
+            CPUFaceState.Disadvantage  => faceDisadvantage,
+            CPUFaceState.TrendrideWin  => faceTrendrideWin,
+            CPUFaceState.TrendrideLose => faceTrendrideLose,
+            _                          => faceNormal
+        };
+    }
+
+    // トレンドライド勝利時の膨張→縮小アニメーション
+    public IEnumerator PlayCPUTrendRideWinAnimation(int cpuPlayerIndex)
+    {
+        Image target = cpuPlayerIndex == 1 ? cpu1FaceImage : cpu2FaceImage;
+        if (target == null) yield break;
+        Transform t = target.transform;
+        Vector3 originalScale = t.localScale;
+        yield return t.DOScale(originalScale * 1.35f, 0.2f).SetEase(Ease.OutBack).WaitForCompletion();
+        yield return t.DOScale(originalScale, 0.15f).SetEase(Ease.InBack).WaitForCompletion();
+    }
+
+    // wins を基準に全 CPU の通常表情を更新（ラウンド得点確定後に呼ぶ）
+    public void UpdateAllCPUFaceExpressions()
+    {
+        List<Player> players = GameManager.Instance.players;
+        if (players == null || players.Count < 2) return;
+        int playerWins = players[0].wins;
+        for (int i = 1; i < players.Count; i++)
+        {
+            CPUFaceState state;
+            if (players[i].wins > playerWins)      state = CPUFaceState.Advantage;
+            else if (players[i].wins < playerWins) state = CPUFaceState.Disadvantage;
+            else                                   state = CPUFaceState.Normal;
+            UpdateCPUFace(i, state);
+        }
     }
 }

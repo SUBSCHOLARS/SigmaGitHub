@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
     public AudioClip trendRideSound;
     public AudioClip firstSetupSound;
     public AudioClip bulletDropSound;
+    [SerializeField] private AudioClip dogNoticeSound;
 
     [Header("ゲームの状態")]
     public List<CardData> deck = new List<CardData>();
@@ -546,6 +547,30 @@ public class GameManager : MonoBehaviour
         if (winType == WinType.TrendRide)
         {
             SoundManager.Instance.PlaySound(trendRideSound);
+
+            // CPU が勝利した場合: 表情変化 + DogNotice SE + 膨張縮小アニメーション
+            foreach (Player winner in winners)
+            {
+                if (winner.isCPU)
+                {
+                    int cpuIdx = players.IndexOf(winner);
+                    UIManager.Instance.UpdateCPUFace(cpuIdx, CPUFaceState.TrendrideWin);
+                    if (dogNoticeSound != null)
+                        SoundManager.Instance.PlaySound(dogNoticeSound);
+                    yield return StartCoroutine(
+                        UIManager.Instance.PlayCPUTrendRideWinAnimation(cpuIdx));
+                    yield return new WaitForSeconds(1.2f);
+                }
+                else
+                {
+                    if (dogNoticeSound != null)
+                        SoundManager.Instance.PlaySound(dogNoticeSound);
+                    UIManager.Instance.UpdateCPUFace(cpuPlayerIndex: 0, CPUFaceState.TrendrideLose);
+                    UIManager.Instance.UpdateCPUFace(cpuPlayerIndex: 1, CPUFaceState.TrendrideLose);
+                    yield return new WaitForSeconds(1.2f);
+                }
+            }
+
             // 2. トレンドライドであった場合、アラートを表示して待機
             UIManager.Instance.ShowTrendRideAlert(true, winners, actionPlayer);
             yield return StartCoroutine(WaitForContinueCLick());
@@ -568,6 +593,7 @@ public class GameManager : MonoBehaviour
         // 5. ポイント計算（actionPlayerを渡して分岐）
         CalculatePoints(winners, actionPlayer);
         UIManager.Instance.UpdateScoreboard(players); // スコアボードUIを更新
+        UIManager.Instance.UpdateAllCPUFaceExpressions(); // wins を反映した表情に戻す
 
         // 6. 最終勝利判定
         Player overallWinner = CheckForOverallWinner();
@@ -1434,6 +1460,30 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(1.5f); // 演出の長さに応じて調整
         UIManager.Instance.ShowBlackOut();
     }
+#if UNITY_EDITOR
+    [ContextMenu("Debug: Test TrendRide Animation")]
+    private void Debug_TestTrendRideAnimation()
+    {
+        if (!Application.isPlaying) return;
+        Player cpu = players?.Find(p => p.isCPU);
+        if (cpu == null) return;
+        StartCoroutine(Debug_TrendRideAnimationSequence(cpu));
+    }
+
+    private IEnumerator Debug_TrendRideAnimationSequence(Player cpu)
+    {
+        int cpuIdx = players.IndexOf(cpu);
+        UIManager.Instance.UpdateCPUFace(cpuIdx, CPUFaceState.TrendrideWin);
+        if (dogNoticeSound != null)
+            SoundManager.Instance.PlaySound(dogNoticeSound);
+        yield return StartCoroutine(UIManager.Instance.PlayCPUTrendRideWinAnimation(cpuIdx));
+        yield return new WaitForSeconds(1.2f);
+        UIManager.Instance.ShowTrendRideAlert(true, new List<Player>{cpu}, players[0]);
+        yield return StartCoroutine(WaitForContinueCLick());
+        UIManager.Instance.ShowTrendRideAlert(false, null, null);
+
+    }
+#endif
     // デバッグ用初期化メソッド
     public static void InitializeForDebug(int debugFlag)
     {

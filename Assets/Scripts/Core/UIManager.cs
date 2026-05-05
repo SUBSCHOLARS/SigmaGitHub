@@ -22,6 +22,14 @@ public class UIManager : MonoBehaviour
     [Header("CPUの手札表示")]
     public Transform cpu1HandContainer; // CPU1_HandDisplayをアタッチ
     public Transform cpu2HandContainer; // CPU2_HandDisplayをアタッチ
+    [Header("CPU表情")]
+    [SerializeField] private Image cpu1FaceImage;
+    [SerializeField] private Image cpu2FaceImage;
+    [SerializeField] private Sprite faceNormal;
+    [SerializeField] private Sprite faceAdvantage;
+    [SerializeField] private Sprite faceDisadvantage;
+    [SerializeField] private Sprite faceTrendrideWin;
+    [SerializeField] private Sprite faceTrendrideLose;
     [Header("CPUの手札表示パラメータ")]
     [SerializeField] private float cpuCardSpacing = 30f;
     [SerializeField] private float cpuArcAmount = 150f;
@@ -92,7 +100,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject bloodObject;
     [SerializeField] private Image blackOut;
     [Header("目標テキスト")]
-    [SerializeField] private TextMeshProUGUI goatText;
+    [SerializeField] private TextMeshProUGUI goalText;
     [Header("GamePlayシーンにあるマスクオブジェクトのRetroWipeEffect")]
     [SerializeField] private RetroWipeEffect retroWipeEffect;
     [Header("目標確認ボタン")]
@@ -118,7 +126,7 @@ public class UIManager : MonoBehaviour
             }
             if(playerHandRaycaster==null)
             {
-                Debug.LogError("Player_HandCongainerにImage（透明な壁）がありません!");
+                Debug.LogError("Player_HandCongainerにImage(透明な壁)がありません!");
             }
         }
         else
@@ -186,9 +194,9 @@ public class UIManager : MonoBehaviour
     }
     public void SetFirstShownGoalText()
     {
-        goatText.gameObject.SetActive(true);
+        goalText.gameObject.SetActive(true);
         goalConfirmButton.SetActive(true);
-        goatText.text = GameManager.Instance.GetProgressFlag() switch
+        goalText.text = GameManager.Instance.GetProgressFlag() switch
         {
             0 => "条件: 3ラウンド以内に1回勝利する。",
             1 => "条件: 3回勝利する。",
@@ -202,7 +210,7 @@ public class UIManager : MonoBehaviour
     }
     public void ActivateRetroWipe()
     {
-        goatText.gameObject.SetActive(false);
+        goalText.gameObject.SetActive(false);
         goalConfirmButton.SetActive(false);
 
         StartCoroutine(retroWipeEffect.AnimateWipe());
@@ -1218,7 +1226,8 @@ public class UIManager : MonoBehaviour
             // rt.sizeDelta = new Vector2(250, 50);
             
             TextMeshProUGUI tmp = textObj.GetComponent<TextMeshProUGUI>();
-            tmp.rectTransform.anchorMin = Vector2.zero;
+            tmp.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 100);
+            tmp.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, -50);
             tmp.rectTransform.anchorMax = Vector2.one;
             tmp.text = p.playerName;
             tmp.alignment = TextAlignmentOptions.Right;
@@ -1381,6 +1390,7 @@ public class UIManager : MonoBehaviour
 
         RectTransform sourceRT = container.GetChild(cardIndexInHand).GetComponent<RectTransform>();
         if (sourceRT == null) yield break;
+        sourceRT.gameObject.SetActive(false);
 
         Vector3 startWorldPos = sourceRT.position;
         Vector3 endWorldPos = fieldCardTop.transform.position;
@@ -1415,5 +1425,47 @@ public class UIManager : MonoBehaviour
             .WaitForCompletion();
 
         Destroy(tempCard);
+    }
+
+    // CPU の表情スプライトを切り替える
+    public void UpdateCPUFace(int cpuPlayerIndex, CPUFaceState state)
+    {
+        Image target = cpuPlayerIndex == 1 ? cpu1FaceImage : cpu2FaceImage;
+        if (target == null) return;
+        target.sprite = state switch
+        {
+            CPUFaceState.Advantage     => faceAdvantage,
+            CPUFaceState.Disadvantage  => faceDisadvantage,
+            CPUFaceState.TrendrideWin  => faceTrendrideWin,
+            CPUFaceState.TrendrideLose => faceTrendrideLose,
+            _                          => faceNormal
+        };
+    }
+
+    // トレンドライド勝利時の膨張→縮小アニメーション
+    public IEnumerator PlayCPUTrendRideWinAnimation(int cpuPlayerIndex)
+    {
+        Image target = cpuPlayerIndex == 1 ? cpu1FaceImage : cpu2FaceImage;
+        if (target == null) yield break;
+        Transform t = target.transform;
+        Vector3 originalScale = t.localScale;
+        yield return t.DOScale(originalScale * 1.35f, 0.2f).SetEase(Ease.OutBack).WaitForCompletion();
+        yield return t.DOScale(originalScale, 0.15f).SetEase(Ease.InBack).WaitForCompletion();
+    }
+
+    // wins を基準に全 CPU の通常表情を更新（ラウンド得点確定後に呼ぶ）
+    public void UpdateAllCPUFaceExpressions()
+    {
+        List<Player> players = GameManager.Instance.players;
+        if (players == null || players.Count < 2) return;
+        int playerWins = players[0].wins;
+        for (int i = 1; i < players.Count; i++)
+        {
+            CPUFaceState state;
+            if (players[i].wins > playerWins)      state = CPUFaceState.Advantage;
+            else if (players[i].wins < playerWins) state = CPUFaceState.Disadvantage;
+            else                                   state = CPUFaceState.Normal;
+            UpdateCPUFace(i, state);
+        }
     }
 }

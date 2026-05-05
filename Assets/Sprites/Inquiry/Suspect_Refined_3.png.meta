@@ -1,13 +1,10 @@
 fileFormatVersion: 2
-guid: 9f3ec310839d90e4280414a22b5a4424
+guid: b443d32a0066d5f4c99c61e3dfe76c64
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5737732078362158072
-    second: CPUFace_Trendride_Win_0
-  - first:
-      213: 7968561904917955427
-    second: CPUFace_Trendride_Win_1
+      213: -6294359736416129154
+    second: Suspect_Refined_3_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,7 +46,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -116,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: CPUFace_Trendride_Win_0
+      name: Suspect_Refined_3_0
       rect:
         serializedVersion: 2
-        x: 9
-        y: 9
-        width: 147
-        height: 132
+        x: 29
+        y: 0
+        width: 262
+        height: 306
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -131,30 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8f3e32bece480af40800000000000000
-      internalID: 5737732078362158072
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: CPUFace_Trendride_Win_1
-      rect:
-        serializedVersion: 2
-        x: 34
-        y: 129
-        width: 22
-        height: 22
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 363485155d4069e60800000000000000
-      internalID: 7968561904917955427
+      spriteID: e7f256e2b21f5a8a0800000000000000
+      internalID: -6294359736416129154
       vertices: []
       indices: 
       edges: []
@@ -163,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -173,8 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      CPUFace_Trendride_Win_0: 5737732078362158072
-      CPUFace_Trendride_Win_1: 7968561904917955427
+      Suspect_Refined_3_0: -6294359736416129154
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

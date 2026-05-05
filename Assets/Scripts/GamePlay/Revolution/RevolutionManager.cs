@@ -13,11 +13,16 @@ public class RevolutionManager : MonoBehaviour
     [Header("黒幕")]
     [SerializeField] private GameObject blackOut;
     [SerializeField] private GameObject revolutioner;
+    [Header("SE")]
+    [SerializeField] private AudioClip explosionSound;
+
+    private AudioSource audioSource;
 
     private void Start()
     {
         if (PersistentDataManager.Instance != null)
             PersistentDataManager.Instance.SetEndingRevolution();
+        audioSource=GetComponent<AudioSource>();
         StartCoroutine(RevolutionSequence());
     }
     private IEnumerator RevolutionSequence()
@@ -34,7 +39,10 @@ public class RevolutionManager : MonoBehaviour
         yield return ShowDialogue("皆ΣあΣたを待っΣいΣすΣ");
         yield return ShowDialogue("...");
 
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(0.5f);
+        audioSource.PlayOneShot(explosionSound, volumeScale: 0.1f);
+
+        yield return new WaitForSeconds(3.5f);
 
         revolutioner.SetActive(true);
         ShowBlackOut();

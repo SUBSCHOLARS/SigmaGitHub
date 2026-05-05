@@ -21,6 +21,7 @@ public class FreeGameManager : MonoBehaviour
     public AudioClip winSound;
     public AudioClip trendRideSound;
     public AudioClip firstSetupSound;
+    [SerializeField] private AudioClip dogNoticeSound;
 
     [Header("ゲームの状態")]
     public List<CardData> deck = new List<CardData>();
@@ -78,6 +79,7 @@ public class FreeGameManager : MonoBehaviour
 
     protected virtual void InitializeGame()
     {
+        FreeUIManager.Instance.SetGoalTextAndButtonTrue();
         // 3人対戦のセットアップ
         players.Clear();
         string pName = PersistentDataManager.Instance != null ? PersistentDataManager.Instance.PlayerName : "Ian";
@@ -513,6 +515,29 @@ public class FreeGameManager : MonoBehaviour
         {
             SoundManager.Instance.PlaySound(trendRideSound);
             // 2. トレンドライドであった場合、アラートを表示して待機
+            // CPU が勝利した場合: 表情変化 + DogNotice SE + 膨張縮小アニメーション
+            foreach (Player winner in winners)
+            {
+                if (winner.isCPU)
+                {
+                    int cpuIdx = players.IndexOf(winner);
+                    FreeUIManager.Instance.UpdateCPUFace(cpuIdx, CPUFaceState.TrendrideWin);
+                    if (dogNoticeSound != null)
+                        SoundManager.Instance.PlaySound(dogNoticeSound);
+                    yield return StartCoroutine(
+                        FreeUIManager.Instance.PlayCPUTrendRideWinAnimation(cpuIdx));
+                    yield return new WaitForSeconds(1.2f);
+                }
+                else
+                {
+                    if (dogNoticeSound != null)
+                        SoundManager.Instance.PlaySound(dogNoticeSound);
+                    FreeUIManager.Instance.UpdateCPUFace(cpuPlayerIndex: 0, CPUFaceState.TrendrideLose);
+                    FreeUIManager.Instance.UpdateCPUFace(cpuPlayerIndex: 1, CPUFaceState.TrendrideLose);
+                    yield return new WaitForSeconds(1.2f);
+                }
+            }
+
             FreeUIManager.Instance.ShowTrendRideAlert(true, winners, actionPlayer);
             yield return StartCoroutine(WaitForContinueCLick());
             FreeUIManager.Instance.ShowTrendRideAlert(false, null, null);
@@ -534,6 +559,7 @@ public class FreeGameManager : MonoBehaviour
         // 5. ポイント計算（actionPlayerを渡して分岐）
         CalculatePoints(winners, actionPlayer);
         FreeUIManager.Instance.UpdateScoreboard(players); // スコアボードUIを更新
+        UIManager.Instance.UpdateAllCPUFaceExpressions(); // wins を反映した表情に戻す
 
         // 6. 最終勝利判定
         Player overallWinner = CheckForOverallWinner();
