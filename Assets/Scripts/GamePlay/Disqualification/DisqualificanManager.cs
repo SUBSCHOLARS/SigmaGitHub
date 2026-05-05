@@ -24,7 +24,7 @@ public class EDisqualificationManager : MonoBehaviour
     }
     private IEnumerator DisqualificationSequence()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2.5f);
         yield return ShowDialogue("この度は管理局の実践的矯正プログラムにご参加いただき、誠にありがとうございます。");
         yield return ShowDialogue("先ほどのゲームの終了をもって、このプログラムは終了となります。");
         yield return ShowDialogue("残念ながら、あなたは思想違反を克服することができたものの、ゲームには敗北してしまいました。");

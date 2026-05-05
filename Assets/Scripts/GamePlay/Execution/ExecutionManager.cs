@@ -22,7 +22,7 @@ public class ExecutionManager : MonoBehaviour
     }
     private IEnumerator RevolutionSequence()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2.5f);
         yield return ShowDialogue("この度は管理局の実践的矯正プログラムにご参加いただき、誠にありがとうございます。");
         yield return ShowDialogue("プログラムを中断する形となり大変申し訳ありませんが、一つ重要なご報告がございます。");
         yield return ShowDialogue("本プログラムを受講するプレイヤーに重大な思想違反が検出されました。");
