@@ -12,15 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a446d676519b94ffdb8d21b99f0443f3, type: 3}
   m_Name: Inquiry4_5
   m_EditorClassIdentifier: Assembly-CSharp::InquiryData
-  questionID: 22
-  questionText: "\u3053\u306E\u97F3\u306B\u805E\u304D\u899A\u3048\u306F\u3042\u308A\u307E\u3059\u304B?"
+  questionID: 
+  questionText: "\u30DC\u30BF\u30F3\u3092\u62BC\u3057\u3066\u97F3\u3092\u805E\u3044\u3066\u304F\u3060\u3055\u3044\u3002"
   photos: []
   choices:
-  - buttonLabel: "\u306F\u3044"
+  - buttonLabel: "\u518D\u751F\u4E2D"
     ideologyType: 0
-    pressDuration: 0.75
-    nextInquiry: {fileID: 11400000, guid: d4c74f96ae0e29342b06e200547caf74, type: 2}
-  - buttonLabel: "\u3044\u3044\u3048"
-    ideologyType: 0
-    pressDuration: 0.75
-    nextInquiry: {fileID: 11400000, guid: d4c74f96ae0e29342b06e200547caf74, type: 2}
+    pressDuration: 6
+    nextInquiry: {fileID: 11400000, guid: b419ab549c1315f49b5b25442582eff2, type: 2}
+  sound: {fileID: 8300000, guid: b6fdc3f409905b248918bf0bf40f8cb1, type: 3}

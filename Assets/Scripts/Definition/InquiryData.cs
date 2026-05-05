@@ -14,6 +14,8 @@ public class InquiryData : ScriptableObject
     public List<Sprite> photos; //画像演出用
     [Header("選択肢")]
     public List<InquiryChoice> choices; // ボタンのリスト（可変）
+    [Header("SE")]
+    public AudioClip sound;
 }
 [Serializable]
 public struct InquiryChoice

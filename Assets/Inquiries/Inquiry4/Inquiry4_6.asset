@@ -12,15 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a446d676519b94ffdb8d21b99f0443f3, type: 3}
   m_Name: Inquiry4_6
   m_EditorClassIdentifier: Assembly-CSharp::InquiryData
-  questionID: 23
-  questionText: "\u3042\u306A\u305F\u4ECA\u3001\u81EA\u5206\u304C\u300C\u5B89\u5168\u300D\u3067\u3042\u308B\u3068\u611F\u3058\u307E\u3059\u304B?"
+  questionID: 22
+  questionText: "\u3053\u306E\u97F3\u306B\u805E\u304D\u899A\u3048\u306F\u3042\u308A\u307E\u3059\u304B?"
   photos: []
   choices:
   - buttonLabel: "\u306F\u3044"
     ideologyType: 0
     pressDuration: 0.75
-    nextInquiry: {fileID: 0}
+    nextInquiry: {fileID: 11400000, guid: d4c74f96ae0e29342b06e200547caf74, type: 2}
   - buttonLabel: "\u3044\u3044\u3048"
     ideologyType: 0
     pressDuration: 0.75
-    nextInquiry: {fileID: 0}
+    nextInquiry: {fileID: 11400000, guid: d4c74f96ae0e29342b06e200547caf74, type: 2}

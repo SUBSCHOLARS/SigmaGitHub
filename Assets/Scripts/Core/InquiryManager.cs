@@ -87,6 +87,12 @@ public class InquiryManager : MonoBehaviour
             TextMeshProUGUI[] texts=rootObject.GetComponentsInChildren<TextMeshProUGUI>();
             foreach(var t in texts) t.text=choice.buttonLabel;
 
+            if(data.sound != null)
+            {
+                AudioSource audioSource = rootObject.GetComponentInChildren<AudioSource>();
+                audioSource.clip = data.sound;
+            }
+
             // 子要素からHoldButtonスクリプトを探す
             HoldButton holdScript=rootObject.GetComponentInChildren<HoldButton>();
 
