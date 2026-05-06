@@ -272,6 +272,7 @@ public class TutorialGameManager : GameManager
 
         deck.Remove(startCard); 
         PlayCardToField(startCard, tutorialMaster);
+        UIManager.Instance.UpdateAllHandVisuals(); // ここで自動的にYourTrendも更新される
         initialSprite = startCard.rawSectorIcon;
         Debug.Log("ゲーム開始！最初のカード: " + startCard.cardName);
 
@@ -419,6 +420,7 @@ public class TutorialGameManager : GameManager
 
         dog.hand.Remove(cardToPlay);
         PlayCardToField(cardToPlay, dog);
+        UIManager.Instance.UpdateAllHandVisuals(); // ここで自動的にYourTrendも更新される
         List<Player> trendRideWinners=CheckForTrendRide(dog);
         if(trendRideWinners.Count>0)
         {
@@ -457,13 +459,13 @@ public class TutorialGameManager : GameManager
         winButton.SetActive(false);
     }
 
-    public override void TryPlayCard(CardData cardToPlay)
+    public override IEnumerator TryPlayCard(CardData cardToPlay)
     {
         if (tutorialStep == 2)
         {
              if (CanPlayCard(cardToPlay))
              {
-                 base.TryPlayCard(cardToPlay);
+                 yield return base.TryPlayCard(cardToPlay);
                  // 勝利フェーズではないので、ここでtutorialStepが進むわけではない
                  // 本来ならここでCPUターンへ行くはずだが、TutorialSequenceが管理する
              }
@@ -473,14 +475,14 @@ public class TutorialGameManager : GameManager
             if (CanPlayCard(cardToPlay))
             {
                  // ここでセルフマッチになるはず
-                 base.TryPlayCard(cardToPlay);
+                 yield return base.TryPlayCard(cardToPlay);
             }
         }
         else if(tutorialStep==4) // トレンドライドプレイ
         {
             if(CanPlayCard(cardToPlay))
             {
-                base.TryPlayCard(cardToPlay);
+                yield return base.TryPlayCard(cardToPlay);
             }
             else
             {
@@ -491,5 +493,6 @@ public class TutorialGameManager : GameManager
         {
             Debug.Log($"TryPlayCard Ignored. Step: {tutorialStep}");
         }
+        yield return null;
     }
 }

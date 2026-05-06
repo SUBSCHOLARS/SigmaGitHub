@@ -128,7 +128,13 @@ public class GameManager : MonoBehaviour
             return; // リターンで最初のターンが開始するのを防ぐ
         }
         // ゴール条件を表示
-        UIManager.Instance.SetGoalTextDependOnProgress(3); // 最初は3ラウンド
+        int remainingTurn = GetProgressFlag() switch
+        {
+            0 => 3,
+            2 => 5,
+            _ => 0 
+        };
+        UIManager.Instance.SetGoalTextDependOnProgress(remainingTurn); // 最初は3ラウンド
         // プレイヤー（0番目）の手札をUIに反映
         SortPlayerCardDataByNumber();
         UIManager.Instance.UpdateAllHandVisuals();
@@ -245,6 +251,7 @@ public class GameManager : MonoBehaviour
                 StartGame(); // もう一度 StartGame を呼び出す
             }
         }
+        UIManager.Instance.UpdateAllHandVisuals(); // ここで自動的にYourTrendも更新される
     }
     // カードを場（捨て札）に出す処理
     public void PlayCardToField(CardData card, Player player)
@@ -279,7 +286,6 @@ public class GameManager : MonoBehaviour
         }
         UIManager.Instance.UpdateFieldPileUI(card);
         SortPlayerCardDataByNumber();
-        UIManager.Instance.UpdateAllHandVisuals(); // ここで自動的にYourTrendも更新される
     }
     // カードが出せるかを判定するメソッド
     public bool CanPlayCard(CardData cardToPlay)
@@ -467,29 +473,28 @@ public class GameManager : MonoBehaviour
         }
         return (totalValue, hasDoubleThink);
     }
-    public virtual void TryPlayCard(CardData cardToPlay)
+    public virtual IEnumerator TryPlayCard(CardData cardToPlay)
     {
         // 1. 操作ロックをチェック
         if (isPlayerInputLocked)
         {
-            return;
+            yield break;
         }
         // 2. プレイヤーのターンかチェック
         if (players[currentPlayerIndex].isCPU)
         {
             Debug.LogWarning("現在はCPUのターンです。プレイヤーはカードを出せません。");
-            return;
+            yield break;
         }
         // 3. プレイヤーの手札に存在するカードのみプレイ可（CPUカードの誤クリック防止）
-        if (!players[currentPlayerIndex].hand.Contains(cardToPlay)) return;
+        if (!players[currentPlayerIndex].hand.Contains(cardToPlay)) yield break;
         if (!CanPlayCard(cardToPlay))
         {
             // アクティブ系イデオロギーカードはクリックで効果発動
             if (cardToPlay.ideologyType == IdeologyType.SigmaSpeak)
             {
                 ActivateSigmaSpeak(); // 内部でguardチェック済み
-                UIManager.Instance.IsShowSigmaSpeakActivationUI(true);
-                return;
+                yield break;
             }
             if (cardToPlay.ideologyType == IdeologyType.MemoryHole && !memoryHoleUsedThisTurn)
             {
@@ -497,15 +502,19 @@ public class GameManager : MonoBehaviour
                 pendingMemoryHole = true;
                 memoryHoleUsedThisTurn = true;
                 UIManager.Instance.ShowTargetSelectionUI();
-                return;
+                yield break;
             }
             Debug.Log("このカードは出せません: " + cardToPlay.cardName);
-            return;
+            yield break;
         }
         // 3. カードを出せる場合の処理を続ける
         Player humanPlayer = players[currentPlayerIndex];
         humanPlayer.hand.Remove(cardToPlay);
+        SetInputLock(true);
+        yield return StartCoroutine(UIManager.Instance.ShowPlayerPlayCardAnimation(cardToPlay));
         PlayCardToField(cardToPlay, humanPlayer); // UI更新もこの中で行われる
+        yield return StartCoroutine(UIManager.Instance.ShowPlayerHandGapFill());
+        UIManager.Instance.UpdateAllHandVisuals(); // ここで自動的にYourTrendも更新される
 
         // 4. マッチ判定
         // トレンドライドを先にチェック
@@ -516,7 +525,7 @@ public class GameManager : MonoBehaviour
             Debug.Log($"トレンドライド {humanPlayer.playerName} の行動で勝利が発生");
             // 勝利シーケンスを開始（引数に「行動した人」を渡す）
             StartCoroutine(StartRoundEndSequence(trendRideWinners, humanPlayer, WinType.TrendRide));
-            return; // 勝利したのでターンを回さない
+            yield break; // 勝利したのでターンを回さない
         }
         // セルフマッチをチェック
         if(CheckForSelfMatch(humanPlayer))
@@ -525,7 +534,7 @@ public class GameManager : MonoBehaviour
             isWaitingForWinConfirmation = true;
             // 勝利確認ボタンを表示
             UIManager.Instance.ShowWinButton(true);
-            return; // ターン終了をせず、ボタン入力を待つ
+            yield break; // ターン終了をせず、ボタン入力を待つ
         }
         // 5. マッチしなかった場合、効果処理とターン送り
         // 操作をロックし、効果処理コルーチン開始
@@ -559,7 +568,7 @@ public class GameManager : MonoBehaviour
                         SoundManager.Instance.PlaySound(dogNoticeSound);
                     yield return StartCoroutine(
                         UIManager.Instance.PlayCPUTrendRideWinAnimation(cpuIdx));
-                    yield return new WaitForSeconds(1.2f);
+                    yield return new WaitForSeconds(1.5f);
                 }
                 else
                 {
@@ -637,6 +646,10 @@ public class GameManager : MonoBehaviour
                 // 最終ステージ(Flag5)でCPUが勝利 → 失格エンド
                 if (GetProgressFlag() == 5)
                 {
+                    if(PlayerHasIdeologyInHand(players[0], IdeologyType.Thoughtcrime))
+                    {
+                        SceneManager.LoadSceneAsync("Execution");
+                    }
                     Debug.Log("Disqualificationルート突入: Flag5でCPUが総合勝利");
                     SceneManager.LoadSceneAsync("Disqualification");
                 }
@@ -741,6 +754,7 @@ public class GameManager : MonoBehaviour
         if (playedEffect == CardEffect.Reject)
         {
             isTurnClockwise = !isTurnClockwise;
+            UIManager.Instance.ReverseOrNonReverseIndication(isTurnClockwise);
             Debug.Log("リバース!");
         }
         // 2. 次のプレイヤーを計算
@@ -948,13 +962,13 @@ public class GameManager : MonoBehaviour
                 UIManager.Instance.SetGoalTextDependOnProgress(0);
                 break;
             case 2:
-                if (currentRound >= 4)
+                if (currentRound >= 5)
                 {
                     SceneManager.LoadSceneAsync("DisqualificationBeforeIdeology");
                 }
                 else
                 {
-                    UIManager.Instance.SetGoalTextDependOnProgress(4 - currentRound);
+                    UIManager.Instance.SetGoalTextDependOnProgress(5 - currentRound);
                 }
                 break;
             case 3:
@@ -1055,9 +1069,10 @@ public class GameManager : MonoBehaviour
             int cardIndex = currentCPU.hand.IndexOf(cardToPlay);
             Debug.Log(cardIndex);
             currentCPU.hand.Remove(cardToPlay);
-            UIManager.Instance.UpdateAllHandVisuals(); // UI（CPUの手札枚数）を更新
             yield return StartCoroutine(UIManager.Instance.ShowCPUPlayCardAnimation(currentPlayerIndex, cardToPlay, cardIndex));
             PlayCardToField(cardToPlay, currentCPU);
+            yield return StartCoroutine(UIManager.Instance.ShowCPUHandGapFill(currentPlayerIndex));
+            UIManager.Instance.UpdateAllHandVisuals(); // ここで自動的にYourTrendも更新される
 
             // 3. マッチ判定と次のターン（ロジックを分離）
             List<Player> trendRideWinners = CheckForTrendRide(currentCPU);
@@ -1228,7 +1243,7 @@ public class GameManager : MonoBehaviour
         float bestScore = float.MinValue;
         
         // 1から6までを評価
-        for(int trend = 1; trend <= 6; trend++)
+        for(int trend = 1; trend <= 7; trend++)
         {
             float score = 0f;
             

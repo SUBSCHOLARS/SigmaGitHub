@@ -105,6 +105,12 @@ public class UIManager : MonoBehaviour
     [SerializeField] private RetroWipeEffect retroWipeEffect;
     [Header("目標確認ボタン")]
     [SerializeField] private GameObject goalConfirmButton;
+    [Header("Reject用UI")]
+    [SerializeField] private Image reverseOrNonReverseImage;
+    [SerializeField] private Sprite nonReverseSprite;
+    [SerializeField] private Sprite reverseSprite;
+    [Header("スライドの秒数")]
+    [SerializeField] private float slideDuration = 0.9f;
 
     void Awake()
     {
@@ -604,7 +610,7 @@ public class UIManager : MonoBehaviour
         }
 
         // レイアウトの更新
-        // この時点でplayerHandContainer.childCountは6（新しい手札の枚数）になっている
+        // この時点でplayerHandContainer.childCountは新しい手札の枚数になっている
         playerHandContainer.GetComponent<HandLayoutManager>().UpdateLayout();
 
         // BureauBrotherをCPUが持っている場合、プレイヤーの手札を警告色（赤）に
@@ -1373,19 +1379,11 @@ public class UIManager : MonoBehaviour
         yield return new WaitForSeconds(0.3f);
     }
 
-    // SigmaSpeakの発動によるカードの色変化、効果発動メッセージを表示するメソッド
-    public void IsShowSigmaSpeakActivationUI(bool show)
-    {
-        if(show)
-        {
-
-        }
-    }
-
     // CPUが出したカードを手札位置からフィールドへ飛ばすアニメーション
     public IEnumerator ShowCPUPlayCardAnimation(int cpuPlayerIndex, CardData card, int cardIndexInHand)
     {
         Transform container = cpuPlayerIndex == 1 ? cpu1HandContainer : cpu2HandContainer;
+
         if (container == null || container.childCount <= cardIndexInHand) yield break;
 
         RectTransform sourceRT = container.GetChild(cardIndexInHand).GetComponent<RectTransform>();
@@ -1427,6 +1425,102 @@ public class UIManager : MonoBehaviour
         Destroy(tempCard);
     }
 
+    public IEnumerator ShowPlayerPlayCardAnimation(CardData playedCard)
+    {
+        RectTransform sourceRT = null;
+        foreach (Transform child in playerHandContainer)
+        {
+            CardController cc = child.GetComponent<CardController>();
+            if (cc != null && cc.cardData == playedCard)
+            {
+                sourceRT = child.GetComponent<RectTransform>();
+                break;
+            }
+        }
+        if (sourceRT == null) yield break;
+
+        sourceRT.gameObject.SetActive(false);
+        Vector3 startWorldPos = sourceRT.position;
+        Vector3 endWorldPos = fieldCardTop.transform.position;
+
+        Canvas rootCanvas = GetComponentInParent<Canvas>();
+        if (rootCanvas == null) yield break;
+
+        GameObject tempCard = Instantiate(cardPrefab, rootCanvas.transform);
+        RectTransform tempRT = tempCard.GetComponent<RectTransform>();
+        if (tempRT != null)
+        {
+            tempRT.anchorMin = new Vector2(0.5f, 0.5f);
+            tempRT.anchorMax = new Vector2(0.5f, 0.5f);
+            tempRT.pivot = new Vector2(0.5f, 0.5f);
+            tempRT.sizeDelta = sourceRT.sizeDelta;
+        }
+        tempCard.transform.rotation = sourceRT.rotation;
+        tempCard.transform.position = startWorldPos;
+        tempCard.transform.SetAsLastSibling();
+
+        CardController tempCC = tempCard.GetComponent<CardController>();
+        if (tempCC != null) tempCC.Setup(playedCard);
+
+        Image img = tempCard.GetComponent<Image>();
+        if (img != null) img.raycastTarget = false;
+
+        yield return tempCard.transform
+            .DOMove(endWorldPos, slideDuration)
+            .SetEase(Ease.OutCubic)
+            .WaitForCompletion();
+
+        Destroy(tempCard);
+    }
+
+    public IEnumerator ShowPlayerHandGapFill()
+    {
+        HandLayoutManager hlm = playerHandContainer.GetComponent<HandLayoutManager>();
+        if (hlm == null) yield break;
+
+        float totalWidth = (hlm.maxCardsInRow - 1) * hlm.cardSpacing;
+        float slideStartX = -totalWidth / 2f;
+        Sequence slideSq = DOTween.Sequence();
+        int newIdx = 0;
+        for (int i = 0; i < playerHandContainer.childCount; i++)
+        {
+            Transform child = playerHandContainer.GetChild(i);
+            if (!child.gameObject.activeSelf) continue;
+            RectTransform childRT = child.GetComponent<RectTransform>();
+            if (childRT == null) { newIdx++; continue; }
+            float xPos = slideStartX + newIdx % hlm.maxCardsInRow * hlm.cardSpacing;
+            float yPos = -(newIdx / hlm.maxCardsInRow) * hlm.cardSpacingInRow - Mathf.Abs(xPos) / hlm.arcAmount;
+            child.DOKill();
+            slideSq.Join(childRT.DOLocalMove(new Vector3(xPos, yPos, 0), slideDuration / 2f).SetEase(Ease.OutCubic));
+            newIdx++;
+        }
+        yield return slideSq.WaitForCompletion();
+    }
+    public IEnumerator ShowCPUHandGapFill(int cpuPlayerIndex)
+    {
+        Transform container = cpuPlayerIndex == 1 ? cpu1HandContainer : cpu2HandContainer;
+
+        // 残りのカードをスライドして隙間を埋める
+        float totalWidth = (maxCardsInCPUHandRow - 1) * cpuCardSpacing;
+        float slideStartX = -totalWidth / 2f;
+        int newIdx = 0;
+        Sequence slideSeq = DOTween.Sequence();
+        for (int i = 0; i < container.childCount; i++)
+        {
+            Transform child = container.GetChild(i);
+            if (!child.gameObject.activeSelf) continue;
+
+            RectTransform childRT = child.GetComponent<RectTransform>();
+            if (childRT == null) { newIdx++; continue; }
+
+            float xPos = slideStartX + newIdx % maxCardsInCPUHandRow * cpuCardSpacing;
+            float yPos = -(newIdx / maxCardsInCPUHandRow) * cpuCardSpacingInRow - Mathf.Abs(xPos) / cpuArcAmount;
+            slideSeq.Join(childRT.DOLocalMove(new Vector3(xPos, yPos, 0), slideDuration).SetEase(Ease.OutCubic));
+            newIdx++;
+        }
+        yield return slideSeq.WaitForCompletion();
+    }
+
     // CPU の表情スプライトを切り替える
     public void UpdateCPUFace(int cpuPlayerIndex, CPUFaceState state)
     {
@@ -1466,6 +1560,17 @@ public class UIManager : MonoBehaviour
             else if (players[i].wins < playerWins) state = CPUFaceState.Disadvantage;
             else                                   state = CPUFaceState.Normal;
             UpdateCPUFace(i, state);
+        }
+    }
+    public void ReverseOrNonReverseIndication(bool isClockWise)
+    {
+        if(isClockWise)
+        {
+            reverseOrNonReverseImage.sprite=nonReverseSprite;
+        }
+        else
+        {
+            reverseOrNonReverseImage.sprite=reverseSprite;
         }
     }
 }

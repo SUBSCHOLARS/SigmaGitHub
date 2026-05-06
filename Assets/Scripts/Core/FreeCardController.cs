@@ -42,8 +42,8 @@ public class FreeCardController : MonoBehaviour
     {
         if (!isPlayerOwned) return; // CPUのカードはクリック不可
         Debug.Log("クリックされたカード" + myCardData.cardName);
-        // GameManagerに「このカードがプレイされようとした」と伝える
-        FreeGameManager.Instance.TryPlayCard(myCardData);
+        // FreeGameManagerに「このカードがプレイされようとした」と伝える
+        FreeGameManager.Instance.StartCoroutine(FreeGameManager.Instance.TryPlayCard(myCardData));
     }
     public void SetHover(bool hover)
     {

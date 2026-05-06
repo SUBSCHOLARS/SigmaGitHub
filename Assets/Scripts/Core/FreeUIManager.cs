@@ -99,6 +99,12 @@ public class FreeUIManager : MonoBehaviour
     [SerializeField] private GameObject goalConfirmButton;
     [Header("FreeGamePLay内のRetroWipeEffect")]
     [SerializeField] private RetroWipeEffect retroWipeEffect;
+    [Header("Reject用UI")]
+    [SerializeField] private Image reverseOrNonReverseImage;
+    [SerializeField] private Sprite nonReverseSprite;
+    [SerializeField] private Sprite reverseSprite;
+    [Header("スライドの秒数")]
+    [SerializeField] private float slideDuration = 0.9f;
     void Awake()
     {
         if (Instance == null)
@@ -315,7 +321,7 @@ public class FreeUIManager : MonoBehaviour
             yield return new WaitForSeconds(1.5f); // 結果を見せる時間
             
             // 手札の表示を更新（ここでCPUの手札が表になる）
-            UpdateAllHandVisuals(currentPlayerIndex); 
+            UpdateAllHandVisuals(); 
         }
 
         // 6. クリーンアップ
@@ -522,7 +528,7 @@ public class FreeUIManager : MonoBehaviour
         }
     }
     // プレイヤーの手札を画面に表示するメソッド
-    public void UpdateAllHandVisuals(int currentPlayerIndex)
+    public void UpdateAllHandVisuals()
     {
         // 手札を破棄する前に、ホバー検出器の参照をリセット
         if(freeHandHoverDetector!=null)
@@ -581,7 +587,7 @@ public class FreeUIManager : MonoBehaviour
         List<Player> players = FreeGameManager.Instance.players;
 
         // プレイヤーの手札合計値を計算して表示
-        if(yourTrendText!=null && currentPlayerIndex==0)
+        if(yourTrendText!=null)
         {
             // FreeGameManagerに計算を依頼
             var (handValue, hasDoublethink) = FreeGameManager.Instance.GetHandValue(players[0].hand);
@@ -1310,12 +1316,105 @@ public class FreeUIManager : MonoBehaviour
         if (img != null) img.raycastTarget = false;
 
         yield return tempCard.transform
+            .DOMove(endWorldPos, slideDuration)
+            .SetEase(Ease.OutCubic)
+            .WaitForCompletion();
+
+        Destroy(tempCard);
+    }
+    public IEnumerator ShowPlayerPlayCardAnimation(CardData playedCard)
+    {
+        RectTransform sourceRT = null;
+        foreach (Transform child in playerHandContainer)
+        {
+            FreeCardController fcc = child.GetComponent<FreeCardController>();
+            if (fcc != null && fcc.MyCardData == playedCard)
+            {
+                sourceRT = child.GetComponent<RectTransform>();
+                break;
+            }
+        }
+        if (sourceRT == null) yield break;
+
+        sourceRT.gameObject.SetActive(false);
+        Vector3 startWorldPos = sourceRT.position;
+        Vector3 endWorldPos = fieldCardTop.transform.position;
+
+        Canvas rootCanvas = GetComponentInParent<Canvas>();
+        if (rootCanvas == null) yield break;
+
+        GameObject tempCard = Instantiate(cardPrefab, rootCanvas.transform);
+        RectTransform tempRT = tempCard.GetComponent<RectTransform>();
+        if (tempRT != null)
+        {
+            tempRT.anchorMin = new Vector2(0.5f, 0.5f);
+            tempRT.anchorMax = new Vector2(0.5f, 0.5f);
+            tempRT.pivot = new Vector2(0.5f, 0.5f);
+            tempRT.sizeDelta = sourceRT.sizeDelta;
+        }
+        tempCard.transform.rotation = sourceRT.rotation;
+        tempCard.transform.position = startWorldPos;
+        tempCard.transform.SetAsLastSibling();
+
+        FreeCardController tempfCC = tempCard.GetComponent<FreeCardController>();
+        if (tempfCC != null) tempfCC.Setup(playedCard);
+
+        Image img = tempCard.GetComponent<Image>();
+        if (img != null) img.raycastTarget = false;
+
+        yield return tempCard.transform
             .DOMove(endWorldPos, 0.5f)
             .SetEase(Ease.OutCubic)
             .WaitForCompletion();
 
         Destroy(tempCard);
     }
+
+    public IEnumerator ShowPlayerHandGapFill()
+    {
+        HandLayoutManager hlm = playerHandContainer.GetComponent<HandLayoutManager>();
+        if (hlm == null) yield break;
+
+        float totalWidth = (hlm.maxCardsInRow - 1) * hlm.cardSpacing;
+        float slideStartX = -totalWidth / 2f;
+        Sequence slideSq = DOTween.Sequence();
+        int newIdx = 0;
+        for (int i = 0; i < playerHandContainer.childCount; i++)
+        {
+            Transform child = playerHandContainer.GetChild(i);
+            if (!child.gameObject.activeSelf) continue;
+            RectTransform childRT = child.GetComponent<RectTransform>();
+            if (childRT == null) { newIdx++; continue; }
+            float xPos = slideStartX + newIdx % hlm.maxCardsInRow * hlm.cardSpacing;
+            float yPos = -(newIdx / hlm.maxCardsInRow) * hlm.cardSpacingInRow - Mathf.Abs(xPos) / hlm.arcAmount;
+            child.DOKill();
+            slideSq.Join(childRT.DOLocalMove(new Vector3(xPos, yPos, 0), slideDuration / 2f).SetEase(Ease.OutCubic));
+            newIdx++;
+        }
+        yield return slideSq.WaitForCompletion();
+    }
+    public IEnumerator ShowCPUHandGapFill(int cpuPlayerIndex)
+    {
+        Transform container = cpuPlayerIndex == 1 ? cpu1HandContainer : cpu2HandContainer;
+        // 残りのカードをスライドして隙間を埋める
+        float totalWidth = (maxCardsInCPUHandRow - 1) * cpuCardSpacing;
+        float slideStartX = -totalWidth / 2f;
+        int newIdx = 0;
+        Sequence slideSeq = DOTween.Sequence();
+        for (int i = 0; i < container.childCount; i++)
+        {
+            Transform child = container.GetChild(i);
+            if (!child.gameObject.activeSelf) continue;
+            RectTransform childRT = child.GetComponent<RectTransform>();
+            if (childRT == null) { newIdx++; continue; }
+            float xPos = slideStartX + newIdx % maxCardsInCPUHandRow * cpuCardSpacing;
+            float yPos = -(newIdx / maxCardsInCPUHandRow) * cpuCardSpacingInRow - Mathf.Abs(xPos) / cpuArcAmount;
+            slideSeq.Join(childRT.DOLocalMove(new Vector3(xPos, yPos, 0), slideDuration).SetEase(Ease.OutCubic));
+            newIdx++;
+        }
+        yield return slideSeq.WaitForCompletion();
+    }
+
     // CPU の表情スプライトを切り替える
     public void UpdateCPUFace(int cpuPlayerIndex, CPUFaceState state)
     {
@@ -1345,7 +1444,7 @@ public class FreeUIManager : MonoBehaviour
     // wins を基準に全 CPU の通常表情を更新（ラウンド得点確定後に呼ぶ）
     public void UpdateAllCPUFaceExpressions()
     {
-        List<Player> players = GameManager.Instance.players;
+        List<Player> players = FreeGameManager.Instance.players;
         if (players == null || players.Count < 2) return;
         int playerWins = players[0].wins;
         for (int i = 1; i < players.Count; i++)
@@ -1355,6 +1454,17 @@ public class FreeUIManager : MonoBehaviour
             else if (players[i].wins < playerWins) state = CPUFaceState.Disadvantage;
             else                                   state = CPUFaceState.Normal;
             UpdateCPUFace(i, state);
+        }
+    }
+    public void ReverseOrNonReverseIndication(bool isClockWise)
+    {
+        if(isClockWise)
+        {
+            reverseOrNonReverseImage.sprite=nonReverseSprite;
+        }
+        else
+        {
+            reverseOrNonReverseImage.sprite=reverseSprite;
         }
     }
 }

@@ -50,7 +50,7 @@ public class CardController : MonoBehaviour
         if (!isPlayerOwned) return; // CPUのカードはクリック不可
         Debug.Log("クリックされたカード" + myCardData.cardName);
         // GameManagerに「このカードがプレイされようとした」と伝える
-        GameManager.Instance.TryPlayCard(myCardData);
+        GameManager.Instance.StartCoroutine(GameManager.Instance.TryPlayCard(myCardData));
     }
     public void SetHover(bool hover)
     {
