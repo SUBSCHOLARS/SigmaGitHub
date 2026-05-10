@@ -573,8 +573,9 @@ public class FreeUIManager : MonoBehaviour
             // SigmaSpeak 有効中はスプライトを差し替え
             if (FreeGameManager.Instance.sigmaSpeakActive && cardData.sigmaSpeakSprite != null)
             {
-                var img = newCardObj.GetComponent<Image>();
-                if (img != null) img.sprite = cardData.sigmaSpeakSprite;
+                // var img = newCardObj.GetComponent<Image>();
+                // if (img != null) img.sprite = cardData.sigmaSpeakSprite;
+                freeCardController.SetSigmaSpeakMode(FreeGameManager.Instance.sigmaSpeakActive);
             }
             // Detectorのリストに新しいカードを追加
             freeHandHoverDetector.cardsInHand.Add(freeCardController);

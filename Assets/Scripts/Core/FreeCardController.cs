@@ -45,6 +45,13 @@ public class FreeCardController : MonoBehaviour
         // FreeGameManagerに「このカードがプレイされようとした」と伝える
         FreeGameManager.Instance.StartCoroutine(FreeGameManager.Instance.TryPlayCard(myCardData));
     }
+    public void SetSigmaSpeakMode(bool active)
+    {
+        if(myCardData.sigmaSpeakSprite !=null)
+        {
+            cardImage.sprite = active ? myCardData.sigmaSpeakSprite : myCardData.cardSprite;
+        }
+    }
     public void SetHover(bool hover)
     {
         if (hover && !isHovered)

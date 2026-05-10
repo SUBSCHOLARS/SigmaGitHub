@@ -600,7 +600,7 @@ public class UIManager : MonoBehaviour
             CardController cardController = newCardObj.GetComponent<CardController>();
             cardController.Setup(cardData);
             cardController.isPlayerOwned = true; // プレイヤーのカードとしてマーク
-            if(GameManager.Instance.sigmaSpeakActive && cardData.effect != CardEffect.None)
+            if(GameManager.Instance.sigmaSpeakActive && cardData.sigmaSpeakSprite != null)
             {
                 cardController.SetSigmaSpeakMode(true);
             }
