@@ -10209,7 +10209,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e0f5ba54b4ba84ccda4139a79edbf919, type: 2}
   - {fileID: 11400000, guid: e0f5ba54b4ba84ccda4139a79edbf919, type: 2}
   - {fileID: 11400000, guid: 7afca8fcbed7e44708941b6bcc989716, type: 2}
-  - {fileID: 11400000, guid: 688c95ac5655c4721ae1878b5e85d3e1, type: 2}
   - {fileID: 11400000, guid: ec47f2434eb9c4a48948371d4303eea1, type: 2}
   - {fileID: 11400000, guid: 32d9a90ebcd8d47599c0d1bb7b20002a, type: 2}
   - {fileID: 11400000, guid: ea1720dfa5dd3412f890d404086d5425, type: 2}
@@ -10220,7 +10219,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4d86bc78030d3409ab784de4d2451e3f, type: 2}
   - {fileID: 11400000, guid: 536494d10f98a49a7b52e112b9634cbf, type: 2}
   - {fileID: 11400000, guid: 71fad1a1e78c1489292278ee67347e40, type: 2}
-  - {fileID: 11400000, guid: f6c965e82d6e0407cb413fb080566820, type: 2}
   - {fileID: 11400000, guid: ac8ae1350913146dcbcb15f37785f360, type: 2}
   - {fileID: 11400000, guid: 20964a128df4a4e02a47b1eab6db000f, type: 2}
   - {fileID: 11400000, guid: b4c22e5414a5e4f1992ea2216b3509e9, type: 2}
@@ -10231,7 +10229,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 736f0a74e00634cd6b4cd2aba75ea9fc, type: 2}
   - {fileID: 11400000, guid: dd7efeb4b5ae249239735d20ce587278, type: 2}
   - {fileID: 11400000, guid: 27f269d6d79e340d5ba0ac01c41a21b2, type: 2}
-  - {fileID: 11400000, guid: c38de017aa993480d991f54ac2d63ee5, type: 2}
   - {fileID: 11400000, guid: 2023fd78dad7d4470afeb0ff5030147f, type: 2}
   - {fileID: 11400000, guid: ff57017c1cef24347911c4810791f341, type: 2}
   - {fileID: 11400000, guid: c7c4f9fd12e9c4bbc9a34ddf61025e34, type: 2}
@@ -10242,7 +10239,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f775147700d4f4b4e8d74fe5dc4c9e25, type: 2}
   - {fileID: 11400000, guid: c4b0e756a34274a1587133245bd9edb1, type: 2}
   - {fileID: 11400000, guid: 9836f4b5b2e334bc6836e215263ed3e2, type: 2}
-  - {fileID: 11400000, guid: d53d2b51671104321a6c5eb572d2f0e9, type: 2}
   - {fileID: 11400000, guid: c6d8dfc6a115b45bfae349d1c02fb34c, type: 2}
   - {fileID: 11400000, guid: 6292ae7848b2c46fa94fe22971bb0d2c, type: 2}
   - {fileID: 11400000, guid: f69432d3beee0439982787bfca51410a, type: 2}
@@ -10256,6 +10252,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 109aa845bbb1ec24f89b14b9e691d528, type: 2}
   - {fileID: 11400000, guid: 8e49170bde9081649a1d274310155dd3, type: 2}
   - {fileID: 11400000, guid: b7eded12b49b9524b8aca243a93d99e3, type: 2}
+  - {fileID: 11400000, guid: fec39e5d6bf3647d483fa8e2ef0a7ff3, type: 2}
+  - {fileID: 11400000, guid: fec39e5d6bf3647d483fa8e2ef0a7ff3, type: 2}
+  - {fileID: 11400000, guid: fec39e5d6bf3647d483fa8e2ef0a7ff3, type: 2}
+  - {fileID: 11400000, guid: fec39e5d6bf3647d483fa8e2ef0a7ff3, type: 2}
   ideologyCardDatabase: []
   drawSound: {fileID: 8300000, guid: c96d6c23a815e4e51bf8d1b1a722dd9c, type: 3}
   playCardSound: {fileID: 8300000, guid: 7a63a4602902a42f38ec2925153fec9e, type: 3}
@@ -10272,6 +10272,14 @@ MonoBehaviour:
   sigmaSpeakActivatorIndex: -1
   memoryHoleUsedThisTurn: 0
   bribeSprite: {fileID: 0}
+  numberSprites:
+  - {fileID: 8906535288332628968, guid: 8383536c6c3f14d73a6d8420b9b4178e, type: 3}
+  - {fileID: -1739198746453962294, guid: f16d188b4fedf4d33a3bb85ad7a7f279, type: 3}
+  - {fileID: -8646038057354247821, guid: 6ee68a00f23fb4ebf87eba12aebd51d2, type: 3}
+  - {fileID: -9149595790079352919, guid: 37f552478e3014dfb94667719cf9f273, type: 3}
+  - {fileID: -1991224323112568568, guid: 0196e34b720364d8290ed29f837060c6, type: 3}
+  - {fileID: -9109299201891457981, guid: 3fd8ae1241b444fc9a616022a65a4bc2, type: 3}
+  - {fileID: -5319029520119078399, guid: ede4d98f088894b96b633059d47d4bac, type: 3}
 --- !u!1 &1948061659
 GameObject:
   m_ObjectHideFlags: 0

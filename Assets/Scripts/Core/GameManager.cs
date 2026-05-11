@@ -60,6 +60,8 @@ public class GameManager : MonoBehaviour
     private const int FIRST_DECK_DISTRIBUTION_COUNT=21;
     private int distributionCount=0;
 
+    [SerializeField] private Sprite[] numberSprites;
+
     void Awake()
     {
         gameMaster = new Player(PlayerID.GameMaster, false, "GameMaster", 0, IdeologyType.None);
@@ -312,7 +314,7 @@ public class GameManager : MonoBehaviour
             return true;
         }
         // 一旦ここにBribeの処理を切り分ける
-        if(cardToPlay.effect==CardEffect.Bribe && cardToPlay.sector==currentCardOnField.sector)
+        if(cardToPlay.effect==CardEffect.Bribe /* && cardToPlay.sector==currentCardOnField.sector */)
         {
             return true;
         }
@@ -445,14 +447,17 @@ public class GameManager : MonoBehaviour
 
         // 現在場に出ているBribeカードの絵柄を取得
         // PlayCardToFieldですでにcurrentCardOnFieldは更新されているはず
-        CardSector bribeSector=currentCardOnField.sector;
-        Debug.Log($"Bribe: {bribeSector} の数字 {currentTrendValue} を設定しました。");
+        // CardSector bribeSector=currentCardOnField.sector;
+        // Debug.Log($"Bribe: {bribeSector} の数字 {currentTrendValue} を設定しました。");
         // その絵柄かつ指定した数字のカードデータを検索して取得
-        CardData targetCard=GetCardDataBySectorAndNumber(bribeSector, currentTrendValue);
+        // CardData targetCard=GetCardDataBySectorAndNumber(bribeSector, currentTrendValue);
 
         // 画像が見つかればそれをUIに渡す（見つからなければnull）
-        Sprite stampSprite=(targetCard != null) ? targetCard.cardIcon: null;
-        Sprite stampIcon=(targetCard!=null) ? targetCard.rawSectorIcon: null;
+        // Sprite stampSprite=(targetCard != null) ? targetCard.cardIcon: null;
+        // Sprite stampIcon=(targetCard!=null) ? targetCard.rawSectorIcon: null;
+
+        Sprite stampSprite = GetNumberSprite(currentTrendValue);
+        Sprite stampIcon = currentCardOnField.rawSectorIcon;
 
         // 場のトレンドが更新されたのでUIに反映（Bribe用）
         UIManager.Instance.UpdateCurrentTrendWhenBribe(stampSprite, stampIcon, currentTrendValue);
@@ -685,10 +690,10 @@ public class GameManager : MonoBehaviour
                 currentTrendValue = chosenTrend;
                 Debug.Log($"[AI Bribe] {cardPlayer.playerName} selected Trend {currentTrendValue}");
                 // CPUの場合も同様に画像を取得して反映
-                CardSector bribeSector=playedCard.sector;
-                CardData targetCard=GetCardDataBySectorAndNumber(bribeSector, currentTrendValue);
-                Sprite stampSprite=(targetCard != null) ? targetCard.cardIcon : null;
-                Sprite stampIcon=(targetCard!=null) ? targetCard.rawSectorIcon:null;
+                // CardSector bribeSector=playedCard.sector;
+                // CardData targetCard=GetCardDataBySectorAndNumber(bribeSector, currentTrendValue);
+                Sprite stampSprite = GetNumberSprite(currentTrendValue);
+                Sprite stampIcon = currentCardOnField.rawSectorIcon;
                 // 場のトレンドが更新されたのでUIに反映
                 UIManager.Instance.UpdateCurrentTrendWhenBribe(stampSprite, stampIcon, currentTrendValue);
                 StartCoroutine(TurnTransitionRoutine(playedCard.effect));
@@ -1456,6 +1461,21 @@ public class GameManager : MonoBehaviour
             }
         }
         return null; // 見つからなかった場合
+    }
+    // Bribeの改修として、渡された数字から数字のスプライトのみを返す軽量なメソッドを作成する
+    public Sprite GetNumberSprite(int trend)
+    {
+        switch(trend)
+        {
+            case 1: return numberSprites[0];
+            case 2: return numberSprites[1];
+            case 3: return numberSprites[2];
+            case 4: return numberSprites[3];
+            case 5: return numberSprites[4];
+            case 6: return numberSprites[5];
+            case 7: return numberSprites[6];
+            default: return null;
+        }
     }
     // 現在のゲーム進行フラグを取得するメソッド
     public int GetProgressFlag()

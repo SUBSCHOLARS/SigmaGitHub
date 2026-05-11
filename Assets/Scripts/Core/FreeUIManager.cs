@@ -584,7 +584,7 @@ public class FreeUIManager : MonoBehaviour
         // レイアウトの更新
         // この時点でplayerHandContainer.childCountは6（新しい手札の枚数）になっている
         playerHandContainer.GetComponent<HandLayoutManager>().UpdateLayout();
-        // 3. CPUの手札更新(裏向きで更新)
+        
         List<Player> players = FreeGameManager.Instance.players;
 
         // プレイヤーの手札合計値を計算して表示
@@ -765,7 +765,14 @@ public class FreeUIManager : MonoBehaviour
         if (count >= 1)
         {
             // リストの末尾(count-1)が最新のカード
-            fieldCardTop.sprite = pile[count - 1].cardSprite;
+            if(FreeGameManager.Instance.sigmaSpeakActive && cardData.sigmaSpeakSprite != null)
+            {
+                fieldCardTop.sprite = cardData.sigmaSpeakSprite;
+            }
+            else
+            {
+                fieldCardTop.sprite = pile[count - 1].cardSprite;
+            }
             fieldCardTop.enabled = true;
             fieldCardExplanation.text = pile[count - 1].descriptionText;
             // ここでスタンプ判定を行う
@@ -788,7 +795,14 @@ public class FreeUIManager : MonoBehaviour
         // 2. 1ターン前のカード
         if (count >= 2)
         {
-            fieldCardMiddle.sprite = pile[count - 2].cardSprite;
+            if(FreeGameManager.Instance.sigmaSpeakActive && pile[count - 2].sigmaSpeakSprite != null)
+            {
+                fieldCardMiddle.sprite = pile[count - 2].sigmaSpeakSprite;
+            }
+            else
+            {
+                fieldCardMiddle.sprite = pile[count - 2].cardSprite;
+            }
             fieldCardMiddle.enabled = true;
             fieldCardExplanation.text = pile[count - 1].descriptionText;
         }
@@ -799,7 +813,14 @@ public class FreeUIManager : MonoBehaviour
         // 3. 2ターン前のカード
         if (count >= 3)
         {
-            fieldCardBottom.sprite = pile[count - 3].cardSprite;
+            if(FreeGameManager.Instance.sigmaSpeakActive && pile[count - 3].sigmaSpeakSprite != null)
+            {
+                fieldCardBottom.sprite = pile[count - 3].sigmaSpeakSprite;
+            }
+            else
+            {
+                fieldCardBottom.sprite = pile[count - 3].cardSprite;
+            }
             fieldCardBottom.enabled = true;
             fieldCardExplanation.text = pile[count - 1].descriptionText;
         }
@@ -1316,6 +1337,11 @@ public class FreeUIManager : MonoBehaviour
         Image img = tempCard.GetComponent<Image>();
         if (img != null) img.raycastTarget = false;
 
+        if(FreeGameManager.Instance.sigmaSpeakActive && card.sigmaSpeakSprite != null)
+        {
+            img.sprite = card.sigmaSpeakSprite;
+        }
+
         yield return tempCard.transform
             .DOMove(endWorldPos, slideDuration)
             .SetEase(Ease.OutCubic)
@@ -1362,6 +1388,11 @@ public class FreeUIManager : MonoBehaviour
 
         Image img = tempCard.GetComponent<Image>();
         if (img != null) img.raycastTarget = false;
+
+        if(FreeGameManager.Instance.sigmaSpeakActive && playedCard.sigmaSpeakSprite != null)
+        {
+            img.sprite = playedCard.sigmaSpeakSprite;
+        }
 
         yield return tempCard.transform
             .DOMove(endWorldPos, 0.5f)

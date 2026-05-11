@@ -812,7 +812,14 @@ public class UIManager : MonoBehaviour
         if (count >= 1)
         {
             // リストの末尾(count-1)が最新のカード
-            fieldCardTop.sprite = GetFieldSprite(pile[count - 1]);
+            if(GameManager.Instance.sigmaSpeakActive && pile[count - 1].sigmaSpeakSprite != null)
+            {
+                fieldCardTop.sprite = pile[count - 1].sigmaSpeakSprite;
+            }
+            else
+            {
+                fieldCardTop.sprite = GetFieldSprite(pile[count - 1]);
+            }
             fieldCardTop.enabled = true;
             fieldCardExplanation.text=pile[count-1].descriptionText;
             // ここでスタンプ判定を行う
@@ -835,7 +842,14 @@ public class UIManager : MonoBehaviour
         // 2. 1ターン前のカード
         if (count >= 2)
         {
-            fieldCardMiddle.sprite = GetFieldSprite(pile[count - 2]);
+            if(GameManager.Instance.sigmaSpeakActive && pile[count - 2].sigmaSpeakSprite != null)
+            {
+                fieldCardMiddle.sprite = pile[count - 2].sigmaSpeakSprite;
+            }
+            else
+            {
+                fieldCardMiddle.sprite = GetFieldSprite(pile[count - 2]);
+            }
             fieldCardMiddle.enabled = true;
             fieldCardExplanation.text=pile[count-1].descriptionText;
         }
@@ -846,7 +860,14 @@ public class UIManager : MonoBehaviour
         // 3. 2ターン前のカード
         if (count >= 3)
         {
-            fieldCardBottom.sprite = GetFieldSprite(pile[count - 3]);
+            if(GameManager.Instance.sigmaSpeakActive && pile[count - 3].sigmaSpeakSprite != null)
+            {
+                fieldCardBottom.sprite = pile[count - 3].sigmaSpeakSprite;
+            }
+            else
+            {
+                fieldCardBottom.sprite = GetFieldSprite(pile[count - 3]);
+            }
             fieldCardBottom.enabled = true;
             fieldCardExplanation.text=pile[count-1].descriptionText;
         }
@@ -1417,6 +1438,11 @@ public class UIManager : MonoBehaviour
         Image img = tempCard.GetComponent<Image>();
         if (img != null) img.raycastTarget = false;
 
+        if(GameManager.Instance.sigmaSpeakActive && card.sigmaSpeakSprite != null)
+        {
+            img.sprite = card.sigmaSpeakSprite;
+        }
+
         yield return tempCard.transform
             .DOMove(endWorldPos, 0.5f)
             .SetEase(Ease.OutCubic)
@@ -1464,6 +1490,11 @@ public class UIManager : MonoBehaviour
 
         Image img = tempCard.GetComponent<Image>();
         if (img != null) img.raycastTarget = false;
+
+        if(GameManager.Instance.sigmaSpeakActive && playedCard.sigmaSpeakSprite != null)
+        {
+            img.sprite = playedCard.sigmaSpeakSprite;
+        }
 
         yield return tempCard.transform
             .DOMove(endWorldPos, slideDuration)
