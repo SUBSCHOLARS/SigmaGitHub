@@ -38,6 +38,7 @@ public class UIManager : MonoBehaviour
     [Header("プレハブ")]
     public GameObject cardPrefab;
     public GameObject cardBackPrefab; // CardBackをアタッチ
+    public GameObject bribeCardPrefab; // BribeCardをアタッチ
     [Header("山札表示")]
     public Transform deckVisualContainer; // DeckVisualContainerをアタッチ
     [Header("ターンインジケーター")]
@@ -57,6 +58,7 @@ public class UIManager : MonoBehaviour
     public Transform surveyCardDisplayArea; // SuveryCardDisplayAreaをアタッチ
     public TextMeshProUGUI surveyResultValueText; // SurveyResultValueTextをアタッチ
     private HandHoverDetector handHoverDetector;
+    private HandHoverDetector bribeHandHoverDetector;
     [Header("ターミナルUI")]
     [SerializeField] private GameObject terminalWindow; // TerminalWindowパネル
     [SerializeField] private GameObject unreadBadge; // 未読バッジ
@@ -122,10 +124,16 @@ public class UIManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        if (playerHandContainer != null)
+        if (playerHandContainer != null && bribeSelectionPanel != null)
         {
             handHoverDetector = playerHandContainer.GetComponent<HandHoverDetector>();
+            Debug.Log("PlayerHandContainerのHandHoverDetectorを取得");
             playerHandRaycaster = playerHandContainer.GetComponent<Image>();
+
+            bribeHandHoverDetector = bribeSelectionPanel.GetComponent<HandHoverDetector>();
+            bribeSelectionPanel.SetActive(false); // コンポーネントを取得したら非表示にする
+
+            Debug.Log("PlayerHandContainerのImageを取得");
             if (handHoverDetector == null)
             {
                 Debug.LogError("Player_HandContainerにHandHoverDetectorコンポーネントがアタッチされていません!");
@@ -144,11 +152,6 @@ public class UIManager : MonoBehaviour
         // CPUの手札エリアにもHoverDetectorを仕込む
         SetupCPUHandHover(cpu1HandContainer);
         SetupCPUHandHover(cpu2HandContainer);
-
-        if(bribeSelectionPanel!=null)
-        {
-            bribeSelectionPanel.SetActive(false);
-        }
         if(targetSelectionPanel!=null)
         {
             targetSelectionPanel.SetActive(false);
@@ -183,7 +186,7 @@ public class UIManager : MonoBehaviour
         }
         if(revealAllHandsPanel!=null)
         {
-                revealAllHandsPanel.SetActive(false);
+            revealAllHandsPanel.SetActive(false);
         }
         terminalLogText.text=""; // ログを空にする
         // 勝利確認ボタンの初期設定
@@ -224,6 +227,37 @@ public class UIManager : MonoBehaviour
     public void ShowBribeSelectionUI()
     {
         bribeSelectionPanel.SetActive(true);
+        if(bribeHandHoverDetector != null)
+        {
+            bribeHandHoverDetector.ResetHover();
+        }
+        List<Transform> oldBribeCards = new List<Transform>();
+        foreach(Transform child in bribeSelectionPanel.transform)
+        {
+            if(child.gameObject.GetComponent<TextMeshProUGUI>())
+            {
+                continue; // TextMeshProUGUIは削除しない
+            }
+            oldBribeCards.Add(child);
+        }
+        foreach(Transform child in oldBribeCards)
+        {
+            child.DOKill();
+            child.SetParent(null);
+            Destroy(child.gameObject);
+        }
+        bribeHandHoverDetector.cardsInHand.Clear();
+        var bribeCards = from numCard in GameManager.Instance.players[0].hand
+                                        where !numCard.isIdeologyCard
+                                        select numCard;;
+        foreach(CardData card in bribeCards)
+        {
+            GameObject cardObj = Instantiate(bribeCardPrefab, bribeSelectionPanel.transform);
+            cardObj.GetComponent<BribeCardController>().Setup(card);
+            cardObj.GetComponent<Image>().raycastTarget = true; // クリックを検知するために有効化
+            bribeHandHoverDetector.cardsInHand.Add(cardObj.GetComponent<BribeCardController>());
+        }
+        bribeSelectionPanel.GetComponent<HandLayoutManager>().UpdateLayout();
     }
     public void HideBribeSelectionUI()
     {
@@ -284,7 +318,7 @@ public class UIManager : MonoBehaviour
     public IEnumerator ShowCensorAnimation(Player targetPlayer)
     {
         // 1. 準備
-        surveyTitleText.text = "CENSOR";
+        surveyTitleText.text = "CENSOR(検閲)";
         surveyPanel.SetActive(true);
 
         CardData randomCard = null;
@@ -292,11 +326,8 @@ public class UIManager : MonoBehaviour
         {
             // ターゲットの手札からランダムに一枚選ぶ
             randomCard = targetPlayer.hand[Random.Range(0, targetPlayer.hand.Count)];
-            // 公開リストに追加（永続化）
-            if(!targetPlayer.revealedCards.Contains(randomCard))
-            {
-                 targetPlayer.revealedCards.Add(randomCard);
-            }
+            // 公開リストに追加（HashSetが重複を自動排除）
+            targetPlayer.revealedCards.Add(randomCard);
         }
 
         // ターゲットの手札を震わせる
@@ -366,9 +397,10 @@ public class UIManager : MonoBehaviour
     public IEnumerator ShowInterrogateAnimation(Player targetPlayer)
     {
         // 1. 準備
-        surveyTitleText.text="INTERROGATE";
+        surveyTitleText.text="INTERROGATE(尋問)";
         surveyPanel.SetActive(true);
         int maxVal=int.MinValue;
+        CardData maxValCard=null;
         bool isHandEmpty=true;
         if(targetPlayer.hand.Count>0)
         {
@@ -379,9 +411,11 @@ public class UIManager : MonoBehaviour
                 if(card.handValue>maxVal)
                 {
                     maxVal=card.handValue;
+                    maxValCard=card;
                 }
             }
         }
+        targetPlayer.interrogatedCards.Add(maxValCard); // 永続化
         // ターゲットの手札を震わせる
         Transform targetHand=GetHandContainerForPlayer(targetPlayer);
         if(targetHand!=null)
@@ -402,24 +436,25 @@ public class UIManager : MonoBehaviour
         else
         {
             // 3. 最大価値のカードの数価を表示
-            surveyResultValueText.text=$"MAX VALUE: {maxVal}";
+            surveyResultValueText.text=$"最大値: {maxVal}";
             surveyResultValueText.gameObject.SetActive(true);
             // 4. ログ表示
             msg=$"{targetPlayer.playerName}の最大の手札価値は[{maxVal}]です";
         }
         AddLogMessage(msg, null);
         // 5. 表示
-        yield return new WaitForSeconds(2.5f);
+        yield return new WaitForSeconds(3.0f);
         // 6. クリーンアップ
         surveyResultValueText.gameObject.SetActive(false);
         surveyPanel.SetActive(false);
+        UpdateAllHandVisuals();
     }
     // 結果を一定時間表示するコルーチンも追加
     public IEnumerator ShowEffectResult(string message)
     {
         effectResultText.text = message;
         effectResultText.gameObject.SetActive(true);
-        yield return new WaitForSeconds(2.0f); // 2秒間表示
+        yield return new WaitForSeconds(3.0f); // 3秒間表示
         effectResultText.gameObject.SetActive(false);
     }
     private string GetSectorIconName(CardSector sector, CardEffect effect)
@@ -594,11 +629,25 @@ public class UIManager : MonoBehaviour
         // 2. 新しい手札を生成
         foreach (CardData cardData in playerHand)
         {
-            // プレハブをplayerHandContainerの子として生成
+            bool isRevealed = GameManager.Instance.players[0].revealedCards.Contains(cardData);
+            bool isInterrogated = GameManager.Instance.players[0].interrogatedCards.Contains(cardData);
             GameObject newCardObj = Instantiate(cardPrefab, playerHandContainer);
-            // CardControllerを取得して、カード情報を設定
             CardController cardController = newCardObj.GetComponent<CardController>();
             cardController.Setup(cardData);
+            if(isRevealed)
+            {
+                // 既に公開されているカードは赤色にする
+                Image img = newCardObj.GetComponent<Image>();
+                if(img != null) img.color = new Color(1f, 0.8f, 0.8f);                
+            }
+            if(isInterrogated)
+            {
+                Image numIcon = cardController.numValueIcon;
+                if(numIcon != null)
+                {
+                    numIcon.color = new Color(1f, 0f, 0f, 1f); // 数値アイコンは完全に表示
+                }
+            }
             cardController.isPlayerOwned = true; // プレイヤーのカードとしてマーク
             if(GameManager.Instance.sigmaSpeakActive && cardData.sigmaSpeakSprite != null)
             {
@@ -649,10 +698,7 @@ public class UIManager : MonoBehaviour
             {
                 foreach (var card in players[p].hand)
                 {
-                    if (!players[p].revealedCards.Contains(card))
-                    {
-                        players[p].revealedCards.Add(card);
-                    }
+                    players[p].revealedCards.Add(card);
                 }
             }
         }
@@ -680,10 +726,11 @@ public class UIManager : MonoBehaviour
         }
         foreach (Transform child in oldCards)
         {
+            child.DOKill();
             child.SetParent(null);
             Destroy(child.gameObject);
         }
-        
+
         // 表示するカードのリストを決定
         List<CardData> targetHand = (handData != null) ? handData : cpu.hand;
         int childCount = targetHand.Count;
@@ -704,15 +751,43 @@ public class UIManager : MonoBehaviour
             
             // 全公開モード、もしくはこのカードが公開済みリストに含まれているか
             bool isRevealed = reveal || cpu.revealedCards.Contains(currentCard);
+            bool isInterrogated = cpu.interrogatedCards.Contains(currentCard);
 
-            if (isRevealed)
+            if(isRevealed && isInterrogated)
             {
                 // 表向きで生成
                 cardObj = Instantiate(cardPrefab, container);
                 CardController cardController = cardObj.GetComponent<CardController>();
                 // カードデータを設定
                 cardController.Setup(currentCard);
-                // "EYE" アイコン的なものを追加しても良いが、一旦表向きにするだけにする
+                // Colorを変えて少し強調する
+                Image img = cardObj.GetComponent<Image>();
+                if(!reveal && cpu.revealedCards.Contains(currentCard))
+                {
+                     // 公開されたカードは少し赤みがかった色にする（警告色）
+                     if(img != null) img.color = new Color(1f, 0.8f, 0.8f);
+                }
+                Image numIcon = cardController.numValueIcon;
+                if(numIcon != null)
+                {
+                    numIcon.color = new Color(1f, 0f, 0f, 1f); // 数値アイコンは完全に表示
+                }
+                // SigmaSpeak 発動中かつ発動者がこのCPUなら差し替え
+                int playerIndex = GameManager.Instance.players.IndexOf(cpu);
+                if (GameManager.Instance.sigmaSpeakActive
+                    && GameManager.Instance.sigmaSpeakActivatorIndex == playerIndex
+                    && currentCard.sigmaSpeakSprite != null)
+                {
+                    if (img != null) img.sprite = currentCard.sigmaSpeakSprite;
+                }
+            }
+            else if (isRevealed && !isInterrogated) // 公開されていて尋問されていないカード
+            {
+                // 表向きで生成
+                cardObj = Instantiate(cardPrefab, container);
+                CardController cardController = cardObj.GetComponent<CardController>();
+                // カードデータを設定
+                cardController.Setup(currentCard);
                 // Colorを変えて少し強調する
                 Image img = cardObj.GetComponent<Image>();
                 if(!reveal && cpu.revealedCards.Contains(currentCard))
@@ -727,6 +802,17 @@ public class UIManager : MonoBehaviour
                     && currentCard.sigmaSpeakSprite != null)
                 {
                     if (img != null) img.sprite = currentCard.sigmaSpeakSprite;
+                }
+            }
+            else if(!isRevealed && isInterrogated)
+            {
+                // 尋問されているカードは裏向きで生成
+                cardObj = Instantiate(cardBackPrefab, container);
+                Image numIcon = cardObj.transform.GetChild(0).GetComponentInChildren<Image>();
+                if(numIcon != null)
+                {
+                    numIcon.sprite = currentCard.numValueIcon;
+                    numIcon.color = new Color(1f, 0f, 0f, 1f); // 数値アイコンは完全に表示
                 }
             }
             else
@@ -767,7 +853,15 @@ public class UIManager : MonoBehaviour
             // (RevealedのカードのみがCardControllerを持っている前提)
             foreach(Transform child in container)
             {
-                CardController cc = child.GetComponent<CardController>();
+                AbstractCardController cc = null;
+                if(child.GetComponent<CardController>() != null)
+                {
+                    cc = child.GetComponentInChildren<CardController>();
+                }
+                else
+                {
+                    cc = child.GetComponent<CardBackController>();
+                }
                 if(cc != null)
                 {
                     detector.cardsInHand.Add(cc);
@@ -1090,7 +1184,6 @@ public class UIManager : MonoBehaviour
     {
         if (currentTrendText != null && sectorIcon != null)
         {
-            // トレンド値も不明にする
             currentTrendText.text = $"TREND: {trendValue}";
             // ?アイコンに変更
             sectorIcon.sprite = errorSprite;

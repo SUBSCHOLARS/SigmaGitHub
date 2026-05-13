@@ -261,11 +261,8 @@ public class FreeUIManager : MonoBehaviour
         {
             // ターゲットの手札からランダムに一枚選ぶ
             randomCard = targetPlayer.hand[Random.Range(0, targetPlayer.hand.Count)];
-            // 公開リストに追加（永続化）
-            if(!targetPlayer.revealedCards.Contains(randomCard))
-            {
-                 targetPlayer.revealedCards.Add(randomCard);
-            }
+            // 公開リストに追加（HashSetが重複を自動排除）
+            targetPlayer.revealedCards.Add(randomCard);
         }
 
         // ターゲットの手札を震わせる
@@ -607,8 +604,7 @@ public class FreeUIManager : MonoBehaviour
         {
             for (int p = 1; p < players.Count; p++)
                 foreach (var card in players[p].hand)
-                    if (!players[p].revealedCards.Contains(card))
-                        players[p].revealedCards.Add(card);
+                    players[p].revealedCards.Add(card);
         }
 
         if (players.Count >= 3) // 3人以上いるか確認

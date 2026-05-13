@@ -16,6 +16,7 @@ MonoBehaviour:
   cardSprite: {fileID: -3662667429919439483, guid: d159f477cc75447ef86f3c02d9b8db7b, type: 3}
   cardIcon: {fileID: 21300000, guid: 315248dda4f24424c89d15e1faf90d06, type: 3}
   rawSectorIcon: {fileID: -3032423481802380067, guid: 66f988e3808dc48d7842c395e3b18a12, type: 3}
+  numValueIcon: {fileID: 4426293586961124817, guid: 9a04ca86ae8594eb9a087f7646c10185, type: 3}
   sector: 3
   effect: 2
   numberValue: 9

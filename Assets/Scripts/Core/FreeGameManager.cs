@@ -221,7 +221,7 @@ public class FreeGameManager : MonoBehaviour
         int firstCardIndex = -1;
         for (int i = 0; i < deck.Count; i++)
         {
-            if (deck[i].effect == CardEffect.None && !deck[i].isIdeologyCard)
+            if (deck[i].effect == CardEffect.None && deck[i].ideologyType == IdeologyType.None)
             {
                 firstCardIndex = i;
                 break;
@@ -864,7 +864,8 @@ public class FreeGameManager : MonoBehaviour
         foreach (Player player in players)
         {
             player.hand.Clear();
-            player.revealedCards.Clear(); // ラウンド開始時に公開カードをクリア
+            player.revealedCards.Clear();     // ラウンド開始時に公開カードをクリア
+            player.interrogatedCards.Clear(); // ラウンド開始時に尋問カードをクリア
         }
 
         // 2. 山札と捨て札をリセット

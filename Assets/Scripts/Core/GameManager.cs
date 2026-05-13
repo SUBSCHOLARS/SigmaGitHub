@@ -222,7 +222,7 @@ public class GameManager : MonoBehaviour
         int firstCardIndex = -1;
         for (int i = 0; i < deck.Count; i++)
         {
-            if (deck[i].effect == CardEffect.None)
+            if (deck[i].effect == CardEffect.None && deck[i].ideologyType == IdeologyType.None) // イデオロギーカードは最初に出さないルール
             {
                 firstCardIndex = i;
                 break;
@@ -266,7 +266,6 @@ public class GameManager : MonoBehaviour
         string message = $"{DateTime.Now} [{playerName}] played [{card.cardName}]";
         // UIManagerにログ表示を依頼
         UIManager.Instance.AddLogMessage(message, card);
-        // TODO: Bribeの場合の数字設定の処理を追加
         if(card.effect==CardEffect.Censor||card.effect==CardEffect.Interrogate)
         {
            // 次のプレイがワイルドになる
@@ -515,6 +514,8 @@ public class GameManager : MonoBehaviour
         // 3. カードを出せる場合の処理を続ける
         Player humanPlayer = players[currentPlayerIndex];
         humanPlayer.hand.Remove(cardToPlay);
+        humanPlayer.revealedCards.Remove(cardToPlay);
+        humanPlayer.interrogatedCards.Remove(cardToPlay);
         SetInputLock(true);
         yield return StartCoroutine(UIManager.Instance.ShowPlayerPlayCardAnimation(cardToPlay));
         PlayCardToField(cardToPlay, humanPlayer); // UI更新もこの中で行われる
@@ -690,8 +691,6 @@ public class GameManager : MonoBehaviour
                 currentTrendValue = chosenTrend;
                 Debug.Log($"[AI Bribe] {cardPlayer.playerName} selected Trend {currentTrendValue}");
                 // CPUの場合も同様に画像を取得して反映
-                // CardSector bribeSector=playedCard.sector;
-                // CardData targetCard=GetCardDataBySectorAndNumber(bribeSector, currentTrendValue);
                 Sprite stampSprite = GetNumberSprite(currentTrendValue);
                 Sprite stampIcon = currentCardOnField.rawSectorIcon;
                 // 場のトレンドが更新されたのでUIに反映
@@ -998,7 +997,8 @@ public class GameManager : MonoBehaviour
         foreach (Player player in players)
         {
             player.hand.Clear();
-            player.revealedCards.Clear(); // ラウンド開始時に公開カードをクリア
+            player.revealedCards.Clear();     // ラウンド開始時に公開カードをクリア
+            player.interrogatedCards.Clear(); // ラウンド開始時に尋問カードをクリア
         }
 
         // 2. 山札と捨て札をリセット
@@ -1246,8 +1246,7 @@ public class GameManager : MonoBehaviour
         List<CardData> unseenCards = GetUnseenCards(cpu);
         int bestTrend = 1;
         float bestScore = float.MinValue;
-        
-        // 1から6までを評価
+
         for(int trend = 1; trend <= 7; trend++)
         {
             float score = 0f;
@@ -1474,6 +1473,11 @@ public class GameManager : MonoBehaviour
             case 5: return numberSprites[4];
             case 6: return numberSprites[5];
             case 7: return numberSprites[6];
+            case 8: return numberSprites[7];
+            case 9: return numberSprites[8];
+            case 10: return numberSprites[9];
+            case 11: return numberSprites[10];
+            case 12: return numberSprites[11];
             default: return null;
         }
     }

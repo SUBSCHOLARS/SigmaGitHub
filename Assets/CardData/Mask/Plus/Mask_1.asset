@@ -16,6 +16,7 @@ MonoBehaviour:
   cardSprite: {fileID: 1334112762561373075, guid: 0ac3b895fbbfe417ab1996db52ab8bb8, type: 3}
   cardIcon: {fileID: 21300000, guid: e0d15678635584ccd9ebf71e74bc3d0b, type: 3}
   rawSectorIcon: {fileID: -3032423481802380067, guid: 66f988e3808dc48d7842c395e3b18a12, type: 3}
+  numValueIcon: {fileID: 8906535288332628968, guid: 8383536c6c3f14d73a6d8420b9b4178e, type: 3}
   sector: 3
   effect: 0
   numberValue: 1
@@ -24,3 +25,4 @@ MonoBehaviour:
   descriptionText: "\u4EEE\u9762\u306E\u30B9\u30FC\u30C8\u3001\u4FA1\u5024\u306F1"
   isIdeologyCard: 0
   ideologyType: 0
+  sigmaSpeakSprite: {fileID: 0}

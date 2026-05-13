@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 public class HandLayoutManager : MonoBehaviour
 {
@@ -21,6 +22,10 @@ public class HandLayoutManager : MonoBehaviour
         for(int i=0; i<childCount; i++)
         {
             Transform card = transform.GetChild(i);
+            if(card.gameObject.GetComponent<TextMeshProUGUI>())
+            {
+                continue; // TextMeshProUGUIはレイアウトしない
+            }
 
             // 1. 位置を決める
             float xPos = startX + i%maxCardsInRow * cardSpacing;

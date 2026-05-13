@@ -4,7 +4,8 @@ public class Player
 {
     public PlayerID id;
     public List<CardData> hand = new List<CardData>();
-    public List<CardData> revealedCards = new List<CardData>(); // 公開されたカード
+    public HashSet<CardData> revealedCards = new HashSet<CardData>(); // 公開されたカード
+    public HashSet<CardData> interrogatedCards = new HashSet<CardData>(); // 尋問されたカード
     public bool isCPU;
     public string playerName;
     public int totalPoints;

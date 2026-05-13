@@ -1,34 +1,26 @@
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
-using TMPro;
-// 自分が何のカードなのか記憶し、クリックされたらGameManagerに通知する
-[RequireComponent(typeof(Image))]
-public class CardController : AbstractCardController
+
+public class BribeCardController : AbstractCardController
 {
-    public GameObject cardTooltipPanel;
-    public TextMeshProUGUI descriptionText;
-    public TextMeshProUGUI flavorText;
-    public Image numValueIcon;
-    // このカードのデータをセットアップ（設定）するメソッド
     public override void Setup(CardData data)
     {
         myCardData = data;
-        // Imageコンポーネントを取得して、スプライトを設定
+         // Imageコンポーネントを取得して、スプライトを設定
         if (cardImage == null)
         {
             cardImage = GetComponent<Image>();
         }
         cardImage.sprite = myCardData.cardSprite;
-        // カード自身のImageはマウスを検知しないようにする
         cardImage.raycastTarget = false;
 
-        // テキストを流し込む
-        descriptionText.text = "説明: "+myCardData.descriptionText;
-        flavorText.text = "フレーバー: "+myCardData.flavorText;
-
-        // 数値アイコンの設定
-        numValueIcon.sprite = myCardData.numValueIcon;
+    }
+    public override void HandleClick()
+    {
+        if(!isPlayerOwned) return;
+        Debug.Log("クリックされたBribeカード" + myCardData.cardName);
+        GameManager.Instance.PlayerSelectBribeTrend(myCardData.numberValue);
     }
     public override void SetSigmaSpeakMode(bool active)
     {
@@ -36,14 +28,6 @@ public class CardController : AbstractCardController
         {
             cardImage.sprite = active ? myCardData.sigmaSpeakSprite : myCardData.cardSprite;
         }
-    }
-    // カードがクリックされたときに呼ばれるメソッド
-    public override void HandleClick()
-    {
-        if (!isPlayerOwned) return; // CPUのカードはクリック不可
-        Debug.Log("クリックされたカード" + myCardData.cardName);
-        // GameManagerに「このカードがプレイされようとした」と伝える
-        GameManager.Instance.StartCoroutine(GameManager.Instance.TryPlayCard(myCardData));
     }
     public override void SetHover(bool hover)
     {
@@ -58,12 +42,9 @@ public class CardController : AbstractCardController
 
             transform.DOLocalMoveY(initialPosition.y + 20f, 0.5f).SetEase(Ease.InOutQuad);
             transform.SetAsLastSibling(); // 最前面に表示
-
-            cardTooltipPanel.SetActive(true); // ツールチップを表示
         }
         else if(!hover && isHovered)
         {
-            cardTooltipPanel.SetActive(false); // ツールチップを非表示
             // ホバー終了
             isHovered = false;
             // 実行中のTweenを即時に停止し、元の位置に戻すTweenを開始する
