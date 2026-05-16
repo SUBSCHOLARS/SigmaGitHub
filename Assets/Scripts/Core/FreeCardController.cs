@@ -4,23 +4,15 @@ using DG.Tweening;
 using TMPro;
 // 自分が何のカードなのか記憶し、クリックされたらGameManagerに通知する
 [RequireComponent(typeof(Image))]
-public class FreeCardController : MonoBehaviour
+public class FreeCardController : AbstractCardController
 {
-    private CardData myCardData;
-    public CardData MyCardData => myCardData; // 外部からカードデータを参照できるようにするプロパティ
-    private Image cardImage;
-
-    private Vector3 initialPosition; // 元の位置を記憶
-    private int siblingIndex; // 本来の重なり順を記憶
-    private bool isHovered = false; // 現在ホバー中かどうかの判定
-    public bool isPlayerOwned = false; // プレイヤー所有カードのみ true
-
     [SerializeField] private GameObject _cardTooltipPanel;
     [SerializeField] private TextMeshProUGUI _descriptionText;
     [SerializeField] private TextMeshProUGUI _flavorText;
+    public Image numValueIcon;
 
     // このカードのデータをセットアップ（設定）するメソッド
-    public void Setup(CardData data)
+    public override void Setup(CardData data)
     {
         myCardData = data;
         // Imageコンポーネントを取得して、スプライトを設定
@@ -35,24 +27,29 @@ public class FreeCardController : MonoBehaviour
         // テキストを流し込む
         _descriptionText.text = "説明: "+myCardData.descriptionText;
         _flavorText.text = "フレーバー: "+myCardData.flavorText;
+        // 数値アイコンを設定
+        if (numValueIcon != null)
+        {
+            numValueIcon.sprite = myCardData.numValueIcon;
+        }
     }
 
     // カードがクリックされたときに呼ばれるメソッド
-    public void HandleClick()
+    public override void HandleClick()
     {
         if (!isPlayerOwned) return; // CPUのカードはクリック不可
         Debug.Log("クリックされたカード" + myCardData.cardName);
         // FreeGameManagerに「このカードがプレイされようとした」と伝える
         FreeGameManager.Instance.StartCoroutine(FreeGameManager.Instance.TryPlayCard(myCardData));
     }
-    public void SetSigmaSpeakMode(bool active)
+    public override void SetSigmaSpeakMode(bool active)
     {
         if(myCardData.sigmaSpeakSprite !=null)
         {
             cardImage.sprite = active ? myCardData.sigmaSpeakSprite : myCardData.cardSprite;
         }
     }
-    public void SetHover(bool hover)
+    public override void SetHover(bool hover)
     {
         if (hover && !isHovered)
         {

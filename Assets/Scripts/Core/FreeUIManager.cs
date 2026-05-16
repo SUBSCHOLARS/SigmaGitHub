@@ -655,21 +655,71 @@ public class FreeUIManager : MonoBehaviour
             
             // 全公開モード、もしくはこのカードが公開済みリストに含まれているか
             bool isRevealed = reveal || cpu.revealedCards.Contains(currentCard);
+            bool isInterrogated = cpu.interrogatedCards.Contains(currentCard);
 
-            if (isRevealed)
+            if(isRevealed && isInterrogated)
             {
                 // 表向きで生成
                 cardObj = Instantiate(cardPrefab, container);
-                FreeCardController freeCardController = cardObj.GetComponent<FreeCardController>();
+                FreeCardController cardController = cardObj.GetComponent<FreeCardController>();
                 // カードデータを設定
-                freeCardController.Setup(currentCard);
-                // "EYE" アイコン的なものを追加しても良いが、一旦表向きにするだけにする
+                cardController.Setup(currentCard);
                 // Colorを変えて少し強調する
+                Image img = cardObj.GetComponent<Image>();
                 if(!reveal && cpu.revealedCards.Contains(currentCard))
                 {
                      // 公開されたカードは少し赤みがかった色にする（警告色）
-                     Image img = cardObj.GetComponent<Image>();
                      if(img != null) img.color = new Color(1f, 0.8f, 0.8f);
+                }
+                Image numIcon = cardController.numValueIcon;
+                if(numIcon != null)
+                {
+                    numIcon.color = new Color(1f, 0f, 0f, 1f); // 数値アイコンは完全に表示
+                }
+                // SigmaSpeak 発動中かつ発動者がこのCPUなら差し替え
+                int playerIndex = GameManager.Instance.players.IndexOf(cpu);
+                if (GameManager.Instance.sigmaSpeakActive
+                    && GameManager.Instance.sigmaSpeakActivatorIndex == playerIndex
+                    && currentCard.sigmaSpeakSprite != null)
+                {
+                    if (img != null) img.sprite = currentCard.sigmaSpeakSprite;
+                }
+            }
+            else if (isRevealed && !isInterrogated) // 公開されていて尋問されていないカード
+            {
+                // 表向きで生成
+                cardObj = Instantiate(cardPrefab, container);
+                FreeCardController cardController = cardObj.GetComponent<FreeCardController>();
+                // カードデータを設定
+                cardController.Setup(currentCard);
+                // Colorを変えて少し強調する
+                Image img = cardObj.GetComponent<Image>();
+                if(!reveal && cpu.revealedCards.Contains(currentCard))
+                {
+                     // 公開されたカードは少し赤みがかった色にする（警告色）
+                     if(img != null) img.color = new Color(1f, 0.8f, 0.8f);
+                }
+                // SigmaSpeak 発動中かつ発動者がこのCPUなら差し替え
+                int playerIndex = GameManager.Instance.players.IndexOf(cpu);
+                if (GameManager.Instance.sigmaSpeakActive
+                    && GameManager.Instance.sigmaSpeakActivatorIndex == playerIndex
+                    && currentCard.sigmaSpeakSprite != null)
+                {
+                    if (img != null) img.sprite = currentCard.sigmaSpeakSprite;
+                }
+            }
+            else if(!isRevealed && isInterrogated)
+            {
+                // 尋問されているカードは裏向きで生成
+                cardObj = Instantiate(cardBackPrefab, container);
+                FreeCardController cardController = cardObj.GetComponent<FreeCardController>();
+                // カードデータを設定
+                cardController.Setup(currentCard);
+                Image numIcon = cardObj.transform.GetChild(0).GetComponentInChildren<Image>();
+                if(numIcon != null)
+                {
+                    numIcon.sprite = currentCard.numValueIcon;
+                    numIcon.color = new Color(1f, 0f, 0f, 1f); // 数値アイコンは完全に表示
                 }
             }
             else
@@ -690,12 +740,6 @@ public class FreeUIManager : MonoBehaviour
             float yPos = -i/maxCardsInCPUHandRow * cpuCardSpacingInRow - Mathf.Abs(xPos) / cpuArcAmount;
 
             rect.localPosition = new Vector3(xPos, yPos, 0);
-
-            // 2. 角度を決める（Y座標を基準に）
-            // float angle = -xPos / (totalWidth + 1f) * (cpuRotationAmount * childCount);
-
-            // 3. ベース回転（90度）と束の傾き（angle）を足す
-            // rect.localRotation = Quaternion.Euler(0, 0, angle);
         }
 
         // CPU手札コンテナのサイズを調整（Raycast用）
@@ -716,7 +760,15 @@ public class FreeUIManager : MonoBehaviour
             // (RevealedのカードのみがFreeCardControllerを持っている前提)
             foreach(Transform child in container)
             {
-                FreeCardController fcc = child.GetComponent<FreeCardController>();
+                AbstractCardController fcc = null;
+                if(child.GetComponent<FreeCardController>() != null)
+                {
+                    fcc = child.GetComponent<FreeCardController>();
+                }
+                else
+                {
+                    fcc = child.GetComponent<CardBackController>();
+                }
                 if(fcc != null)
                 {
                     freeDetector.cardsInHand.Add(fcc);
@@ -1152,7 +1204,7 @@ public class FreeUIManager : MonoBehaviour
                 foreach (Transform child in tgtContainer)
                 {
                     var fcc = child.GetComponent<FreeCardController>();
-                    if (fcc != null && fcc.MyCardData == targetCard) { tgtObj = child.gameObject; break; }
+                    if (fcc != null && fcc.myCardData == targetCard) { tgtObj = child.gameObject; break; }
                 }
             }
             else
@@ -1351,7 +1403,7 @@ public class FreeUIManager : MonoBehaviour
         foreach (Transform child in playerHandContainer)
         {
             FreeCardController fcc = child.GetComponent<FreeCardController>();
-            if (fcc != null && fcc.MyCardData == playedCard)
+            if (fcc != null && fcc.myCardData == playedCard)
             {
                 sourceRT = child.GetComponent<RectTransform>();
                 break;

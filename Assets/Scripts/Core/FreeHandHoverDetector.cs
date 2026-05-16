@@ -8,16 +8,16 @@ using UnityEngine.SceneManagement;
 public class FreeHandHoverDetector : MonoBehaviour, IPointerMoveHandler, IPointerExitHandler, IPointerClickHandler
 {
     // FreeUIManagerが手札のリストをここに設定する
-    public List<FreeCardController> cardsInHand = new List<FreeCardController>();
+    public List<AbstractCardController> cardsInHand = new List<AbstractCardController>();
     public bool isInteractionEnabled = true; // クリック有効か
-    private FreeCardController currentlyHoveredCard = null;
+    private AbstractCardController currentlyHoveredCard = null;
     // カメラへの参照を追加
     private Camera mainCamera;
     // マウスがHandPlayArea(透明な壁)の上を移動し続けている間、常に呼ばれる。
     public void OnPointerMove(PointerEventData eventData)
     {
         // マウスに一番近いカードを探す（eventData.positionはピクセル座標）
-        FreeCardController closestCard = FindClosestCard(eventData.position);
+        AbstractCardController closestCard = FindClosestCard(eventData.position);
         if (closestCard != currentlyHoveredCard)
         {
             // 以前ホバーしていたカードがあれば、ホバーを削除
