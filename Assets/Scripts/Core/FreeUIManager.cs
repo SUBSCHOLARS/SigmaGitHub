@@ -38,6 +38,7 @@ public class FreeUIManager : MonoBehaviour
     [Header("プレハブ")]
     public GameObject cardPrefab;
     public GameObject cardBackPrefab; // CardBackをアタッチ
+    public GameObject bribeCardPrefab;
     [Header("山札表示")]
     public Transform deckVisualContainer; // DeckVisualContainerをアタッチ
     [Header("ターンインジケーター")]
