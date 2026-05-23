@@ -67,11 +67,11 @@ public class FreeHandHoverDetector : MonoBehaviour, IPointerMoveHandler, IPointe
         currentlyHoveredCard = null;
     }
     // マウスの座標に地番近いカードを探すロジック（座標変換のロジックも含む）
-    private FreeCardController FindClosestCard(Vector2 mousePosition)
+    private AbstractCardController FindClosestCard(Vector2 mousePosition)
     {
-        FreeCardController closest = null;
+        AbstractCardController closest = null;
         float minDistance = float.MaxValue;
-        foreach (FreeCardController card in cardsInHand)
+        foreach (AbstractCardController card in cardsInHand)
         {
             // カードのスクリーン座標とマウス座標の距離を計算
             // カードのワールド座標（transform.positionをmainCamera.WorldToScreenPointでピクセル座標に変換）

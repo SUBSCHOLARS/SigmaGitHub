@@ -20,7 +20,14 @@ public class BribeCardController : AbstractCardController
     {
         if(!isPlayerOwned) return;
         Debug.Log("クリックされたBribeカード" + myCardData.cardName);
-        GameManager.Instance.PlayerSelectBribeTrend(myCardData.numberValue);
+        if(GameManager.Instance != null)
+        {
+            GameManager.Instance.PlayerSelectBribeTrend(myCardData.numberValue);
+        }
+        else
+        {
+            FreeGameManager.Instance.PlayerSelectBribeTrend(myCardData.numberValue);
+        }
     }
     public override void SetSigmaSpeakMode(bool active)
     {

@@ -1655,6 +1655,7 @@ MonoBehaviour:
   cpuCardSpacingInRow: 20
   cardPrefab: {fileID: 4087856086764915820, guid: d45a5fd441aed1142bf4026e57fe19ae, type: 3}
   cardBackPrefab: {fileID: 4586531106669417455, guid: 8bd66bf65c7df45388df0163aacf02df, type: 3}
+  bribeCardPrefab: {fileID: 6725545581308364881, guid: 4416799d4607134429775bf84cf9c9d1, type: 3}
   deckVisualContainer: {fileID: 938293776}
   playerTurnGlow: {fileID: 1667480559}
   cpu1TurnGlow: {fileID: 813954720}
@@ -1688,7 +1689,7 @@ MonoBehaviour:
   sectorIcon: {fileID: 1351462549}
   errorSprite: {fileID: 21300000, guid: 56fd93bf1c2f44f0a90989040b6b7ba0, type: 3}
   continueButton: {fileID: 1958600343}
-  fieldTopStampEffect: {fileID: 608672885}
+  fieldTopStampEffect: {fileID: 485946823}
   revealAllHandsPanel: {fileID: 1204147250}
   playerNameText: {fileID: 723047548488427418, guid: f4412ac59f09b46f98bd0ac6a9b62bb0, type: 3}
   nextButtonSound: {fileID: 8300000, guid: 51c677061068a4a2492ad0c27a4f6015, type: 3}
@@ -2226,7 +2227,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &478130427
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2315,6 +2316,56 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HandHoverDetector
   cardsInHand: []
   isInteractionEnabled: 1
+--- !u!1 &485946821
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 485946822}
+  - component: {fileID: 485946823}
+  m_Layer: 5
+  m_Name: CardStamp
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &485946822
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 485946821}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 608672882}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &485946823
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 485946821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0eb6eb17af714a81945a2cb9303e078, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CardStampEffect
+  stampImage: {fileID: 1179603939}
+  approvedTextObj: {fileID: 739860220}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -3038,7 +3089,6 @@ GameObject:
   - component: {fileID: 608672882}
   - component: {fileID: 608672884}
   - component: {fileID: 608672883}
-  - component: {fileID: 608672885}
   m_Layer: 5
   m_Name: Field_Card_Top
   m_TagString: Untagged
@@ -3060,6 +3110,7 @@ RectTransform:
   m_Children:
   - {fileID: 739860223}
   - {fileID: 1179603938}
+  - {fileID: 485946822}
   m_Father: {fileID: 246202546}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 3}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -3105,20 +3156,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 608672881}
   m_CullTransparentMesh: 1
---- !u!114 &608672885
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 608672881}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e0eb6eb17af714a81945a2cb9303e078, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CardStampEffect
-  stampImage: {fileID: 1179603939}
-  approvedTextObj: {fileID: 739860220}
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -10243,7 +10280,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2048510229
 RectTransform:
   m_ObjectHideFlags: 0

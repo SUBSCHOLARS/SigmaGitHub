@@ -56,6 +56,7 @@ public class FreeUIManager : MonoBehaviour
     public Transform surveyCardDisplayArea; // SuveryCardDisplayAreaをアタッチ
     public TextMeshProUGUI surveyResultValueText; // SurveyResultValueTextをアタッチ
     private FreeHandHoverDetector freeHandHoverDetector;
+    private HandHoverDetector bribeHandHoverDetector;
     [Header("ターミナルUI")]
     [SerializeField] private GameObject terminalWindow; // TerminalWindowパネル
     [SerializeField] private GameObject unreadBadge; // 未読バッジ
@@ -120,6 +121,10 @@ public class FreeUIManager : MonoBehaviour
         {
             freeHandHoverDetector = playerHandContainer.GetComponent<FreeHandHoverDetector>();
             playerHandRaycaster = playerHandContainer.GetComponent<Image>();
+
+            bribeHandHoverDetector = bribeSelectionPanel.GetComponent<HandHoverDetector>();
+            bribeSelectionPanel.SetActive(false);
+
             if (freeHandHoverDetector == null)
             {
                 Debug.LogError("Player_HandContainerにFreeHandHoverDetectorコンポーネントがアタッチされていません!");
@@ -207,6 +212,37 @@ public class FreeUIManager : MonoBehaviour
     public void ShowBribeSelectionUI()
     {
         bribeSelectionPanel.SetActive(true);
+        if(bribeHandHoverDetector != null)
+        {
+            bribeHandHoverDetector.ResetHover();
+        }
+        List<Transform> oldBribeCards = new List<Transform>();
+        foreach(Transform child in bribeSelectionPanel.transform)
+        {
+            if(child.GetComponent<TextMeshProUGUI>())
+            {
+                continue; // TextMeshProUGUIは削除しない
+            }
+            oldBribeCards.Add(child);
+        }
+        foreach(Transform child in oldBribeCards)
+        {
+            child.DOKill();
+            child.SetParent(null);
+            Destroy(child.gameObject);
+        }
+        bribeHandHoverDetector.cardsInHand.Clear();
+        var bribeCards = from numCard in FreeGameManager.Instance.players[0].hand
+                            where !numCard.isIdeologyCard
+                            select numCard;
+        foreach(CardData card in bribeCards)
+        {
+            GameObject cardObj = Instantiate(bribeCardPrefab, bribeSelectionPanel.transform);
+            cardObj.GetComponent<BribeCardController>().Setup(card);
+            cardObj.GetComponent<Image>().raycastTarget = true;
+            bribeHandHoverDetector.cardsInHand.Add(cardObj.GetComponent<BribeCardController>());
+        }
+        bribeSelectionPanel.GetComponent<HandLayoutManager>().UpdateLayout();
     }
     public void HideBribeSelectionUI()
     {
@@ -333,9 +369,10 @@ public class FreeUIManager : MonoBehaviour
     public IEnumerator ShowInterrogateAnimation(Player targetPlayer)
     {
         // 1. 準備
-        surveyTitleText.text="INTERROGATE";
+        surveyTitleText.text="INTERROGATE(尋問)";
         surveyPanel.SetActive(true);
         int maxVal=int.MinValue;
+        CardData maxValCard = null;
         bool isHandEmpty=true;
         if(targetPlayer.hand.Count>0)
         {
@@ -346,9 +383,11 @@ public class FreeUIManager : MonoBehaviour
                 if(card.handValue>maxVal)
                 {
                     maxVal=card.handValue;
+                    maxValCard = card;
                 }
             }
         }
+        targetPlayer.interrogatedCards.Add(maxValCard);
         // ターゲットの手札を震わせる
         Transform targetHand=GetHandContainerForPlayer(targetPlayer);
         if(targetHand!=null)
@@ -380,6 +419,7 @@ public class FreeUIManager : MonoBehaviour
         // 6. クリーンアップ
         surveyResultValueText.gameObject.SetActive(false);
         surveyPanel.SetActive(false);
+        UpdateAllHandVisuals();
     }
     // 結果を一定時間表示するコルーチンも追加
     public IEnumerator ShowEffectResult(string message)
@@ -562,11 +602,27 @@ public class FreeUIManager : MonoBehaviour
         // 2. 新しい手札を生成
         foreach (CardData cardData in playerHand)
         {
+            bool isRevealed = FreeGameManager.Instance.players[0].revealedCards.Contains(cardData);
+            bool isInterrogated = FreeGameManager.Instance.players[0].interrogatedCards.Contains(cardData);
             // プレハブをplayerHandContainerの子として生成
             GameObject newCardObj = Instantiate(cardPrefab, playerHandContainer);
             // FreeCardControllerを取得して、カード情報を設定
             FreeCardController freeCardController = newCardObj.GetComponent<FreeCardController>();
             freeCardController.Setup(cardData);
+            if(isRevealed)
+            {
+                // 既に公開されているカードは赤色にする
+                Image img = newCardObj.GetComponent<Image>();
+                if(img != null) img.color = new Color(1f, 0.8f, 0.8f);                
+            }
+            if(isInterrogated)
+            {
+                Image numIcon = freeCardController.numValueIcon;
+                if(numIcon != null)
+                {
+                    numIcon.color = new Color(1f, 0f, 0f, 1f); // 数値アイコンは完全に表示
+                }
+            }
             freeCardController.isPlayerOwned = true; // プレイヤーのカードとしてマーク
             // SigmaSpeak 有効中はスプライトを差し替え
             if (FreeGameManager.Instance.sigmaSpeakActive && cardData.sigmaSpeakSprite != null)
