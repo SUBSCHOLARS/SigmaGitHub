@@ -617,9 +617,10 @@ public class FreeUIManager : MonoBehaviour
             }
             if(isInterrogated)
             {
-                Image numIcon = freeCardController.numValueIcon;
+                Image numIcon = newCardObj.transform.GetChild(0).GetComponent<Image>();;
                 if(numIcon != null)
                 {
+                    numIcon.sprite = freeCardController.numValueIcon.sprite;
                     numIcon.color = new Color(1f, 0f, 0f, 1f); // 数値アイコンは完全に表示
                 }
             }
@@ -734,9 +735,9 @@ public class FreeUIManager : MonoBehaviour
                     numIcon.color = new Color(1f, 0f, 0f, 1f); // 数値アイコンは完全に表示
                 }
                 // SigmaSpeak 発動中かつ発動者がこのCPUなら差し替え
-                int playerIndex = GameManager.Instance.players.IndexOf(cpu);
-                if (GameManager.Instance.sigmaSpeakActive
-                    && GameManager.Instance.sigmaSpeakActivatorIndex == playerIndex
+                int playerIndex = FreeGameManager.Instance.players.IndexOf(cpu);
+                if (FreeGameManager.Instance.sigmaSpeakActive
+                    && FreeGameManager.Instance.sigmaSpeakActivatorIndex == playerIndex
                     && currentCard.sigmaSpeakSprite != null)
                 {
                     if (img != null) img.sprite = currentCard.sigmaSpeakSprite;
@@ -757,9 +758,9 @@ public class FreeUIManager : MonoBehaviour
                      if(img != null) img.color = new Color(1f, 0.8f, 0.8f);
                 }
                 // SigmaSpeak 発動中かつ発動者がこのCPUなら差し替え
-                int playerIndex = GameManager.Instance.players.IndexOf(cpu);
-                if (GameManager.Instance.sigmaSpeakActive
-                    && GameManager.Instance.sigmaSpeakActivatorIndex == playerIndex
+                int playerIndex = FreeGameManager.Instance.players.IndexOf(cpu);
+                if (FreeGameManager.Instance.sigmaSpeakActive
+                    && FreeGameManager.Instance.sigmaSpeakActivatorIndex == playerIndex
                     && currentCard.sigmaSpeakSprite != null)
                 {
                     if (img != null) img.sprite = currentCard.sigmaSpeakSprite;
@@ -769,9 +770,6 @@ public class FreeUIManager : MonoBehaviour
             {
                 // 尋問されているカードは裏向きで生成
                 cardObj = Instantiate(cardBackPrefab, container);
-                FreeCardController cardController = cardObj.GetComponent<FreeCardController>();
-                // カードデータを設定
-                cardController.Setup(currentCard);
                 Image numIcon = cardObj.transform.GetChild(0).GetComponentInChildren<Image>();
                 if(numIcon != null)
                 {

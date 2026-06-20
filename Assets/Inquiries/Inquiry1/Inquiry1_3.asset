@@ -13,26 +13,15 @@ MonoBehaviour:
   m_Name: Inquiry1_3
   m_EditorClassIdentifier: Assembly-CSharp::InquiryData
   questionID: 3
-  questionText: "\u8868\u9762\u7684\u306A\u30C7\u30B6\u30A4\u30F3\u306B\u3064\u3044\u3066\u306F\u3069\u3046\u601D\u3044\u307E\u3057\u305F\u304B\uFF1F(1~5)"
-  photo: {fileID: 0}
+  questionText: "\u672C\u88FD\u54C1\u3092\u4F7F\u7528\u3057\u3066\u3044\u308B\u9593\u306B\u4F55\u3089\u304B\u306E\u601D\u8003\u306B\u81F3\u308A\u307E\u3057\u305F\u304B\uFF1F"
+  photos: []
   choices:
-  - buttonLabel: 1
+  - buttonLabel: "\u306F\u3044"
     ideologyType: 0
     pressDuration: 1.5
     nextInquiry: {fileID: 11400000, guid: 641e0495aa9774de6ac2df9bed7458e4, type: 2}
-  - buttonLabel: 2
+  - buttonLabel: "\u3044\u3044\u3048"
     ideologyType: 0
     pressDuration: 1.5
     nextInquiry: {fileID: 11400000, guid: 641e0495aa9774de6ac2df9bed7458e4, type: 2}
-  - buttonLabel: 3
-    ideologyType: 0
-    pressDuration: 1.5
-    nextInquiry: {fileID: 11400000, guid: 641e0495aa9774de6ac2df9bed7458e4, type: 2}
-  - buttonLabel: 4
-    ideologyType: 0
-    pressDuration: 1.5
-    nextInquiry: {fileID: 11400000, guid: 641e0495aa9774de6ac2df9bed7458e4, type: 2}
-  - buttonLabel: 5
-    ideologyType: 0
-    pressDuration: 1.5
-    nextInquiry: {fileID: 11400000, guid: 641e0495aa9774de6ac2df9bed7458e4, type: 2}
+  sound: {fileID: 0}

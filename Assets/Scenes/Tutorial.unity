@@ -2503,6 +2503,7 @@ MonoBehaviour:
   sigmaSpeakActivatorIndex: -1
   memoryHoleUsedThisTurn: 0
   currentRound: 1
+  numberSprites: []
   dogSide: {fileID: 205789223}
   dogFront: {fileID: 197620975}
   tutorialCanvas: {fileID: 1576623724}
@@ -3137,6 +3138,7 @@ MonoBehaviour:
   cpuCardSpacingInRow: 20
   cardPrefab: {fileID: 4087856086764915820, guid: 676823b40ee3c4f99904263a0a8d815d, type: 3}
   cardBackPrefab: {fileID: 4586531106669417455, guid: 8bd66bf65c7df45388df0163aacf02df, type: 3}
+  bribeCardPrefab: {fileID: 0}
   deckVisualContainer: {fileID: 938293776}
   playerTurnGlow: {fileID: 1667480559}
   cpu1TurnGlow: {fileID: 813954720}
@@ -3178,9 +3180,13 @@ MonoBehaviour:
   gameGoalText: {fileID: 0}
   bloodObject: {fileID: 0}
   blackOut: {fileID: 0}
-  goatText: {fileID: 0}
+  goalText: {fileID: 0}
   retroWipeEffect: {fileID: 0}
   goalConfirmButton: {fileID: 0}
+  reverseOrNonReverseImage: {fileID: 0}
+  nonReverseSprite: {fileID: 0}
+  reverseSprite: {fileID: 0}
+  slideDuration: 0.9
 --- !u!1 &373105530
 GameObject:
   m_ObjectHideFlags: 0

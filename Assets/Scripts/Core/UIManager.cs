@@ -1697,4 +1697,8 @@ public class UIManager : MonoBehaviour
             reverseOrNonReverseImage.sprite=reverseSprite;
         }
     }
+    public void HideFieldCardExplanation()
+    {
+        fieldCardExplanation.text="";
+    }
 }

@@ -687,7 +687,7 @@ MonoBehaviour:
   buttonPrefab: {fileID: 3052164396074649235, guid: a27057868f2484b28abb88361d958b12, type: 3}
   maskObject: {fileID: 265713871}
   isDebugMode: 1
-  debugProgressFlag: 5
+  debugProgressFlag: 4
 --- !u!4 &1204919102
 Transform:
   m_ObjectHideFlags: 0

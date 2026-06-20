@@ -167,8 +167,8 @@ public class TutorialGameManager : GameManager
         // 状態: P1手札[Eye_2, Gear_2] (Sum 4). Trend 2.
         isPlayerInputLocked = true;
         yield return StartCoroutine(ShowDialogue("私が「Mask_2」を出したことで、トレンドは「2」に変わった。"));
-        yield return StartCoroutine(ShowDialogue("では君の手札をよく見てくれ。「2」と「2」...合計「4」だ。"));
-        yield return StartCoroutine(ShowDialogue("ここで例えば「Eye_2」を出せばどうなる?\nトレンドは「2」になる。君の手元に残る「Gear_2」の価値も「2」。"));
+        yield return StartCoroutine(ShowDialogue("では君の手札をよく見てくれ。「1」と「1」「2」...合計「4」だ。"));
+        yield return StartCoroutine(ShowDialogue("ここで例えば「歯車の2」を出せばどうなる?\nトレンドは「2」になる。君の手元に残る「目の1」と「歯車の1」の価値も合わせて「2」だ。"));
         yield return StartCoroutine(ShowDialogue("自分が出したカードによる新しいトレンドと、残った手札の合計値が一致する。\nこれを 「セルフマッチ」 と呼ぶ。"));
         yield return StartCoroutine(ShowDialogue("セルフマッチをするなら、手札の合計値を偶数にしておくといいだろうね。"));
         yield return StartCoroutine(ShowDialogue("これこそがこのゲームのゴール。\nさあ、カードを出してマッチしてみせろ。"));
@@ -206,6 +206,7 @@ public class TutorialGameManager : GameManager
 
          // 9. エンディング
         yield return new WaitForSeconds(2.0f); // 勝利演出の余韻
+        UIManager.Instance.HideFieldCardExplanation();
         yield return StartCoroutine(ShowDialogue("どうだったかな？。\nこれがこのゲーム...「ΣIGMA」の基本になる。"));
         yield return StartCoroutine(ShowDialogue("これからはレベルごとに提示されるクリアの条件を満たしていって、ゴールを目指してくれ。"));
 
@@ -262,7 +263,8 @@ public class TutorialGameManager : GameManager
         // P2 (Dog): Mask_2 (Sum 2) -> FieldのMask_6にSuitが合う
         
         players[0].hand.Clear();
-        players[0].hand.Add(GetCard("Eye_2"));
+        players[0].hand.Add(GetCard("Eye_1"));
+        players[0].hand.Add(GetCard("Gear_1"));
         
         players[1].hand.Clear();
         players[1].hand.Add(GetCard("Mask_2")); // 後で出す用
