@@ -17,10 +17,12 @@ MonoBehaviour:
   photos: []
   choices:
   - buttonLabel: "\u306F\u3044"
+    fontSize: 24
     ideologyType: 0
     pressDuration: 1.5
     nextInquiry: {fileID: 11400000, guid: 641e0495aa9774de6ac2df9bed7458e4, type: 2}
   - buttonLabel: "\u3044\u3044\u3048"
+    fontSize: 24
     ideologyType: 0
     pressDuration: 1.5
     nextInquiry: {fileID: 11400000, guid: 641e0495aa9774de6ac2df9bed7458e4, type: 2}

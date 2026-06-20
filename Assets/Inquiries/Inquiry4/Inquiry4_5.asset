@@ -17,6 +17,7 @@ MonoBehaviour:
   photos: []
   choices:
   - buttonLabel: "\u518D\u751F\u4E2D"
+    fontSize: 24
     ideologyType: 0
     pressDuration: 6
     nextInquiry: {fileID: 11400000, guid: b419ab549c1315f49b5b25442582eff2, type: 2}

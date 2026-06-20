@@ -13,14 +13,17 @@ MonoBehaviour:
   m_Name: Inquiry5_6
   m_EditorClassIdentifier: Assembly-CSharp::InquiryData
   questionID: 28
-  questionText: "\u4EE5\u4E0B\u306F\u3042\u306A\u305F\u306B\u3068\u3063\u3066\u610F\u5473\u306E\u3042\u308B\u6587\u5B57\u5217\u3067\u3059\u304B?\n\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3"
+  questionText: "\u4EE5\u4E0B\u306F\u3042\u306A\u305F\u306B\u3068\u3063\u3066\u610F\u5473\u306E\u3042\u308B\u6587\u5B57\u5217\u3067\u3059\u304B?\n\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3\u03A3"
   photos: []
   choices:
   - buttonLabel: "\u306F\u3044"
+    fontSize: 24
     ideologyType: 0
     pressDuration: 0.75
     nextInquiry: {fileID: 0}
   - buttonLabel: "\u3044\u3044\u3048"
+    fontSize: 24
     ideologyType: 0
     pressDuration: 0.75
     nextInquiry: {fileID: 0}
+  sound: {fileID: 0}

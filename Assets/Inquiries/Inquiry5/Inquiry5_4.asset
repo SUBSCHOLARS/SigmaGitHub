@@ -17,10 +17,13 @@ MonoBehaviour:
   photos: []
   choices:
   - buttonLabel: "\u904E\u53BB\u306E\u8A18\u9332\u306F\u5909\u66F4\u3055\u308C\u3066\u306F\u306A\u3089\u306A\u3044"
+    fontSize: 14
     ideologyType: 0
     pressDuration: 0.75
     nextInquiry: {fileID: 11400000, guid: faec76e2b26fc504cb57c42c6cace7e3, type: 2}
   - buttonLabel: "\u904E\u53BB\u306E\u8A18\u9332\u306F\u3001\u5FC5\u8981\u306B\u5FDC\u3058\u3066\u4FEE\u6B63\u3055\u308C\u308B\u3079\u304D\u3067\u3042\u308B"
+    fontSize: 14
     ideologyType: 0
     pressDuration: 0.75
     nextInquiry: {fileID: 11400000, guid: faec76e2b26fc504cb57c42c6cace7e3, type: 2}
+  sound: {fileID: 0}

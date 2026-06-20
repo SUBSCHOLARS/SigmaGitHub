@@ -14,13 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InquiryData
   questionID: 4
   questionText: "\u4ECA\u3001\u3042\u306A\u305F\u306F\u5BA4\u5185\u306B\u3044\u307E\u3059\u304B\uFF1F"
-  photo: {fileID: 0}
+  photos: []
   choices:
   - buttonLabel: "\u306F\u3044"
+    fontSize: 24
     ideologyType: 0
     pressDuration: 1.5
     nextInquiry: {fileID: 11400000, guid: b9e2be5467c6e401ab27259bc07635c0, type: 2}
   - buttonLabel: "\u3044\u3044\u3048"
+    fontSize: 24
     ideologyType: 0
     pressDuration: 1.5
     nextInquiry: {fileID: 11400000, guid: b9e2be5467c6e401ab27259bc07635c0, type: 2}
+  sound: {fileID: 0}

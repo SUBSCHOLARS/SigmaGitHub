@@ -11,7 +11,7 @@ public class InquiryData : ScriptableObject
     [Header("質問設定")]
     [TextArea(3, 10)]
     public string questionText; // 質問文
-    public List<Sprite> photos; //画像演出用
+    public List<Sprite> photos; //画像演出用 // フォントサイズ
     [Header("選択肢")]
     public List<InquiryChoice> choices; // ボタンのリスト（可変）
     [Header("SE")]
@@ -21,6 +21,7 @@ public class InquiryData : ScriptableObject
 public struct InquiryChoice
 {
     public string buttonLabel; // ボタンに表示する文字
+    public int fontSize;
     public IdeologyType ideologyType; // どの思想に紐づくか
     public float pressDuration;
     public InquiryData nextInquiry; // 次に表示する質問

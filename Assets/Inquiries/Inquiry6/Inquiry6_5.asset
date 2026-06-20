@@ -17,10 +17,13 @@ MonoBehaviour:
   photos: []
   choices:
   - buttonLabel: "\u306F\u3044"
+    fontSize: 24
     ideologyType: 5
     pressDuration: 0.75
     nextInquiry: {fileID: 0}
   - buttonLabel: "\u306F\u3044"
+    fontSize: 24
     ideologyType: 5
     pressDuration: 0.75
     nextInquiry: {fileID: 0}
+  sound: {fileID: 0}

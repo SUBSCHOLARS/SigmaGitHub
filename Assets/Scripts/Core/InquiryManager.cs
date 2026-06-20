@@ -85,7 +85,11 @@ public class InquiryManager : MonoBehaviour
             GameObject rootObject=Instantiate(buttonPrefab, buttonContainer);
             // 全ての子のTMPに同じテキストを流し込む（Button用とImage用）
             TextMeshProUGUI[] texts=rootObject.GetComponentsInChildren<TextMeshProUGUI>();
-            foreach(var t in texts) t.text=choice.buttonLabel;
+            foreach(var t in texts)
+            { 
+                t.text=choice.buttonLabel;
+                t.fontSize=choice.fontSize; // フォントサイズを設定
+            }
 
             if(data.sound != null)
             {

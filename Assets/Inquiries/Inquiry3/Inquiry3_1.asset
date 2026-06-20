@@ -17,10 +17,13 @@ MonoBehaviour:
   photos: []
   choices:
   - buttonLabel: "\u540C\u610F\u3059\u308B"
+    fontSize: 24
     ideologyType: 0
     pressDuration: 0.75
     nextInquiry: {fileID: 11400000, guid: 17176b1b251c27c41bc774eadac6c5a1, type: 2}
   - buttonLabel: "\u540C\u610F\u3057\u306A\u3044"
+    fontSize: 24
     ideologyType: 0
     pressDuration: 0.75
     nextInquiry: {fileID: 11400000, guid: 17176b1b251c27c41bc774eadac6c5a1, type: 2}
+  sound: {fileID: 0}

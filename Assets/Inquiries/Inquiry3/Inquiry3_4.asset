@@ -21,6 +21,8 @@ MonoBehaviour:
   - {fileID: -6294359736416129154, guid: b443d32a0066d5f4c99c61e3dfe76c64, type: 3}
   choices:
   - buttonLabel: "\u78BA\u8A8D\u3057\u305F"
+    fontSize: 24
     ideologyType: 0
     pressDuration: 0.75
     nextInquiry: {fileID: 11400000, guid: 6a0a44087a945b747952ba772dc7a84f, type: 2}
+  sound: {fileID: 0}
