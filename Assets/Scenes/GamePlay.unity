@@ -7926,7 +7926,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!82 &1427448714
 AudioSource:
   m_ObjectHideFlags: 0
@@ -10245,6 +10245,7 @@ MonoBehaviour:
   memoryHoleUsedThisTurn: 0
   currentRound: 1
   numberSprites:
+  - {fileID: 2880924268787125726, guid: 20e90a8d363334bc7a8989f81a6601e1, type: 3}
   - {fileID: 8906535288332628968, guid: 8383536c6c3f14d73a6d8420b9b4178e, type: 3}
   - {fileID: -1739198746453962294, guid: f16d188b4fedf4d33a3bb85ad7a7f279, type: 3}
   - {fileID: -8646038057354247821, guid: 6ee68a00f23fb4ebf87eba12aebd51d2, type: 3}
@@ -10253,7 +10254,6 @@ MonoBehaviour:
   - {fileID: -9109299201891457981, guid: 3fd8ae1241b444fc9a616022a65a4bc2, type: 3}
   - {fileID: -5319029520119078399, guid: ede4d98f088894b96b633059d47d4bac, type: 3}
   - {fileID: -9155929770397124374, guid: 2a7357f08bb804e4184669a57fdf8b7c, type: 3}
-  - {fileID: 4426293586961124817, guid: 9a04ca86ae8594eb9a087f7646c10185, type: 3}
   - {fileID: 4426293586961124817, guid: 9a04ca86ae8594eb9a087f7646c10185, type: 3}
   - {fileID: 21300000, guid: 09365db52f7b19c49be73e1a34cb1102, type: 3}
   - {fileID: 21300000, guid: b41f3d82e24ad834e8a49772c0b0ecce, type: 3}

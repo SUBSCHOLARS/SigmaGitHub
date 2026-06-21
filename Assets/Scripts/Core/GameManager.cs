@@ -1466,18 +1466,19 @@ public class GameManager : MonoBehaviour
     {
         switch(trend)
         {
-            case 1: return numberSprites[0];
-            case 2: return numberSprites[1];
-            case 3: return numberSprites[2];
-            case 4: return numberSprites[3];
-            case 5: return numberSprites[4];
-            case 6: return numberSprites[5];
-            case 7: return numberSprites[6];
-            case 8: return numberSprites[7];
-            case 9: return numberSprites[8];
-            case 10: return numberSprites[9];
-            case 11: return numberSprites[10];
-            case 12: return numberSprites[11];
+            case 0: return numberSprites[0];
+            case 1: return numberSprites[1];
+            case 2: return numberSprites[2];
+            case 3: return numberSprites[3];
+            case 4: return numberSprites[4];
+            case 5: return numberSprites[5];
+            case 6: return numberSprites[6];
+            case 7: return numberSprites[7];
+            case 8: return numberSprites[8];
+            case 9: return numberSprites[9];
+            case 10: return numberSprites[10];
+            case 11: return numberSprites[11];
+            case 12: return numberSprites[12];
             default: return null;
         }
     }
