@@ -39,13 +39,10 @@ public class LobbyManager : MonoBehaviour
         {
             fillObject.SetActive(true);
             startButton.interactable = true;
+            startButton.GetComponent<HoldButton>().enabled = true;
             buttonText.color = Color.white;
             int flag = PersistentDataManager.Instance.GameProgressFlag;
             buttonText.text = $"ゲーム-{flag + 1}/6";
-
-            freePlayFillObject.SetActive(true);
-            freePlayButton.interactable = true;
-            freePlayButtonText.color = Color.white;
         }
 
         // エンディング到達マークの表示制御
@@ -58,6 +55,14 @@ public class LobbyManager : MonoBehaviour
                 PersistentDataManager.Instance.EndingDisqualificationBeforeIdeology);
         if (markRevolution != null)
             markRevolution.SetActive(PersistentDataManager.Instance.EndingRevolution);
+
+        if(markBrainwash || markDisqualification || markDisqualificationBeforeIdeology || markRevolution)
+        {
+            freePlayFillObject.SetActive(true);
+            freePlayButton.interactable = true;
+            freePlayButton.GetComponent<HoldButton>().enabled = true;
+            freePlayButtonText.color = Color.white;
+        }
     }
 
     public void OnStartGameClicked()
